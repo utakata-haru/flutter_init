@@ -1,1 +1,217 @@
-# flutter_init
+# Flutter Init - Flutterアプリ開発テンプレート
+
+## 📋 概要
+
+`flutter_init`は、Flutterアプリケーション開発を効率的に開始するためのテンプレートリポジトリです。クリーンアーキテクチャに基づいた構造化されたプロジェクトセットアップと、AI支援による開発フローを提供します。
+
+## 🚀 使用方法
+
+### 重要なブランチ戦略
+
+⚠️ **重要**: `main`ブランチには直接コミットしないでください。
+
+1. **新しいアプリを作成する場合**:
+   ```bash
+   # このリポジトリをクローン
+   git clone https://github.com/utakata-haru/flutter_init.git
+   cd flutter_init
+   
+   # 新しいブランチを作成して開発開始
+   git checkout -b feature/your-app-name
+   ```
+
+2. **開発の開始**:
+   - ブランチを作成後、AIアシスタントまたは手動でFlutterプロジェクトを初期化
+   - 提供されたテンプレートとスクリプトを活用して開発を進める
+
+## 🏗️ プロジェクト構造
+
+```
+flutter_init/
+├── .github/
+│   └── chatmodes/
+│       └── flutter.chatmode.md     # VS Code用AIアシスタント設定
+├── .trae/
+│   └── rules/
+│       └── project_rules.md        # Trae AI IDE用プロジェクトルール
+├── AI/
+│   ├── generate_feature.sh         # フィーチャー自動生成スクリプト
+│   ├── instructions/
+│   │   ├── features_template.md     # クリーンアーキテクチャテンプレート
+│   │   └── technology_stack.md     # 技術スタック定義
+│   └── logs/
+│       └── conversation_log.md     # 開発ログ
+├── .gitignore                      # Git除外設定
+└── README.md                       # このファイル
+```
+
+## 🤖 AIアシスタント機能
+
+### Flutter App Builder
+
+このリポジトリは複数のAI開発環境に対応しています：
+
+#### VS Code + GitHub Copilot
+`.github/chatmodes/flutter.chatmode.md`で定義されたカスタムモードが、段階的なアプリケーション開発をサポートします。
+
+#### Trae AI IDE
+`.trae/rules/project_rules.md`で定義されたプロジェクトルールが、VS Code環境と同等の開発支援を提供します。Trae環境では、より高度なコード生成とリアルタイムな開発支援が利用できます。
+
+#### 開発プロセス（3段階）
+
+1. **🎯 第一段階：仕様策定フェーズ**
+   - アプリケーションの要件定義
+   - 詳細な仕様書の作成
+   - ターゲットユーザーと機能の明確化
+
+2. **🏗️ 第二段階：構造計画フェーズ**
+   - クリーンアーキテクチャに基づいたファイル構成計画
+   - 必要なDartファイルの洗い出し
+   - 構造計画書の作成
+
+3. **💻 第三段階：実装フェーズ**
+   - 実際のコード実装
+   - レイヤーごとの段階的開発
+   - 動作検証とテスト
+
+## 🛠️ 自動フィーチャー生成
+
+### generate_feature.sh スクリプト
+
+クリーンアーキテクチャに基づいたフィーチャーディレクトリを自動生成します。
+
+#### 使用方法
+
+```bash
+# 対話形式で実行
+./AI/generate_feature.sh
+
+# コマンドライン引数で実行
+./AI/generate_feature.sh -n UserProfile -p user -y
+```
+
+#### 権限レベル
+
+- **admin**: 管理者専用機能
+- **user**: 一般ユーザー機能  
+- **shared**: 共通機能（認証、共通UIコンポーネントなど）
+- **direct**: features下に直接配置
+
+#### 生成されるディレクトリ構造
+
+```
+lib/features/{permission_level}/{feature_name}/
+├── 1_domain/              # ドメイン層
+│   ├── 1_entities/        # エンティティ
+│   ├── 2_repositories/    # リポジトリインターフェース
+│   └── 3_usecases/        # ユースケース
+├── 2_application/         # アプリケーション層
+│   ├── 1_states/          # 状態クラス
+│   ├── 2_providers/       # プロバイダー
+│   └── 3_notifiers/       # 状態管理
+├── 3_infrastructure/      # インフラストラクチャ層
+│   ├── 1_data_sources/    # データソース
+│   ├── 2_models/          # データモデル
+│   └── 3_repositories/    # リポジトリ実装
+└── 4_presentation/        # プレゼンテーション層
+    ├── 1_widgets/         # UIコンポーネント
+    └── 2_pages/           # ページ
+```
+
+## 📚 技術スタック
+
+### 主要ライブラリ
+
+| カテゴリ | ライブラリ | 役割 |
+|----------|------------|------|
+| 状態管理 | riverpod, hooks_riverpod | DIコンテナと状態管理 |
+| データモデル | freezed | イミュータブルなデータクラス生成 |
+| 画面遷移 | go_router | 型安全なルーティング |
+| ローカルDB | sqflite | ローカルデータベース |
+| UI補助 | flutter_hooks | ウィジェットの状態管理 |
+
+### アーキテクチャ原則
+
+- **クリーンアーキテクチャ**: 4層構造による責務分離
+- **依存性注入**: Riverpodによる型安全なDI
+- **イミュータブル設計**: Freezedによるデータクラス
+- **テスト駆動開発**: テストしやすい設計
+
+## 📖 開発ガイドライン
+
+### 1. 新機能開発の流れ
+
+1. **フィーチャー生成**: `generate_feature.sh`でディレクトリ構造を作成
+2. **ドメイン層**: エンティティとユースケースを定義
+3. **インフラ層**: データソースとリポジトリを実装
+4. **アプリケーション層**: 状態管理とビジネスロジックを実装
+5. **プレゼンテーション層**: UIコンポーネントとページを作成
+
+### 2. コーディング規約
+
+- **命名規則**: snake_caseでフィーチャー名を定義
+- **ファイル構成**: 各層の責務を明確に分離
+- **依存関係**: 上位層から下位層への一方向依存
+- **テスト**: 各層に対応するテストを作成
+
+## 🔧 セットアップ
+
+### 前提条件
+
+- Flutter SDK (最新安定版)
+- Dart SDK
+- Git
+- AI開発環境（VS Code + GitHub Copilot または Trae AI IDE）
+
+### 初期セットアップ
+
+1. **リポジトリのクローン**:
+   ```bash
+   git clone https://github.com/your-username/flutter_init.git
+   cd flutter_init
+   ```
+
+2. **新しいブランチの作成**:
+   ```bash
+   git checkout -b feature/your-project-name
+   ```
+
+3. **Flutterプロジェクトの初期化**:
+   ```bash
+   flutter create .
+   ```
+
+4. **依存関係の追加**:
+   `AI/instructions/technology_stack.md`を参考にpubspec.yamlを設定
+
+### AI環境別セットアップ
+
+#### VS Code環境
+1. GitHub Copilotを有効化
+2. `.github/chatmodes/flutter.chatmode.md`のカスタムモードを使用
+3. Copilot Chatでフィーチャー開発を開始
+
+#### Trae AI IDE環境
+1. プロジェクトを開くと`.trae/rules/project_rules.md`が自動的に読み込まれます
+2. Flutter App Builderとして3段階の開発プロセスが利用可能
+3. クリーンアーキテクチャに基づいた自動コード生成とリアルタイム支援
+
+## 📝 ライセンス
+
+このプロジェクトはMITライセンスの下で公開されています。
+
+## 🤝 コントリビューション
+
+1. このリポジトリをフォーク
+2. フィーチャーブランチを作成 (`git checkout -b feature/amazing-feature`)
+3. 変更をコミット (`git commit -m 'Add some amazing feature'`)
+4. ブランチにプッシュ (`git push origin feature/amazing-feature`)
+5. プルリクエストを作成
+
+## 📞 サポート
+
+質問や問題がある場合は、GitHubのIssuesページでお気軽にお問い合わせください。
+
+---
+
+**Happy Coding! 🚀**
