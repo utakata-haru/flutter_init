@@ -38,8 +38,8 @@ lib/features/{permission_level}/{feature_name_snake}/
 │   └── 3_notifiers/          # 状態管理（Riverpod Notifier）
 ├── 3_infrastructure/
 │   ├── 1_data_sources/
-│   │   ├── local/        # ローカルデータソース
-│   │   └── remote/       # リモートデータソース
+│   │   ├── 1_local/        # ローカルデータソース
+│   │   └── 2_remote/       # リモートデータソース
 │   ├── 2_models/           # データモデル
 │   └── 3_repositories/     # リポジトリ実装
 └── 4_presentation/

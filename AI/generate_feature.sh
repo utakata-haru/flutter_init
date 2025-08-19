@@ -165,8 +165,8 @@ mkdir -p "${BASE_PATH}/2_application/3_notifiers"
 mkdir -p "${BASE_PATH}/2_application/2_providers"
 mkdir -p "${BASE_PATH}/2_application/1_states"
 
-mkdir -p "${BASE_PATH}/3_infrastructure/1_data_sources/local"
-mkdir -p "${BASE_PATH}/3_infrastructure/1_data_sources/remote"
+mkdir -p "${BASE_PATH}/3_infrastructure/1_data_sources/1_local"
+mkdir -p "${BASE_PATH}/3_infrastructure/1_data_sources/2_remote"
 mkdir -p "${BASE_PATH}/3_infrastructure/2_models"
 mkdir -p "${BASE_PATH}/3_infrastructure/3_repositories"
 
