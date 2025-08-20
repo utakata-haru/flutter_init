@@ -75,8 +75,8 @@ class PomodoroTimerWidget extends ConsumerWidget {
                 child: CircularProgressIndicator(
                   value: 1,
                   strokeWidth: 14,
-                  backgroundColor: colorScheme.surfaceVariant,
-                  valueColor: AlwaysStoppedAnimation<Color>(colorScheme.surfaceVariant),
+                  backgroundColor: colorScheme.surfaceContainerHighest,
+                  valueColor: AlwaysStoppedAnimation<Color>(colorScheme.surfaceContainerHighest),
                 ),
               ),
               // 実際の進捗リング（満タン→ゼロへ減少するよう反転）
