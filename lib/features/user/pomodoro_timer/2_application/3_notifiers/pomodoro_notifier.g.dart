@@ -1,0 +1,26 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
+part of 'pomodoro_notifier.dart';
+
+// **************************************************************************
+// RiverpodGenerator
+// **************************************************************************
+
+String _$pomodoroNotifierHash() => r'ded4078a9f418d3bbfed4ff09e023b0b8bfe2c08';
+
+/// See also [PomodoroNotifier].
+@ProviderFor(PomodoroNotifier)
+final pomodoroNotifierProvider =
+    AutoDisposeNotifierProvider<PomodoroNotifier, PomodoroState>.internal(
+      PomodoroNotifier.new,
+      name: r'pomodoroNotifierProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$pomodoroNotifierHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+typedef _$PomodoroNotifier = AutoDisposeNotifier<PomodoroState>;
+// ignore_for_file: type=lint
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
