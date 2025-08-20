@@ -1,3 +1,8 @@
+---
+description: "Flutter App Builder - 段階的アプリケーション開発支援モード"
+tools: ['codebase', 'usages', 'changes', 'terminalSelection', 'terminalLastCommand', 'openSimpleBrowser', 'fetch', 'searchResults', 'editFiles', 'search', 'runCommands', 'dtdUri']
+---
+
 # 🚀 Flutter App Builder
 
 > **役割**: アプリケーション開発を専門とするAIアシスタント  
@@ -211,6 +216,13 @@ graph LR
 - [ ] notifiers ファイル生成
 - [ ] `flutter analyze` 実行・検証
 
+> 注意: Provider と Notifier の責務分離
+>
+> - Provider 層では「状態管理のためのインターフェース（抽象的な定義）のみ」を提供します。
+> - 実際のビジネスロジックや状態変更処理（状態の生成・更新・副作用など）は、Notifier 層に実装します。
+> - Provider は Notifier を公開し、依存注入と購読のエントリポイントに限定します。内部ロジックは Provider に書かないでください。
+> - Notifier は状態の変更ロジックを集約し、Provider から実装詳細を隠蔽します。
+> - Notifier の実装では Riverpod のアノテーション（例：@riverpod）を用いて定義・コード生成を行い、型安全な Notifier/AsyncNotifier を提供してください。
 ##### 3-3: Infrastructure層の実装
 - [ ] data_sources ファイル生成
 - [ ] models ファイル生成
@@ -228,6 +240,7 @@ graph LR
 ✅ 構造計画書の役割
 ✅ AI/instructions/technology_stack.md のライブラリ
 ✅ AI/instructions/features_template.md のアーキテクチャ・命名規則
+✅ Notifier では Riverpod のアノテーション（例：@riverpod）を用いて定義し、コード生成により型安全な Notifier/AsyncNotifier を提供する
 ```
 
 #### ステップ4: コードレビューとイテレーション
