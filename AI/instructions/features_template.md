@@ -57,16 +57,21 @@ lib/features/{permission_level}/{feature_name_snake}/
 #### Entities
 ```dart
 // entities/user_entity.dart
-class UserEntity {
-  final String id;
-  final String name;
-  final String email;
-  
-  const UserEntity({
-    required this.id,
-    required this.name,
-    required this.email,
-  });
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+part 'user_entity.freezed.dart';
+part 'user_entity.g.dart';
+
+@freezed
+class UserEntity with _$UserEntity {
+  const factory UserEntity({
+    required String id,
+    required String name,
+    required String email,
+  }) = _UserEntity;
+
+  // JSONシリアライズ/デシリアライズ（必要に応じて使用してください）
+  factory UserEntity.fromJson(Map<String, dynamic> json) => _$UserEntityFromJson(json);
 }
 ```
 
@@ -110,15 +115,26 @@ class UserState with _$UserState {
 #### Notifiers
 ```dart
 // notifiers/user_notifier.dart
-class UserNotifier extends StateNotifier<UserState> {
-  final GetUserUseCase _getUserUseCase;
-  
-  UserNotifier(this._getUserUseCase) : super(const UserState.initial());
-  
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'user_notifier.g.dart';
+
+// Notifier の責務
+// - 状態の生成・更新・副作用などのビジネスロジックを集約
+// - Provider からは依存を注入するのみで、実装詳細はここに隠蔽
+// - Riverpod のアノテーション（@riverpod）により型安全な Notifier/AsyncNotifier を提供
+ @riverpod
+ class UserNotifier extends _$UserNotifier {
+   // 初期状態を返す（UserState は states で定義）
+   @override
+   UserState build() => const UserState.initial();
+
   Future<void> getUser(String id) async {
     state = const UserState.loading();
     try {
-      final user = await _getUserUseCase(id);
+      // UseCase は Provider から取得（依存注入）
+      final getUserUseCase = ref.read(getUserUseCaseProvider);
+      final user = await getUserUseCase(id);
       state = UserState.loaded(user);
     } catch (e) {
       state = UserState.error(e.toString());
@@ -128,11 +144,50 @@ class UserNotifier extends StateNotifier<UserState> {
 ```
 
 #### Providers
+
+Provider と Notifier の責務は以下の通りです（重要）。
+
+- Provider: 依存注入と購読のエントリポイントのみを提供（抽象の公開）。内部ロジックは書かない。
+- Notifier: 状態の生成・更新・副作用などのビジネスロジックを集約。Provider から実装詳細を隠蔽。
+- Notifier は Riverpod のアノテーション（例: @riverpod）で定義し、コード生成により型安全な Notifier/AsyncNotifier を提供。
+
 ```dart
 // providers/user_providers.dart
-final userNotifierProvider = StateNotifierProvider<UserNotifier, UserState>(
-  (ref) => UserNotifier(ref.read(getUserUseCaseProvider)),
-);
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+// 実際のパス構成に合わせて import を調整してください（例）
+// import 'features/user/domain/repositories/user_repository.dart';
+// import 'features/user/domain/usecases/get_user_usecase.dart';
+// import 'features/user/infrastructure/repositories/user_repository_impl.dart';
+// import 'features/user/infrastructure/datasources/user_remote_data_source.dart';
+// import 'features/user/infrastructure/datasources/user_local_data_source.dart';
+
+part 'user_providers.g.dart';
+
+/// Provider と Notifier の責務分離（要点）
+/// - Provider: 依存注入と公開のみ（インスタンスの組み立て）。ロジックは書かない。
+/// - Notifier: 状態の生成・更新・副作用などのビジネスロジックを担う。
+
+// Repository の抽象を公開（実装詳細は隠蔽）
+@riverpod
+UserRepository userRepository(UserRepositoryRef ref) {
+  // DI 配線のみ。ロジックはここに書かない
+  // 例: インフラ層で定義した DataSource Provider を watch して組み立てる
+  final remote = ref.watch(userRemoteDataSourceProvider);
+  final local = ref.watch(userLocalDataSourceProvider);
+  return UserRepositoryImpl(remote, local);
+}
+
+// UseCase の抽象を公開（Repository を依存注入）
+@riverpod
+GetUserUseCase getUserUseCase(GetUserUseCaseRef ref) {
+  final repo = ref.watch(userRepositoryProvider);
+  return GetUserUseCase(repo);
+}
+
+// Notifier はクラス側の @riverpod により `userNotifierProvider` が自動生成されます。
+// 例）ウィジェット内での利用（購読のみ、ロジックは Notifier 側にある）
+// final userState = ref.watch(userNotifierProvider);
 ```
 
 ### 3. Infrastructure Layer（インフラストラクチャ層）
@@ -300,13 +355,22 @@ class UserRepositoryImpl implements UserRepository {
 #### Pages
 ```dart
 // pages/user_profile_page.dart
-class UserProfilePage extends ConsumerWidget {
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+
+class UserProfilePage extends HookConsumerWidget {
   final String userId;
   
-  const UserProfilePage({Key? key, required this.userId}) : super(key: key);
+  const UserProfilePage({super.key, required this.userId});
   
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // 例: Hookを使って初回マウント時に取得
+    useEffect(() {
+      Future.microtask(() => ref.read(userNotifierProvider.notifier).getUser(userId));
+      return null; // dispose不要
+    }, const []);
+
     final userState = ref.watch(userNotifierProvider);
     
     return Scaffold(
@@ -399,16 +463,19 @@ class UserInfoCard extends StatelessWidget {
 ```yaml
 dependencies:
   flutter_riverpod: 
+  riverpod_annotation: 
   freezed_annotation:
+  json_annotation:
   dio:
   go_router: 
   sqflite: 
   path: 
 
 dev_dependencies:
-  freezed: 
-  json_annotation:
   build_runner: 
+  freezed: 
+  json_serializable: 
+  riverpod_generator: 
 ```
 
 ### Provider Registration
@@ -437,35 +504,3 @@ final appProviders = [
 - [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
 - [Flutter Riverpod](https://riverpod.dev/)
 - [Atomic Design](https://atomicdesign.bradfrost.com/)
-
-## CLI 使用方法（generate_feature.sh と整合）
-このリポジトリに含まれる generate_feature.sh は対話式だけでなく、コマンド実行時の引数指定でも動作します。CI やコード生成エージェントから一発でディレクトリを作成したい場合は引数を利用してください。
-
-主なオプション
-- -n, --name NAME  
-  フィーチャー名（例: UserProfile, order_history）
-- -p, --permission NUM_OR_STR  
-  権限（1|2|3|4 または admin|user|shared|direct）。数値は以下にマップされます: 1→admin, 2→user, 3→shared, 4→direct
-- -l, --permission-level LEVEL  
-  --permission と同等。文字列で直接指定する場合に使用します（admin/user/shared/direct）。
-- -y, --yes  
-  確認プロンプトをスキップして即時生成します（非対話的実行向け）。
-- -h, --help  
-  ヘルプを表示します。
-
-動作のポイント
-- 引数が与えられなければ従来どおり対話式で入力を促します（互換性を維持）。
-- 権限の解釈は数値（1-4）と文字列の両方を受け付けます（大文字・小文字を問わない）。
-- direct を指定すると lib/features/ 以下に直接フィーチャーディレクトリを作成します。その他は lib/features/{permission}/{feature_name_snake} に作成されます。
-- フィーチャー名はスクリプト内で snake_case に変換されます（大文字→小文字、スペース/ハイフンをアンダースコアへ置換）。
-- -y を指定すると「作成してよいか」の確認をスキップします。
-
-使い方例
-- 対話式（従来どおり）  
-  ./Template/AI/generate_feature.sh
-- 引数で一発（管理者用 feature を作成、確認スキップ）  
-  ./Template/AI/generate_feature.sh -n UserProfile -p admin -y
-- 数値で指定（shared を作成）  
-  ./Template/AI/generate_feature.sh --name order_history --permission 3
-- direct（features 配下に直接配置）  
-  ./Template/AI/generate_feature.sh -n metrics -p direct

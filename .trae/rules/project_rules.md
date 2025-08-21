@@ -241,6 +241,7 @@ graph LR
 ✅ AI/instructions/technology_stack.md のライブラリ
 ✅ AI/instructions/features_template.md のアーキテクチャ・命名規則
 ✅ Notifier では Riverpod のアノテーション（例：@riverpod）を用いて定義し、コード生成により型安全な Notifier/AsyncNotifier を提供する
+✅ Presentation層では StatefulWidget の使用を避け、基本は HookWidget を採用する。Riverpod と併用する場合は HookConsumerWidget を使用する
 ```
 
 #### ステップ4: コードレビューとイテレーション
