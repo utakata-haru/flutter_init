@@ -4,10 +4,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:audioplayers/audioplayers.dart'; // 追加: 音声再生
+ // 追加: 音声再生
 
 import '../../2_application/1_states/voice_memo_detail_state.dart';
 import '../../2_application/3_notifiers/voice_memo_detail_notifier.dart';
+import '../../2_application/3_notifiers/playback_notifier.dart'; // 追加: 再生制御をNotifier経由に変更
+import '../../2_application/1_states/playback_state.dart'; // 追加: PlaybackStatus参照用
 
 class VoiceMemoDetailPage extends HookConsumerWidget {
   final String id;
@@ -23,14 +25,6 @@ class VoiceMemoDetailPage extends HookConsumerWidget {
       Future.microtask(() => ref.read(voiceMemoDetailNotifierProvider.notifier).fetch(id));
       return null; // クリーンアップ不要
     }, [id]);
-
-    // AudioPlayer をフックで管理（ライフサイクルに合わせて破棄）
-    final player = useMemoized(() => AudioPlayer(), const []);
-    final playerState = useState(PlayerState.stopped);
-    final position = useState(Duration.zero);
-    final duration = useState(Duration.zero);
-    // 再生速度（0.5x/1.0x/1.5x/2.0）を管理
-    final speed = useState<double>(1.0);
 
     // 再生用: mm:ss 表記を作るヘルパー
     String formatTime(Duration d) {
@@ -60,86 +54,23 @@ class VoiceMemoDetailPage extends HookConsumerWidget {
           final tagsLabel = item.tags.map((t) => t.name).join(', ');
           final durationSec = (item.durationMs / 1000).round();
 
-          // 音声ソースのセットとリスナー登録（item.audioPathが変わるたびに更新）
+          // 再生状態（PlaybackNotifier）を購読
+          final playback = ref.watch(playbackNotifierProvider);
+          final playbackCtl = ref.read(playbackNotifierProvider.notifier);
+
+          // 音声ソースのセット（item.audioPathが変わるたびに更新）
           useEffect(() {
-            // 既存の再生を停止してからソースをセット
-            () async {
-              try {
-                // Android向け: オーディオフォーカス/セッション設定（他アプリの音量を一時的に下げる）
-                try {
-                  await player.setAudioContext(AudioContext(
-                    android: AudioContextAndroid(
-                      contentType: AndroidContentType.music,
-                      usageType: AndroidUsageType.media,
-                      audioFocus: AndroidAudioFocus.gainTransientMayDuck,
-                      // duck（減衰）優先。必要なら willPauseWhenDucked を true に変更
-                      // willPauseWhenDucked: false, // デフォルトに依存
-                    ),
-                  ));
-                } catch (_) {
-                  // ランタイム/環境差異で未対応な場合は握りつぶす
-                }
-
-                await player.stop();
-                // ローカルファイルをソースに設定（自動再生はしない）
-                await player.setSource(DeviceFileSource(item.audioPath));
-              } catch (_) {
-                // 失敗時は無視（UIで再試行できる）
-              }
-            }();
-
-            // プレイヤーの各種ストリームを購読
-            final subState = player.onPlayerStateChanged.listen((s) {
-              playerState.value = s;
-            });
-            final subPos = player.onPositionChanged.listen((p) {
-              position.value = p;
-            });
-            final subDur = player.onDurationChanged.listen((d) {
-              duration.value = d;
-            });
-            // 再生完了時の挙動: 停止して先頭(00:00)に戻す
-            final subComplete = player.onPlayerComplete.listen((_) async {
-              try {
-                // 完了時は停止＋先頭へシーク
-                await player.stop();
-                await player.seek(Duration.zero);
-              } catch (_) {}
-              // UI状態を更新
-              playerState.value = PlayerState.stopped;
-              position.value = Duration.zero;
-            });
-
-            // クリーンアップ
-            return () {
-              subState.cancel();
-              subPos.cancel();
-              subDur.cancel();
-              subComplete.cancel();
-            };
-          }, [item.audioPath, player]);
-
-          // 再生速度の変更をプレイヤーへ反映
-          useEffect(() {
-            () async {
-              try {
-                await player.setPlaybackRate(speed.value);
-              } catch (_) {}
-            }();
-            return null;
-          }, [speed.value, player]);
+            Future.microtask(() => playbackCtl.load(item.audioPath));
+            return null; // クリーンアップはNotifier側で実施
+          }, [item.audioPath]);
 
           // 再生/一時停止のトグル
           Future<void> togglePlay() async {
             try {
-              if (playerState.value == PlayerState.playing) {
-                await player.pause();
-              } else if (playerState.value == PlayerState.paused) {
-                await player.resume();
+              if (playback.status == PlaybackStatus.playing) {
+                await playbackCtl.pause();
               } else {
-                // stopped/completed など、最初から再生
-                await player.seek(Duration.zero);
-                await player.resume();
+                await playbackCtl.play();
               }
             } catch (e) {
               if (context.mounted) {
@@ -152,27 +83,13 @@ class VoiceMemoDetailPage extends HookConsumerWidget {
 
           // 相対シーク（ミリ秒）。0〜totalの範囲にクランプ
           Future<void> seekRelativeMs(int deltaMs, Duration total) async {
-            final currentMs = position.value.inMilliseconds;
-            final target = (currentMs + deltaMs).clamp(0, total.inMilliseconds);
-            try {
-              await player.seek(Duration(milliseconds: target));
-            } catch (_) {}
+            await playbackCtl.seekRelative(deltaMs);
           }
 
-          // 破棄時にプレイヤーを停止・解放
-          useEffect(() {
-            return () async {
-              try {
-                await player.stop();
-                await player.dispose();
-              } catch (_) {}
-            };
-          }, const []);
-
-          final total = duration.value.inMilliseconds == 0
+          final total = playback.duration.inMilliseconds == 0
               ? Duration(milliseconds: item.durationMs)
-              : duration.value;
-          final current = position.value > total ? total : position.value;
+              : playback.duration;
+          final current = playback.position > total ? total : playback.position;
 
           return ListView(
             padding: const EdgeInsets.all(16),
@@ -237,7 +154,7 @@ class VoiceMemoDetailPage extends HookConsumerWidget {
                             onPressed: togglePlay,
                             iconSize: 40,
                             icon: Icon(
-                              playerState.value == PlayerState.playing
+                              playback.status == PlaybackStatus.playing
                                   ? Icons.pause_circle_filled
                                   : Icons.play_circle_fill,
                             ),
@@ -261,9 +178,7 @@ class VoiceMemoDetailPage extends HookConsumerWidget {
                                   max: total.inMilliseconds.toDouble().clamp(1.0, double.infinity),
                                   onChanged: (v) async {
                                     final d = Duration(milliseconds: v.round());
-                                    try {
-                                      await player.seek(d);
-                                    } catch (_) {}
+                                    await playbackCtl.seek(d);
                                   },
                                 ),
                                 Row(
@@ -280,8 +195,8 @@ class VoiceMemoDetailPage extends HookConsumerWidget {
                           // 再生速度切り替え（ポップアップメニュー）
                           PopupMenuButton<double>(
                             tooltip: '再生速度',
-                            initialValue: speed.value,
-                            onSelected: (v) => speed.value = v,
+                            initialValue: playback.speed,
+                            onSelected: (v) => playbackCtl.setSpeed(v),
                             itemBuilder: (context) => const [
                               PopupMenuItem(value: 0.5, child: Text('0.5x')),
                               PopupMenuItem(value: 1.0, child: Text('1.0x')),
@@ -289,7 +204,7 @@ class VoiceMemoDetailPage extends HookConsumerWidget {
                               PopupMenuItem(value: 2.0, child: Text('2.0x')),
                             ],
                             child: Chip(
-                              label: Text('${speed.value.toStringAsFixed(1)}x'),
+                              label: Text('${playback.speed.toStringAsFixed(1)}x'),
                             ),
                           ),
                         ],

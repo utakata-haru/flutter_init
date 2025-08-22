@@ -7,7 +7,7 @@ part of 'voice_memo_update_meta_notifier.dart';
 // **************************************************************************
 
 String _$voiceMemoUpdateMetaNotifierHash() =>
-    r'49db3f0fd62bd162d0f6c15a42a50c476a45ab78';
+    r'f0a9fce87f0d52b6b4c6e51c595edefc29ba70d4';
 
 /// See also [VoiceMemoUpdateMetaNotifier].
 @ProviderFor(VoiceMemoUpdateMetaNotifier)
