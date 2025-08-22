@@ -1,0 +1,46 @@
+name: flutter_init
+description: "A new Flutter project."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.8.1
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+
+  # UI補助
+  flutter_hooks:
+
+  # 状態管理
+  riverpod:
+  hooks_riverpod:
+  riverpod_annotation:
+
+  # データモデル/シリアライズ
+  freezed_annotation:
+  json_annotation:
+
+  # 画面遷移
+  go_router:
+
+  # ローカルDB
+  sqflite:
+  path:
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  # コード生成（Riverpod）
+  build_runner:
+  riverpod_generator:
+
+  # Lints
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
