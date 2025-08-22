@@ -18,6 +18,14 @@ final GoRouter appRouter = GoRouter(
         child: VoiceMemoListPage(),
       ),
       routes: [
+        // 作成: /memos/new （動的ルートよりも先に置く）
+        GoRoute(
+          path: 'new',
+          name: 'voiceMemoCreate',
+          pageBuilder: (context, state) => const MaterialPage(
+            child: VoiceMemoEditPage(),
+          ),
+        ),
         // 詳細: /memos/:id
         GoRoute(
           path: ':id',
@@ -28,13 +36,6 @@ final GoRouter appRouter = GoRouter(
               child: VoiceMemoDetailPage(id: id),
             );
           },
-        ),
-        GoRoute(
-          path: 'new',
-          name: 'voiceMemoCreate',
-          pageBuilder: (context, state) => const MaterialPage(
-            child: VoiceMemoEditPage(),
-          ),
         ),
       ],
     ),

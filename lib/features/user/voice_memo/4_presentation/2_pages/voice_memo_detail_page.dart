@@ -4,6 +4,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:audioplayers/audioplayers.dart'; // 追加: 音声再生
 
 import '../../2_application/1_states/voice_memo_detail_state.dart';
 import '../../2_application/3_notifiers/voice_memo_detail_notifier.dart';
@@ -22,6 +23,21 @@ class VoiceMemoDetailPage extends HookConsumerWidget {
       Future.microtask(() => ref.read(voiceMemoDetailNotifierProvider.notifier).fetch(id));
       return null; // クリーンアップ不要
     }, [id]);
+
+    // AudioPlayer をフックで管理（ライフサイクルに合わせて破棄）
+    final player = useMemoized(() => AudioPlayer(), const []);
+    final playerState = useState(PlayerState.stopped);
+    final position = useState(Duration.zero);
+    final duration = useState(Duration.zero);
+    // 再生速度（0.5x/1.0x/1.5x/2.0）を管理
+    final speed = useState<double>(1.0);
+
+    // 再生用: mm:ss 表記を作るヘルパー
+    String formatTime(Duration d) {
+      final m = d.inMinutes.remainder(60).toString().padLeft(2, '0');
+      final s = d.inSeconds.remainder(60).toString().padLeft(2, '0');
+      return '$m:$s';
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -43,6 +59,93 @@ class VoiceMemoDetailPage extends HookConsumerWidget {
 
           final tagsLabel = item.tags.map((t) => t.name).join(', ');
           final durationSec = (item.durationMs / 1000).round();
+
+          // 音声ソースのセットとリスナー登録（item.audioPathが変わるたびに更新）
+          useEffect(() {
+            // 既存の再生を停止してからソースをセット
+            () async {
+              try {
+                await player.stop();
+                // ローカルファイルをソースに設定（自動再生はしない）
+                await player.setSource(DeviceFileSource(item.audioPath));
+              } catch (_) {
+                // 失敗時は無視（UIで再試行できる）
+              }
+            }();
+
+            // プレイヤーの各種ストリームを購読
+            final subState = player.onPlayerStateChanged.listen((s) {
+              playerState.value = s;
+            });
+            final subPos = player.onPositionChanged.listen((p) {
+              position.value = p;
+            });
+            final subDur = player.onDurationChanged.listen((d) {
+              duration.value = d;
+            });
+
+            // クリーンアップ
+            return () {
+              subState.cancel();
+              subPos.cancel();
+              subDur.cancel();
+            };
+          }, [item.audioPath, player]);
+
+          // 再生速度の変更をプレイヤーへ反映
+          useEffect(() {
+            () async {
+              try {
+                await player.setPlaybackRate(speed.value);
+              } catch (_) {}
+            }();
+            return null;
+          }, [speed.value, player]);
+
+          // 再生/一時停止のトグル
+          Future<void> togglePlay() async {
+            try {
+              if (playerState.value == PlayerState.playing) {
+                await player.pause();
+              } else if (playerState.value == PlayerState.paused) {
+                await player.resume();
+              } else {
+                // stopped/completed など、最初から再生
+                await player.seek(Duration.zero);
+                await player.resume();
+              }
+            } catch (e) {
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('再生に失敗しました: $e')),
+                );
+              }
+            }
+          }
+
+          // 相対シーク（ミリ秒）。0〜totalの範囲にクランプ
+          Future<void> seekRelativeMs(int deltaMs, Duration total) async {
+            final currentMs = position.value.inMilliseconds;
+            final target = (currentMs + deltaMs).clamp(0, total.inMilliseconds);
+            try {
+              await player.seek(Duration(milliseconds: target));
+            } catch (_) {}
+          }
+
+          // 破棄時にプレイヤーを停止・解放
+          useEffect(() {
+            return () async {
+              try {
+                await player.stop();
+                await player.dispose();
+              } catch (_) {}
+            };
+          }, const []);
+
+          final total = duration.value.inMilliseconds == 0
+              ? Duration(milliseconds: item.durationMs)
+              : duration.value;
+          final current = position.value > total ? total : position.value;
 
           return ListView(
             padding: const EdgeInsets.all(16),
@@ -82,6 +185,91 @@ class VoiceMemoDetailPage extends HookConsumerWidget {
                       label: Text('ゴミ箱'),
                     ),
                 ],
+              ),
+
+              const SizedBox(height: 24),
+
+              // ===== 再生コントロール =====
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Row(
+                        children: [
+                          // 10秒戻る
+                          IconButton(
+                            onPressed: () => seekRelativeMs(-10000, total),
+                            icon: const Icon(Icons.replay_10),
+                            tooltip: '10秒戻る',
+                          ),
+                          const SizedBox(width: 4),
+                          // 再生/一時停止ボタン
+                          IconButton(
+                            onPressed: togglePlay,
+                            iconSize: 40,
+                            icon: Icon(
+                              playerState.value == PlayerState.playing
+                                  ? Icons.pause_circle_filled
+                                  : Icons.play_circle_fill,
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          // 10秒進む
+                          IconButton(
+                            onPressed: () => seekRelativeMs(10000, total),
+                            icon: const Icon(Icons.forward_10),
+                            tooltip: '10秒進む',
+                          ),
+                          const SizedBox(width: 8),
+                          // 進捗スライダー
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Slider(
+                                  value: current.inMilliseconds.toDouble(),
+                                  min: 0,
+                                  max: total.inMilliseconds.toDouble().clamp(1.0, double.infinity),
+                                  onChanged: (v) async {
+                                    final d = Duration(milliseconds: v.round());
+                                    try {
+                                      await player.seek(d);
+                                    } catch (_) {}
+                                  },
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(formatTime(current)),
+                                    Text(formatTime(total)),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          // 再生速度切り替え（ポップアップメニュー）
+                          PopupMenuButton<double>(
+                            tooltip: '再生速度',
+                            initialValue: speed.value,
+                            onSelected: (v) => speed.value = v,
+                            itemBuilder: (context) => const [
+                              PopupMenuItem(value: 0.5, child: Text('0.5x')),
+                              PopupMenuItem(value: 1.0, child: Text('1.0x')),
+                              PopupMenuItem(value: 1.5, child: Text('1.5x')),
+                              PopupMenuItem(value: 2.0, child: Text('2.0x')),
+                            ],
+                            child: Chip(
+                              label: Text('${speed.value.toStringAsFixed(1)}x'),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
               ),
 
               const SizedBox(height: 24),

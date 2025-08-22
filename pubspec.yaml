@@ -31,6 +31,14 @@ dependencies:
   sqflite:
   path:
 
+  # 録音・権限・パス
+  record:
+  path_provider:
+  permission_handler:
+
+  # 再生
+  audioplayers:
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
