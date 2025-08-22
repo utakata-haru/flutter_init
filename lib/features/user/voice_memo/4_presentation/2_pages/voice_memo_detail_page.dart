@@ -65,6 +65,21 @@ class VoiceMemoDetailPage extends HookConsumerWidget {
             // 既存の再生を停止してからソースをセット
             () async {
               try {
+                // Android向け: オーディオフォーカス/セッション設定（他アプリの音量を一時的に下げる）
+                try {
+                  await player.setAudioContext(AudioContext(
+                    android: AudioContextAndroid(
+                      contentType: AndroidContentType.music,
+                      usageType: AndroidUsageType.media,
+                      audioFocus: AndroidAudioFocus.gainTransientMayDuck,
+                      // duck（減衰）優先。必要なら willPauseWhenDucked を true に変更
+                      // willPauseWhenDucked: false, // デフォルトに依存
+                    ),
+                  ));
+                } catch (_) {
+                  // ランタイム/環境差異で未対応な場合は握りつぶす
+                }
+
                 await player.stop();
                 // ローカルファイルをソースに設定（自動再生はしない）
                 await player.setSource(DeviceFileSource(item.audioPath));
@@ -83,12 +98,24 @@ class VoiceMemoDetailPage extends HookConsumerWidget {
             final subDur = player.onDurationChanged.listen((d) {
               duration.value = d;
             });
+            // 再生完了時の挙動: 停止して先頭(00:00)に戻す
+            final subComplete = player.onPlayerComplete.listen((_) async {
+              try {
+                // 完了時は停止＋先頭へシーク
+                await player.stop();
+                await player.seek(Duration.zero);
+              } catch (_) {}
+              // UI状態を更新
+              playerState.value = PlayerState.stopped;
+              position.value = Duration.zero;
+            });
 
             // クリーンアップ
             return () {
               subState.cancel();
               subPos.cancel();
               subDur.cancel();
+              subComplete.cancel();
             };
           }, [item.audioPath, player]);
 
