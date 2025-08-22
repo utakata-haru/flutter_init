@@ -29,6 +29,13 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+
+        <!-- 前景サービス: メディア通知（段階1はプレースホルダ） -->
+        <service
+            android:name=".MediaService"
+            android:exported="false"
+            android:foregroundServiceType="mediaPlayback" />
+
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data
