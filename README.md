@@ -105,13 +105,13 @@ lib/features/{permission_level}/{feature_name}/
 │   ├── 1_entities/        # エンティティ
 │   ├── 2_repositories/    # リポジトリインターフェース
 │   └── 3_usecases/        # ユースケース
-├── 2_application/         # アプリケーション層
+├── 3_application/         # アプリケーション層
 │   ├── 1_states/          # 状態クラス
 │   ├── 2_providers/       # プロバイダー
 │   └── 3_notifiers/       # 状態管理
-├── 3_infrastructure/      # インフラストラクチャ層
-│   ├── 1_data_sources/    # データソース
-│   ├── 2_models/          # データモデル
+├── 2_infrastructure/      # インフラストラクチャ層
+│   ├── 2_data_sources/    # データソース
+│   ├── 1_models/          # データモデル
 │   └── 3_repositories/    # リポジトリ実装
 └── 4_presentation/        # プレゼンテーション層
     ├── 1_widgets/         # UIコンポーネント
