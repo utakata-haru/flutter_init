@@ -32,11 +32,11 @@ lib/features/{permission_level}/{feature_name_snake}/
 │   ├── 1_entities/           # エンティティ（ビジネスオブジェクト）
 │   ├── 2_repositories/       # リポジトリインターフェース
 │   └── 3_usecases/           # ユースケース（ビジネスロジック）
-├── 2_application/
+├── 3_application/
 │   ├── 1_states/             # 状態クラス
 │   ├── 2_providers/          # プロバイダー定義
 │   └── 3_notifiers/          # 状態管理（Riverpod Notifier）
-├── 3_infrastructure/
+├── 2_infrastructure/
 │   ├── 1_data_sources/
 │   │   ├── 1_local/        # ローカルデータソース
 │   │   └── 2_remote/       # リモートデータソース

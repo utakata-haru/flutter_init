@@ -210,7 +210,12 @@ graph LR
 - [ ] ファイルパス・ファイル名明記でユーザー提示
 - [ ] `flutter analyze` 実行・検証
 
-##### 3-2: Application層の実装
+##### 3-2: Infrastructure層の実装
+- [ ] models ファイル生成
+- [ ] data_sources ファイル生成
+- [ ] repositories ファイル生成
+- [ ] `flutter analyze` 実行・検証
+##### 3-3: Application層の実装
 - [ ] states ファイル生成
 - [ ] providers ファイル生成
 - [ ] notifiers ファイル生成
@@ -218,17 +223,20 @@ graph LR
 
 > 注意: Provider と Notifier の責務分離
 >
-> - Provider 層では「状態管理のためのインターフェース（抽象的な定義）のみ」を提供します。
-> - 実際のビジネスロジックや状態変更処理（状態の生成・更新・副作用など）は、Notifier 層に実装します。
-> - Provider は Notifier を公開し、依存注入と購読のエントリポイントに限定します。内部ロジックは Provider に書かないでください。
-> - Notifier は状態の変更ロジックを集約し、Provider から実装詳細を隠蔽します。
-> - Notifier の実装では Riverpod のアノテーション（例：@riverpod）を用いて定義・コード生成を行い、型安全な Notifier/AsyncNotifier を提供してください。
-##### 3-3: Infrastructure層の実装
-- [ ] data_sources ファイル生成
-- [ ] models ファイル生成
-- [ ] repositories ファイル生成
-- [ ] `flutter analyze` 実行・検証
+- **Notifier (`3_notifiers/`) の責務**
+    - UIが直接関心を持つ状態（State）の生成、更新、管理に関する**全てのロジックをここに実装します**。
+    - `UseCase`の呼び出し、API通信などの非同期処理といった副作用を管理する責任を持ちます。
+    - `class`に`@riverpod`アノテーションを付けることで、`Notifier`本体の実装と、UIがアクセスするための`Provider`の定義を一体化させます。
 
+- **Provider の責務**
+    - **依存性注入Provider (`2_providers/`)**:
+        - `Repository`や`UseCase`といった、アプリケーションの裏側で使われる**「部品」の依存関係を組み立てること**に特化します。
+        - ドメイン層のインターフェースとインフラ層の実装クラスを結びつけ、インスタンスを生成する役割を担います。
+        - このProviderに、UIの状態に関するロジックを記述することはありません。
+    - **自動生成されるNotifier Provider**:
+        - `Notifier`に付けた`@riverpod`アノテーションによって**自動で生成されるProvider**です。（例: `userNotifierProvider`）
+        - UIと`Notifier`の実装を切り離すための、**唯一の安全なアクセスポイント（窓口）**として機能します。
+        - UIは常にこのProviderを介してのみ、状態を購読（`watch`）したり`Notifier`のメソッドを呼び出したりします。
 ##### 3-4: Presentation層の実装
 - [ ] pages ファイル生成
 - [ ] widgets（atoms、molecules、organisms）ファイル生成
