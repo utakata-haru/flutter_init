@@ -12,8 +12,8 @@
 ```
 lib/features/{permission_level}/{feature_name}/
 ├── 1_domain/           # ドメイン層（ビジネスロジック）
-├── 3_application/      # アプリケーション層（状態管理）
 ├── 2_infrastructure/   # インフラストラクチャ層（データアクセス）
+├── 3_application/      # アプリケーション層（状態管理）
 └── 4_presentation/     # プレゼンテーション層（UI）
 ```
 
@@ -32,16 +32,16 @@ lib/features/{permission_level}/{feature_name_snake}/
 │   ├── 1_entities/           # エンティティ（ビジネスオブジェクト）
 │   ├── 2_repositories/       # リポジトリインターフェース
 │   └── 3_usecases/           # ユースケース（ビジネスロジック）
+├── 2_infrastructure/
+│   ├── 1_models/           # データモデル
+│   ├── 2_data_sources/
+│   │   ├── 1_local/        # ローカルデータソース
+│   │   └── 2_remote/       # リモートデータソース
+│   └── 3_repositories/     # リポジトリ実装
 ├── 3_application/
 │   ├── 1_states/             # 状態クラス
 │   ├── 2_providers/          # プロバイダー定義
 │   └── 3_notifiers/          # 状態管理（Riverpod Notifier）
-├── 2_infrastructure/
-│   ├── 2_data_sources/
-│   │   ├── 1_local/        # ローカルデータソース
-│   │   └── 2_remote/       # リモートデータソース
-│   ├── 1_models/           # データモデル
-│   └── 3_repositories/     # リポジトリ実装
 └── 4_presentation/
     ├── 2_pages/            # ページ（画面）
     └── 1_widgets/
