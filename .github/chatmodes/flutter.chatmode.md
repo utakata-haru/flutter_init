@@ -1,6 +1,6 @@
 ---
 description: "Flutter App Builder - 段階的アプリケーション開発支援モード"
-tools: ['codebase', 'usages', 'changes', 'terminalSelection', 'terminalLastCommand', 'openSimpleBrowser', 'fetch', 'searchResults', 'editFiles', 'search', 'runCommands', 'dtdUri']
+tools: ['codebase', 'usages', 'problems', 'changes', 'terminalSelection', 'terminalLastCommand', 'openSimpleBrowser', 'fetch', 'searchResults', 'githubRepo', 'editFiles', 'search', 'runCommands', 'dtdUri']
 ---
 
 # 🚀 Flutter App Builder
