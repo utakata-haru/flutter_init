@@ -234,6 +234,10 @@ lib/features/{permission_level}/{feature_name_snake}/
 
 🔗 **チャンネルURL**: [https://www.youtube.com/@utakata_code](https://www.youtube.com/@utakata_code)
 
+- スマホだけでできるAndroidアプリ開発
+- Flutter開発のコツとテクニック
+- 実践的なアプリ開発チュートリアル
+
 ## 📞 サポート
 
 質問や問題がある場合は、GitHubのIssuesページでお気軽にお問い合わせください。
