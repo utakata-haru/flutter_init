@@ -12,6 +12,7 @@ coverage/
 
 # OS・ログ等の雑多ファイル
 .DS_Store
+**/.DS_Store
 *.log
 
 # IDE 設定（個人環境依存ファイル）
