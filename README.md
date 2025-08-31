@@ -203,7 +203,20 @@ lib/features/{permission_level}/{feature_name_snake}/
 
 ## 📝 ライセンス
 
-このプロジェクトはMITライセンスの下で公開されています。
+このプロジェクトは以下のライセンス条件の下で公開されています：
+
+### 利用条件
+
+- **個人利用**: 無許可で自由に利用可能
+- **商用利用**: 事前の許可が必要
+
+### 詳細
+
+- 個人的な学習、研究、非営利目的での利用は自由です
+- 商用プロジェクトでの利用を希望される場合は、事前にお問い合わせください
+- 再配布時は本ライセンス条件を明記してください
+
+詳細なライセンス条項については、[LICENSE](LICENSE)ファイルをご確認ください。
 
 ## 🤝 コントリビューション
 
@@ -212,6 +225,14 @@ lib/features/{permission_level}/{feature_name_snake}/
 3. 変更をコミット (`git commit -m 'Add some amazing feature'`)
 4. ブランチにプッシュ (`git push origin feature/amazing-feature`)
 5. プルリクエストを作成
+
+## 📺 関連チャンネル
+
+### 泡沫Code
+
+本プロジェクトの開発者によるYouTubeチャンネルです。Flutterアプリ開発に関する解説動画を配信しています。
+
+🔗 **チャンネルURL**: [https://www.youtube.com/@utakata_code](https://www.youtube.com/@utakata_code)
 
 ## 📞 サポート
 
