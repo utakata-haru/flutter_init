@@ -569,9 +569,6 @@ import '../2_data_sources/2_remote/user_remote_data_source.dart';
 import '../1_models/user_model.dart';
 import '../1_models/user_db_model.dart';
 
-// ✅ 共通サービス
-import '../services/connectivity_service.dart';
-import '../services/sync_service.dart';
 ```
 
 ### 禁止されるimport
