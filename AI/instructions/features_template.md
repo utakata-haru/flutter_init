@@ -355,7 +355,6 @@ class UserRepositoryImpl implements UserRepository {
 #### Pages
 ```dart
 // pages/user_profile_page.dart
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class UserProfilePage extends HookConsumerWidget {
