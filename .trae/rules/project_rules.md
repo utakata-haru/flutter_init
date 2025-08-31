@@ -1,8 +1,3 @@
----
-description: "Flutter App Builder - 段階的アプリケーション開発支援モード"
-tools: ['codebase', 'usages', 'problems', 'changes', 'terminalSelection', 'terminalLastCommand', 'openSimpleBrowser', 'fetch', 'searchResults', 'githubRepo', 'editFiles', 'search', 'runCommands', 'dtdUri']
----
-
 # 🚀 Flutter App Builder
 
 > **役割**: アプリケーション開発を専門とするAIアシスタント  
@@ -199,27 +194,28 @@ graph LR
 
 **🔧 事前準備**
 - [ ] `flutter create .` でプロジェクトを初期化
-- [ ] `AI/generate_feature.sh` または `AI/generate_feature.ps1` を引数付きで実行
+- [ ] `AI/scripts/generate_feature.sh` または `AI/scripts/generate_feature.ps1` を引数付きで実行
 
 **🏗️ 実装順序**
 
 ##### 3-1: Domain層の実装
-- [ ] entities ファイル生成
-- [ ] repositories ファイル生成
-- [ ] usecases ファイル生成
+- [ ] AI/instructions/architecture/lib/features/1_domain/1_entities/instructions.md　を確認後　entities ファイル生成
+- [ ] AI/instructions/architecture/lib/features/1_domain/2_repositories/instructions.md　を確認後　repositories ファイル生成
+- [ ] AI/instructions/architecture/lib/features/1_domain/3_usecases/instructions.md　を確認後　usecases ファイル生成
 - [ ] コード生成時の遵守事項確認
 - [ ] ファイルパス・ファイル名明記でユーザー提示
 - [ ] `flutter analyze` 実行・検証
 
 ##### 3-2: Infrastructure層の実装
-- [ ] models ファイル生成
-- [ ] data_sources ファイル生成
-- [ ] repositories ファイル生成
+- [ ] AI/instructions/architecture/lib/features/2_infrastructure/1_models/instructions.md　を確認後　models ファイル生成
+- [ ] AI/instructions/architecture/lib/features/2_infrastructure/2_data_sources/1_local/instructions.md　を確認後　local ファイル生成
+- [ ] AI/instructions/architecture/lib/features/2_infrastructure/2_data_sources/2_remote/instructions.md　を確認後　remote ファイル生成
+- [ ] AI/instructions/architecture/lib/features/2_infrastructure/3_repositories/instructions.md　を確認後　repositories ファイル生成
 - [ ] `flutter analyze` 実行・検証
 ##### 3-3: Application層の実装
-- [ ] states ファイル生成
-- [ ] providers ファイル生成
-- [ ] notifiers ファイル生成
+- [ ] AI/instructions/architecture/lib/features/3_application/1_states/instructions.md　を確認後　states ファイル生成
+- [ ] AI/instructions/architecture/lib/features/3_application/2_providers/instructions.md　を確認後　providers ファイル生成
+- [ ] AI/instructions/architecture/lib/features/3_application/3_notifiers/instructions.md　を確認後　notifiers ファイル生成
 - [ ] `flutter analyze` 実行・検証
 
 > 注意: Provider と Notifier の責務分離
@@ -239,8 +235,10 @@ graph LR
         - UIと`Notifier`の実装を切り離すための、**唯一の安全なアクセスポイント（窓口）**として機能します。
         - UIは常にこのProviderを介してのみ、状態を購読（`watch`）したり`Notifier`のメソッドを呼び出したりします。
 ##### 3-4: Presentation層の実装
-- [ ] pages ファイル生成
-- [ ] widgets（atoms、molecules、organisms）ファイル生成
+- [ ] AI/instructions/architecture/lib/features/4_presentation/2_pages/instructions.md　を確認後　pages ファイル生成
+- [ ] AI/instructions/architecture/lib/features/4_presentation/1_widgets/1_atoms/instructions.md　を確認後　atoms ファイル生成
+- [ ] AI/instructions/architecture/lib/features/4_presentation/1_widgets/2_molecules/instructions.md　を確認後　molecules ファイル生成
+- [ ] AI/instructions/architecture/lib/features/4_presentation/1_widgets/3_organisms/instructions.md　を確認後　organisms ファイル生成
 - [ ] `flutter analyze` 実行・検証
 
 **📋 コード生成遵守事項**
