@@ -31,6 +31,8 @@ flutter_init/
 ├── .github/
 │   └── chatmodes/
 │       └── flutter.chatmode.md     # VS Code用AIアシスタント設定
+├── .cursor/
+│   └── rules/                      # Cursor IDE用ワークスペースルール
 ├── .trae/
 │   └── rules/
 │       └── project_rules.md        # Trae AI IDE用プロジェクトルール
@@ -53,6 +55,9 @@ flutter_init/
 
 #### VS Code + GitHub Copilot
 `.github/chatmodes/flutter.chatmode.md`で定義されたカスタムモードが、段階的なアプリケーション開発をサポートします。
+
+#### Cursor IDE
+`.cursor/rules/`で定義されたワークスペースルールが、Claude Sonnet 4による高精度な開発支援を提供します。Cursor環境では、リアルタイムなコード補完と3段階の構造化開発プロセスが利用できます。
 
 #### Trae AI IDE
 `.trae/rules/project_rules.md`で定義されたプロジェクトルールが、VS Code環境と同等の開発支援を提供します。Trae環境では、より高度なコード生成とリアルタイムな開発支援が利用できます。
@@ -166,7 +171,7 @@ lib/features/{permission_level}/{feature_name_snake}/
 - Flutter SDK (最新安定版)
 - Dart SDK
 - Git
-- AI開発環境（VS Code + GitHub Copilot または Trae AI IDE）
+- AI開発環境（VS Code + GitHub Copilot、Cursor IDE、または Trae AI IDE）
 
 ### 初期セットアップ
 
@@ -195,6 +200,11 @@ lib/features/{permission_level}/{feature_name_snake}/
 1. GitHub Copilotを有効化
 2. `.github/chatmodes/flutter.chatmode.md`のカスタムモードを使用
 3. Copilot Chatでフィーチャー開発を開始
+
+#### Cursor IDE環境
+1. プロジェクトを開くと`.cursor/rules/`のワークスペースルールが自動的に読み込まれます
+2. Claude Sonnet 4による Flutter App Builder として3段階の開発プロセスが利用可能
+3. 高精度なコード生成と構造化されたアプリケーション開発支援
 
 #### Trae AI IDE環境
 1. プロジェクトを開くと`.trae/rules/project_rules.md`が自動的に読み込まれます
