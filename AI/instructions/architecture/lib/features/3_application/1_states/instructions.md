@@ -462,7 +462,7 @@ import 'package:riverpod/riverpod.dart';
 import 'package:dio/dio.dart';
 
 // ❌ データベース
-import 'package:sqflite/sqflite.dart';
+import 'package:drift/drift.dart';
 
 // ❌ インフラ層
 import '../../2_infrastructure/models/user_model.dart';

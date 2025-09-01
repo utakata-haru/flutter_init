@@ -5,12 +5,12 @@ applyTo: 'lib/features/**/2_infrastructure/2_data_sources/1_local/**'
 # Local Data Source Layer Instructions - ローカルデータソース層
 
 ## 概要
-ローカルデータソース層は、デバイス内のデータストレージ（SQLite、SharedPreferences、ファイルシステムなど）へのアクセスを担当します。データの永続化、キャッシュ、オフライン対応を実現するための重要な層です。
+ローカルデータソース層は、デバイス内のデータストレージ（Drift、SharedPreferences、ファイルシステムなど）へのアクセスを担当します。データの永続化、キャッシュ、オフライン対応を実現するための重要な層です。
 
 ## 役割と責務
 
 ### ✅ すべきこと
-- **ローカルストレージアクセス**: SQLite、SharedPreferences、ファイルシステムへの操作
+- **ローカルストレージアクセス**: Drift、SharedPreferences、ファイルシステムへの操作
 - **データキャッシュ**: リモートから取得したデータのローカル保存
 - **オフライン対応**: ネットワーク接続がない場合のデータ提供
 - **データ同期**: ローカルとリモートデータの整合性管理
@@ -24,11 +24,12 @@ applyTo: 'lib/features/**/2_infrastructure/2_data_sources/1_local/**'
 
 ## 実装ガイドライン
 
-### 1. SQLiteデータソースの基本実装
+### 1. Driftデータソースの基本実装
 ```dart
 // data_sources/local/user_local_data_source.dart
-import 'package:sqflite/sqflite.dart';
+import 'package:drift/drift.dart';
 import '../../1_models/user_db_model.dart';
+import '../../../core/database/app_database.dart';
 
 abstract class UserLocalDataSource {
   Future<UserDbModel?> getUser(String id);
@@ -40,24 +41,24 @@ abstract class UserLocalDataSource {
   Future<void> deleteUser(String id);
   Future<void> deleteAllUsers();
   Future<bool> userExists(String id);
+  Stream<List<UserDbModel>> watchAllUsers();
+  Stream<UserDbModel?> watchUser(String id);
 }
 
 class UserLocalDataSourceImpl implements UserLocalDataSource {
-  final Database _database;
+  final AppDatabase _database;
 
   UserLocalDataSourceImpl(this._database);
 
   @override
   Future<UserDbModel?> getUser(String id) async {
     try {
-      final List<Map<String, dynamic>> maps = await _database.query(
-        UserDbModel.tableName,
-        where: '${UserDbModel.columnId} = ?',
-        whereArgs: [id],
-      );
+      final user = await (_database.select(_database.users)
+            ..where((tbl) => tbl.id.equals(id)))
+          .getSingleOrNull();
 
-      if (maps.isNotEmpty) {
-        return UserDbModel.fromMap(maps.first);
+      if (user != null) {
+        return UserDbModel.fromDriftUser(user);
       }
       return null;
     } catch (e) {
@@ -68,12 +69,11 @@ class UserLocalDataSourceImpl implements UserLocalDataSource {
   @override
   Future<List<UserDbModel>> getAllUsers() async {
     try {
-      final List<Map<String, dynamic>> maps = await _database.query(
-        UserDbModel.tableName,
-        orderBy: '${UserDbModel.columnCreatedAt} DESC',
-      );
+      final users = await (_database.select(_database.users)
+            ..orderBy([(tbl) => OrderingTerm.desc(tbl.createdAt)]))
+          .get();
 
-      return maps.map((map) => UserDbModel.fromMap(map)).toList();
+      return users.map((user) => UserDbModel.fromDriftUser(user)).toList();
     } catch (e) {
       throw LocalDataSourceException('Failed to get all users: $e');
     }
@@ -82,14 +82,12 @@ class UserLocalDataSourceImpl implements UserLocalDataSource {
   @override
   Future<List<UserDbModel>> getUsersByRole(String role) async {
     try {
-      final List<Map<String, dynamic>> maps = await _database.query(
-        UserDbModel.tableName,
-        where: '${UserDbModel.columnRole} = ?',
-        whereArgs: [role],
-        orderBy: '${UserDbModel.columnName} ASC',
-      );
+      final users = await (_database.select(_database.users)
+            ..where((tbl) => tbl.role.equals(role))
+            ..orderBy([(tbl) => OrderingTerm.asc(tbl.name)]))
+          .get();
 
-      return maps.map((map) => UserDbModel.fromMap(map)).toList();
+      return users.map((user) => UserDbModel.fromDriftUser(user)).toList();
     } catch (e) {
       throw LocalDataSourceException('Failed to get users by role: $e');
     }
@@ -98,10 +96,8 @@ class UserLocalDataSourceImpl implements UserLocalDataSource {
   @override
   Future<void> saveUser(UserDbModel user) async {
     try {
-      await _database.insert(
-        UserDbModel.tableName,
-        user.toMap(),
-        conflictAlgorithm: ConflictAlgorithm.replace,
+      await _database.into(_database.users).insertOnConflictUpdate(
+        user.toDriftCompanion(),
       );
     } catch (e) {
       throw LocalDataSourceException('Failed to save user: $e');
@@ -110,18 +106,15 @@ class UserLocalDataSourceImpl implements UserLocalDataSource {
 
   @override
   Future<void> saveUsers(List<UserDbModel> users) async {
-    final batch = _database.batch();
-    
     try {
-      for (final user in users) {
-        batch.insert(
-          UserDbModel.tableName,
-          user.toMap(),
-          conflictAlgorithm: ConflictAlgorithm.replace,
-        );
-      }
-      
-      await batch.commit(noResult: true);
+      await _database.batch((batch) {
+        for (final user in users) {
+          batch.insertOnConflictUpdate(
+            _database.users,
+            user.toDriftCompanion(),
+          );
+        }
+      });
     } catch (e) {
       throw LocalDataSourceException('Failed to save users: $e');
     }
@@ -130,14 +123,11 @@ class UserLocalDataSourceImpl implements UserLocalDataSource {
   @override
   Future<void> updateUser(UserDbModel user) async {
     try {
-      final count = await _database.update(
-        UserDbModel.tableName,
-        user.toMap(),
-        where: '${UserDbModel.columnId} = ?',
-        whereArgs: [user.id],
-      );
+      final success = await (_database.update(_database.users)
+            ..where((tbl) => tbl.id.equals(user.id)))
+          .write(user.toDriftCompanion());
 
-      if (count == 0) {
+      if (success == 0) {
         throw LocalDataSourceException('User not found for update: ${user.id}');
       }
     } catch (e) {
@@ -148,11 +138,9 @@ class UserLocalDataSourceImpl implements UserLocalDataSource {
   @override
   Future<void> deleteUser(String id) async {
     try {
-      final count = await _database.delete(
-        UserDbModel.tableName,
-        where: '${UserDbModel.columnId} = ?',
-        whereArgs: [id],
-      );
+      final count = await (_database.delete(_database.users)
+            ..where((tbl) => tbl.id.equals(id)))
+          .go();
 
       if (count == 0) {
         throw LocalDataSourceException('User not found for delete: $id');
@@ -165,7 +153,7 @@ class UserLocalDataSourceImpl implements UserLocalDataSource {
   @override
   Future<void> deleteAllUsers() async {
     try {
-      await _database.delete(UserDbModel.tableName);
+      await _database.delete(_database.users).go();
     } catch (e) {
       throw LocalDataSourceException('Failed to delete all users: $e');
     }
@@ -174,18 +162,31 @@ class UserLocalDataSourceImpl implements UserLocalDataSource {
   @override
   Future<bool> userExists(String id) async {
     try {
-      final List<Map<String, dynamic>> result = await _database.query(
-        UserDbModel.tableName,
-        columns: [UserDbModel.columnId],
-        where: '${UserDbModel.columnId} = ?',
-        whereArgs: [id],
-        limit: 1,
-      );
+      final user = await (_database.select(_database.users)
+            ..where((tbl) => tbl.id.equals(id))
+            ..limit(1))
+          .getSingleOrNull();
 
-      return result.isNotEmpty;
+      return user != null;
     } catch (e) {
       throw LocalDataSourceException('Failed to check user existence: $e');
     }
+  }
+
+  @override
+  Stream<List<UserDbModel>> watchAllUsers() {
+    return (_database.select(_database.users)
+          ..orderBy([(tbl) => OrderingTerm.desc(tbl.createdAt)]))
+        .watch()
+        .map((users) => users.map((user) => UserDbModel.fromDriftUser(user)).toList());
+  }
+
+  @override
+  Stream<UserDbModel?> watchUser(String id) {
+    return (_database.select(_database.users)
+          ..where((tbl) => tbl.id.equals(id)))
+        .watchSingleOrNull()
+        .map((user) => user != null ? UserDbModel.fromDriftUser(user) : null);
   }
 }
 ```
@@ -576,7 +577,7 @@ import 'dart:convert';
 import 'dart:io';
 
 // ✅ ローカルストレージライブラリ
-import 'package:sqflite/sqflite.dart';
+import 'package:drift/drift.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -605,22 +606,16 @@ import '../../../3_application/states/user_state.dart';
 
 ## テスト指針
 
-### 1. SQLiteテスト
+### 1. Driftテスト
 ```dart
 // test/infrastructure/data_sources/local/user_local_data_source_test.dart
 void main() {
   group('UserLocalDataSource', () {
-    late Database database;
+    late AppDatabase database;
     late UserLocalDataSourceImpl dataSource;
 
     setUp(() async {
-      database = await openDatabase(
-        ':memory:',
-        version: 1,
-        onCreate: (db, version) async {
-          await db.execute(UserDbModel.createTableSql);
-        },
-      );
+      database = AppDatabase.forTesting(NativeDatabase.memory());
       dataSource = UserLocalDataSourceImpl(database);
     });
 

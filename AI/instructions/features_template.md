@@ -246,51 +246,95 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
 }
 ```
 
-**Local Data Source (SQLite)**
+**Local Data Source (Drift)**
 ```dart
 // data_sources/local/user_local_data_source.dart
+import 'package:drift/drift.dart';
+
+// Driftテーブル定義
+class Users extends Table {
+  TextColumn get id => text()();
+  TextColumn get name => text()();
+  TextColumn get email => text()();
+  
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+// Driftデータベース定義
+@DriftDatabase(tables: [Users])
+class AppDatabase extends _$AppDatabase {
+  AppDatabase() : super(_openConnection());
+  
+  @override
+  int get schemaVersion => 1;
+}
+
 abstract class UserLocalDataSource {
   Future<UserModel?> getUser(String id);
   Future<void> saveUser(UserModel user);
   Future<void> deleteUser(String id);
+  Stream<List<UserModel>> watchAllUsers();
 }
 
 class UserLocalDataSourceImpl implements UserLocalDataSource {
-  final Database _database;
+  final AppDatabase _database;
   
   UserLocalDataSourceImpl(this._database);
   
   @override
   Future<UserModel?> getUser(String id) async {
-    final List<Map<String, dynamic>> maps = await _database.query(
-      'users',
-      where: 'id = ?',
-      whereArgs: [id],
-    );
+    final user = await (_database.select(_database.users)
+          ..where((tbl) => tbl.id.equals(id)))
+        .getSingleOrNull();
     
-    if (maps.isNotEmpty) {
-      return UserModel.fromJson(maps.first);
+    if (user != null) {
+      return UserModel(
+        id: user.id,
+        name: user.name,
+        email: user.email,
+      );
     }
     return null;
   }
   
   @override
   Future<void> saveUser(UserModel user) async {
-    await _database.insert(
-      'users',
-      user.toJson(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
+    await _database.into(_database.users).insertOnConflictUpdate(
+      UsersCompanion(
+        id: Value(user.id),
+        name: Value(user.name),
+        email: Value(user.email),
+      ),
     );
   }
   
   @override
   Future<void> deleteUser(String id) async {
-    await _database.delete(
-      'users',
-      where: 'id = ?',
-      whereArgs: [id],
+    await (_database.delete(_database.users)
+          ..where((tbl) => tbl.id.equals(id)))
+        .go();
+  }
+  
+  @override
+  Stream<List<UserModel>> watchAllUsers() {
+    return _database.select(_database.users).watch().map(
+      (rows) => rows.map((row) => UserModel(
+        id: row.id,
+        name: row.name,
+        email: row.email,
+      )).toList(),
     );
   }
+}
+
+// データベース接続の設定
+QueryExecutor _openConnection() {
+  return LazyDatabase(() async {
+    final dbFolder = await getApplicationDocumentsDirectory();
+    final file = File(p.join(dbFolder.path, 'app_database.db'));
+    return NativeDatabase.createInBackground(file);
+  });
 }
 ```
 
@@ -467,7 +511,9 @@ dependencies:
   json_annotation:
   dio:
   go_router: 
-  sqflite: 
+  drift: ^2.14.0
+  sqlite3_flutter_libs: ^0.5.0
+  path_provider: ^2.1.0
   path: 
 
 dev_dependencies:
@@ -475,6 +521,7 @@ dev_dependencies:
   freezed: 
   json_serializable: 
   riverpod_generator: 
+  drift_dev: ^2.14.0
 ```
 
 ### Provider Registration

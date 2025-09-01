@@ -29,7 +29,7 @@ applyTo: 'lib/features/**/3_application/2_providers/**'
 // providers/user_providers.dart
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:dio/dio.dart';
-import 'package:sqflite/sqflite.dart';
+import 'package:drift/drift.dart';
 
 // ドメイン層
 import '../../1_domain/2_repositories/user_repository.dart';
@@ -168,26 +168,23 @@ Future<bool> connectivity(ConnectivityRef ref) async {
 ```dart
 // shared/providers/database_providers.dart
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:sqflite/sqflite.dart';
+import 'package:drift/drift.dart';
 import 'package:path/path.dart';
 
 part 'database_providers.g.dart';
 
-/// SQLiteデータベースのProvider
+/// DriftデータベースのProvider
 @riverpod
-Future<Database> database(DatabaseRef ref) async {
-  final databasePath = await getDatabasesPath();
-  final path = join(databasePath, 'app_database.db');
-  
-  return openDatabase(
-    path,
-    version: 1,
-    onCreate: (db, version) async {
-      // テーブル作成SQL
-      await db.execute(UserDbModel.createTableSql);
-      await db.execute(ProductDbModel.createTableSql);
-      // 他のテーブルも同様に作成
-    },
+AppDatabase database(DatabaseRef ref) {
+  return AppDatabase();
+}
+
+/// データベース接続の管理
+@riverpod
+Future<void> initializeDatabase(InitializeDatabaseRef ref) async {
+  final database = ref.watch(databaseProvider);
+  // データベースの初期化処理
+  // Driftでは自動的にテーブルが作成されます
     onUpgrade: (db, oldVersion, newVersion) async {
       // データベースマイグレーション処理
       await _performMigration(db, oldVersion, newVersion);
@@ -529,7 +526,7 @@ import '../../2_infrastructure/3_repositories/user_repository_impl.dart';
 
 // ✅ 外部ライブラリ
 import 'package:dio/dio.dart';
-import 'package:sqflite/sqflite.dart';
+import 'package:drift/drift.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 // ✅ 共通プロバイダー

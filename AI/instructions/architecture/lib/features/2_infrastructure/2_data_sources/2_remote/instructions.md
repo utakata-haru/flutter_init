@@ -835,7 +835,7 @@ import '../exceptions/remote_data_source_exceptions.dart';
 import 'package:flutter/material.dart';
 
 // ❌ ローカルストレージ
-import 'package:sqflite/sqflite.dart';
+import 'package:drift/drift.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 // ❌ ドメインエンティティ

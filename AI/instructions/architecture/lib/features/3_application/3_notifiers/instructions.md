@@ -699,7 +699,7 @@ import '../../4_presentation/pages/user_page.dart';
 
 // ❌ 外部ライブラリの直接使用
 import 'package:dio/dio.dart';
-import 'package:sqflite/sqflite.dart';
+import 'package:drift/drift.dart';
 ```
 
 ## テスト指針

@@ -13,7 +13,7 @@ applyTo: 'lib/features/**/2_infrastructure/1_models/**'
 - **データ変換**: 外部データ形式とドメインエンティティ間の変換
 - **シリアライゼーション**: オブジェクトをJSON、XMLなどの形式に変換
 - **デシリアライゼーション**: 外部データからオブジェクトを構築
-- **データベーススキーマ対応**: SQLiteやその他のDBスキーマとの整合性保持
+- **データベーススキーマ対応**: Driftやその他のDBスキーマとの整合性保持
 - **APIレスポンス対応**: RESTfulAPIのレスポンス形式への対応
 
 ### ❌ してはいけないこと
@@ -177,23 +177,17 @@ class OrderItemModel {
 }
 ```
 
-### 3. SQLite用のモデル（データベース）
+### 3. Drift用のモデル（データベース）
 ```dart
 // models/user_db_model.dart
-class UserDbModel {
-  static const String tableName = 'users';
-  
-  // カラム名定数
-  static const String columnId = 'id';
-  static const String columnName = 'name';
-  static const String columnEmail = 'email';
-  static const String columnCreatedAt = 'created_at';
-  static const String columnUpdatedAt = 'updated_at';
-  static const String columnProfileImageUrl = 'profile_image_url';
+import 'package:drift/drift.dart';
+import '../../../core/database/app_database.dart';
 
+class UserDbModel {
   final String id;
   final String name;
   final String email;
+  final String role;
   final DateTime createdAt;
   final DateTime updatedAt;
   final String? profileImageUrl;
@@ -202,33 +196,36 @@ class UserDbModel {
     required this.id,
     required this.name,
     required this.email,
+    required this.role,
     required this.createdAt,
     required this.updatedAt,
     this.profileImageUrl,
   });
 
-  /// データベースマップからモデルを生成
-  factory UserDbModel.fromMap(Map<String, dynamic> map) {
+  /// DriftのUserデータからモデルを生成
+  factory UserDbModel.fromDriftUser(User user) {
     return UserDbModel(
-      id: map[columnId] as String,
-      name: map[columnName] as String,
-      email: map[columnEmail] as String,
-      createdAt: DateTime.parse(map[columnCreatedAt] as String),
-      updatedAt: DateTime.parse(map[columnUpdatedAt] as String),
-      profileImageUrl: map[columnProfileImageUrl] as String?,
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+      profileImageUrl: user.profileImageUrl,
     );
   }
 
-  /// モデルをデータベースマップに変換
-  Map<String, dynamic> toMap() {
-    return {
-      columnId: id,
-      columnName: name,
-      columnEmail: email,
-      columnCreatedAt: createdAt.toIso8601String(),
-      columnUpdatedAt: updatedAt.toIso8601String(),
-      columnProfileImageUrl: profileImageUrl,
-    };
+  /// モデルをDriftのCompanionに変換
+  UsersCompanion toDriftCompanion() {
+    return UsersCompanion(
+      id: Value(id),
+      name: Value(name),
+      email: Value(email),
+      role: Value(role),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+      profileImageUrl: Value(profileImageUrl),
+    );
   }
 
   /// ドメインエンティティに変換
@@ -248,23 +245,27 @@ class UserDbModel {
       id: entity.id,
       name: entity.name,
       email: entity.email,
+      role: entity.role ?? 'user', // デフォルト値
       createdAt: entity.createdAt ?? DateTime.now(),
       updatedAt: DateTime.now(),
       profileImageUrl: entity.profileImageUrl,
     );
   }
 
-  /// テーブル作成SQL
-  static String get createTableSql => '''
-    CREATE TABLE $tableName (
-      $columnId TEXT PRIMARY KEY,
-      $columnName TEXT NOT NULL,
-      $columnEmail TEXT NOT NULL UNIQUE,
-      $columnCreatedAt TEXT NOT NULL,
-      $columnUpdatedAt TEXT NOT NULL,
-      $columnProfileImageUrl TEXT
-    )
-  ''';
+  /// Driftテーブル定義は app_database.dart で管理
+  /// 例:
+  /// class Users extends Table {
+  ///   TextColumn get id => text()();
+  ///   TextColumn get name => text()();
+  ///   TextColumn get email => text().unique()();
+  ///   TextColumn get role => text()();
+  ///   DateTimeColumn get createdAt => dateTime()();
+  ///   DateTimeColumn get updatedAt => dateTime()();
+  ///   TextColumn get profileImageUrl => text().nullable()();
+  ///   
+  ///   @override
+  ///   Set<Column> get primaryKey => {id};
+  /// }
 }
 ```
 
@@ -476,7 +477,7 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 
 // ❌ データベースライブラリ
-import 'package:sqflite/sqflite.dart';
+import 'package:drift/drift.dart';
 
 // ❌ 状態管理
 import 'package:riverpod/riverpod.dart';

@@ -236,7 +236,7 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 
 // ❌ データベース
-import 'package:sqflite/sqflite.dart';
+import 'package:drift/drift.dart';
 
 // ❌ インフラ層への依存
 import '../../2_infrastructure/models/user_model.dart';

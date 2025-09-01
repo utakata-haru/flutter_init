@@ -137,7 +137,7 @@ lib/features/{permission_level}/{feature_name_snake}/
 | 状態管理 | riverpod, hooks_riverpod | DIコンテナと状態管理 |
 | データモデル | freezed | イミュータブルなデータクラス生成 |
 | 画面遷移 | go_router | 型安全なルーティング |
-| ローカルDB | sqflite | ローカルデータベース |
+| ローカルDB | drift | 型安全なローカルデータベース |
 | UI補助 | flutter_hooks | ウィジェットの状態管理 |
 
 ### アーキテクチャ原則
