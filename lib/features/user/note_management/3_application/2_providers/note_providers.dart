@@ -2,6 +2,12 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:flutter/foundation.dart' show debugPrint, kIsWeb;
+
+// 条件付きインポート
+import 'database_stub.dart'
+    if (dart.library.io) 'database_io.dart'
+    if (dart.library.html) 'database_web.dart';
 
 // ドメイン層
 import '../../1_domain/2_repositories/note_repository.dart';
@@ -21,7 +27,35 @@ part 'note_providers.g.dart';
 /// SQLiteデータベースの依存性注入
 @Riverpod(keepAlive: true)
 Future<Database> database(Ref ref) async {
-  // データベースパスを取得
+  // プラットフォームに応じてデータベースファクトリーを初期化
+  try {
+    initializeDatabaseFactory();
+  } catch (e) {
+    // プラットフォーム固有の初期化でエラーが発生した場合
+    debugPrint('Database factory initialization error: $e. Using default sqflite.');
+  }
+
+  // Web環境の場合、メモリ内データベースを使用
+  if (kIsWeb) { 
+    // Web環境ではメモリ内データベースを使用
+    return await openDatabase(
+      ':memory:',
+      version: 1,
+      onCreate: (Database db, int version) async {
+        await db.execute('''
+          CREATE TABLE notes (
+            id TEXT PRIMARY KEY,
+            title TEXT NOT NULL,
+            content TEXT NOT NULL,
+            created_at INTEGER NOT NULL,
+            updated_at INTEGER NOT NULL
+          )
+        ''');
+      },
+    );
+  }
+
+  // デスクトップ/モバイル環境の場合
   final databasesPath = await getDatabasesPath();
   final path = join(databasesPath, 'notes.db');
 
@@ -45,19 +79,15 @@ Future<Database> database(Ref ref) async {
 
 /// NoteLocalDataSourceの依存性注入
 @riverpod
-NoteLocalDataSource noteLocalDataSource(Ref ref) {
-  final database = ref.watch(databaseProvider);
-  return database.when(
-    data: (db) => NoteLocalDataSourceImpl(db),
-    loading: () => throw StateError('Database is still loading'),
-    error: (error, stackTrace) => throw StateError('Database error: $error'),
-  );
+Future<NoteLocalDataSource> noteLocalDataSource(Ref ref) async {
+  final database = await ref.watch(databaseProvider.future);
+  return NoteLocalDataSourceImpl(database);
 }
 
 /// NoteRepositoryの依存性注入
 @riverpod
-NoteRepository noteRepository(Ref ref) {
-  final localDataSource = ref.watch(noteLocalDataSourceProvider);
+Future<NoteRepository> noteRepository(Ref ref) async {
+  final localDataSource = await ref.watch(noteLocalDataSourceProvider.future);
   return NoteRepositoryImpl(localDataSource);
 }
 
@@ -65,43 +95,43 @@ NoteRepository noteRepository(Ref ref) {
 
 /// CreateNoteUseCaseの依存性注入
 @riverpod
-CreateNoteUseCase createNoteUseCase(Ref ref) {
-  final repository = ref.watch(noteRepositoryProvider);
+Future<CreateNoteUseCase> createNoteUseCase(Ref ref) async {
+  final repository = await ref.watch(noteRepositoryProvider.future);
   return CreateNoteUseCase(repository);
 }
 
 /// GetNotesUseCaseの依存性注入
 @riverpod
-GetNotesUseCase getNotesUseCase(Ref ref) {
-  final repository = ref.watch(noteRepositoryProvider);
+Future<GetNotesUseCase> getNotesUseCase(Ref ref) async {
+  final repository = await ref.watch(noteRepositoryProvider.future);
   return GetNotesUseCase(repository);
 }
 
 /// GetNoteByIdUseCaseの依存性注入
 @riverpod
-GetNoteByIdUseCase getNoteByIdUseCase(Ref ref) {
-  final repository = ref.watch(noteRepositoryProvider);
+Future<GetNoteByIdUseCase> getNoteByIdUseCase(Ref ref) async {
+  final repository = await ref.watch(noteRepositoryProvider.future);
   return GetNoteByIdUseCase(repository);
 }
 
 /// UpdateNoteUseCaseの依存性注入
 @riverpod
-UpdateNoteUseCase updateNoteUseCase(Ref ref) {
-  final repository = ref.watch(noteRepositoryProvider);
+Future<UpdateNoteUseCase> updateNoteUseCase(Ref ref) async {
+  final repository = await ref.watch(noteRepositoryProvider.future);
   return UpdateNoteUseCase(repository);
 }
 
 /// DeleteNoteUseCaseの依存性注入
 @riverpod
-DeleteNoteUseCase deleteNoteUseCase(Ref ref) {
-  final repository = ref.watch(noteRepositoryProvider);
+Future<DeleteNoteUseCase> deleteNoteUseCase(Ref ref) async {
+  final repository = await ref.watch(noteRepositoryProvider.future);
   return DeleteNoteUseCase(repository);
 }
 
 /// SearchNotesUseCaseの依存性注入
 @riverpod
-SearchNotesUseCase searchNotesUseCase(Ref ref) {
-  final repository = ref.watch(noteRepositoryProvider);
+Future<SearchNotesUseCase> searchNotesUseCase(Ref ref) async {
+  final repository = await ref.watch(noteRepositoryProvider.future);
   return SearchNotesUseCase(repository);
 }
 
@@ -136,7 +166,7 @@ DatabaseConfig databaseConfig(Ref ref) {
 /// データベースの健全性チェックプロバイダー
 @riverpod
 Future<bool> databaseHealthCheck(Ref ref) async {
-  final repository = ref.watch(noteRepositoryProvider);
+  final repository = await ref.watch(noteRepositoryProvider.future);
   if (repository is NoteRepositoryImpl) {
     return await repository.checkDatabaseHealth();
   }
@@ -146,7 +176,7 @@ Future<bool> databaseHealthCheck(Ref ref) async {
 /// ストレージ統計情報プロバイダー
 @riverpod
 Future<Map<String, dynamic>> storageStats(Ref ref) async {
-  final repository = ref.watch(noteRepositoryProvider);
+  final repository = await ref.watch(noteRepositoryProvider.future);
   if (repository is NoteRepositoryImpl) {
     return await repository.getStorageStats();
   }
@@ -156,7 +186,7 @@ Future<Map<String, dynamic>> storageStats(Ref ref) async {
 /// データベース最適化プロバイダー（手動実行用）
 @riverpod
 Future<void> optimizeDatabase(Ref ref) async {
-  final repository = ref.watch(noteRepositoryProvider);
+  final repository = await ref.watch(noteRepositoryProvider.future);
   if (repository is NoteRepositoryImpl) {
     await repository.optimizeDatabase();
   }

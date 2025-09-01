@@ -50,6 +50,7 @@ dependencies:
 
   # ローカルDB
   sqflite: ^2.3.0
+  sqflite_common_ffi: ^2.3.0
   path: ^1.8.0
 
 dev_dependencies:

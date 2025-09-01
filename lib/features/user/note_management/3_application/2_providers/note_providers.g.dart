@@ -6,7 +6,7 @@ part of 'note_providers.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$databaseHash() => r'02b8405a459dbe70b8c3fb5066ce30566efa1a0c';
+String _$databaseHash() => r'81048dc31465e2805503a2d455e6c0385e0d5d85';
 
 /// SQLiteデータベースの依存性注入
 ///
@@ -26,14 +26,14 @@ final databaseProvider = FutureProvider<Database>.internal(
 // ignore: unused_element
 typedef DatabaseRef = FutureProviderRef<Database>;
 String _$noteLocalDataSourceHash() =>
-    r'02c09786a458aec9ecf44ad2d605cec848fe4154';
+    r'a9c4c91550f3095a9cddf18ffdaba7ba2706c4fc';
 
 /// NoteLocalDataSourceの依存性注入
 ///
 /// Copied from [noteLocalDataSource].
 @ProviderFor(noteLocalDataSource)
 final noteLocalDataSourceProvider =
-    AutoDisposeProvider<NoteLocalDataSource>.internal(
+    AutoDisposeFutureProvider<NoteLocalDataSource>.internal(
       noteLocalDataSource,
       name: r'noteLocalDataSourceProvider',
       debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
@@ -45,34 +45,36 @@ final noteLocalDataSourceProvider =
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-typedef NoteLocalDataSourceRef = AutoDisposeProviderRef<NoteLocalDataSource>;
-String _$noteRepositoryHash() => r'5e4428d6fe93989d8fe9d061e9180bfa2d69998d';
+typedef NoteLocalDataSourceRef =
+    AutoDisposeFutureProviderRef<NoteLocalDataSource>;
+String _$noteRepositoryHash() => r'560d01d7039456e9d9bed60b4e6a94d340191815';
 
 /// NoteRepositoryの依存性注入
 ///
 /// Copied from [noteRepository].
 @ProviderFor(noteRepository)
-final noteRepositoryProvider = AutoDisposeProvider<NoteRepository>.internal(
-  noteRepository,
-  name: r'noteRepositoryProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$noteRepositoryHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
+final noteRepositoryProvider =
+    AutoDisposeFutureProvider<NoteRepository>.internal(
+      noteRepository,
+      name: r'noteRepositoryProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$noteRepositoryHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-typedef NoteRepositoryRef = AutoDisposeProviderRef<NoteRepository>;
-String _$createNoteUseCaseHash() => r'47e7ac43b21b8740d4c19d113ff9eaf96a9397f1';
+typedef NoteRepositoryRef = AutoDisposeFutureProviderRef<NoteRepository>;
+String _$createNoteUseCaseHash() => r'0456c35fa86455ffd8836dbc377fc1873f2564b5';
 
 /// CreateNoteUseCaseの依存性注入
 ///
 /// Copied from [createNoteUseCase].
 @ProviderFor(createNoteUseCase)
 final createNoteUseCaseProvider =
-    AutoDisposeProvider<CreateNoteUseCase>.internal(
+    AutoDisposeFutureProvider<CreateNoteUseCase>.internal(
       createNoteUseCase,
       name: r'createNoteUseCaseProvider',
       debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
@@ -84,35 +86,36 @@ final createNoteUseCaseProvider =
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-typedef CreateNoteUseCaseRef = AutoDisposeProviderRef<CreateNoteUseCase>;
-String _$getNotesUseCaseHash() => r'401969ad6ff1c3f1b8216edfefd5a591e57fec23';
+typedef CreateNoteUseCaseRef = AutoDisposeFutureProviderRef<CreateNoteUseCase>;
+String _$getNotesUseCaseHash() => r'a6ff09e99a7f8d3c3d7a44c0befdcf2ab668e1ba';
 
 /// GetNotesUseCaseの依存性注入
 ///
 /// Copied from [getNotesUseCase].
 @ProviderFor(getNotesUseCase)
-final getNotesUseCaseProvider = AutoDisposeProvider<GetNotesUseCase>.internal(
-  getNotesUseCase,
-  name: r'getNotesUseCaseProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$getNotesUseCaseHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
+final getNotesUseCaseProvider =
+    AutoDisposeFutureProvider<GetNotesUseCase>.internal(
+      getNotesUseCase,
+      name: r'getNotesUseCaseProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$getNotesUseCaseHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-typedef GetNotesUseCaseRef = AutoDisposeProviderRef<GetNotesUseCase>;
+typedef GetNotesUseCaseRef = AutoDisposeFutureProviderRef<GetNotesUseCase>;
 String _$getNoteByIdUseCaseHash() =>
-    r'0a9be8fbbe2c7a5b4520b183b6932a283c75e798';
+    r'f8caf2aa4dd979e3e0d9dc6a919666a77e914078';
 
 /// GetNoteByIdUseCaseの依存性注入
 ///
 /// Copied from [getNoteByIdUseCase].
 @ProviderFor(getNoteByIdUseCase)
 final getNoteByIdUseCaseProvider =
-    AutoDisposeProvider<GetNoteByIdUseCase>.internal(
+    AutoDisposeFutureProvider<GetNoteByIdUseCase>.internal(
       getNoteByIdUseCase,
       name: r'getNoteByIdUseCaseProvider',
       debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
@@ -124,15 +127,16 @@ final getNoteByIdUseCaseProvider =
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-typedef GetNoteByIdUseCaseRef = AutoDisposeProviderRef<GetNoteByIdUseCase>;
-String _$updateNoteUseCaseHash() => r'c51179e3d1b6b6f3931b1a1427b88c9bc8ef2194';
+typedef GetNoteByIdUseCaseRef =
+    AutoDisposeFutureProviderRef<GetNoteByIdUseCase>;
+String _$updateNoteUseCaseHash() => r'b2c067df9232ad78da836f8d9864d4e8fb045296';
 
 /// UpdateNoteUseCaseの依存性注入
 ///
 /// Copied from [updateNoteUseCase].
 @ProviderFor(updateNoteUseCase)
 final updateNoteUseCaseProvider =
-    AutoDisposeProvider<UpdateNoteUseCase>.internal(
+    AutoDisposeFutureProvider<UpdateNoteUseCase>.internal(
       updateNoteUseCase,
       name: r'updateNoteUseCaseProvider',
       debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
@@ -144,15 +148,15 @@ final updateNoteUseCaseProvider =
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-typedef UpdateNoteUseCaseRef = AutoDisposeProviderRef<UpdateNoteUseCase>;
-String _$deleteNoteUseCaseHash() => r'336c0f9143288a03d674f03760a6dc1411a7f1ac';
+typedef UpdateNoteUseCaseRef = AutoDisposeFutureProviderRef<UpdateNoteUseCase>;
+String _$deleteNoteUseCaseHash() => r'199f3c3fdc244ae7a13e35647cd97a135cebacff';
 
 /// DeleteNoteUseCaseの依存性注入
 ///
 /// Copied from [deleteNoteUseCase].
 @ProviderFor(deleteNoteUseCase)
 final deleteNoteUseCaseProvider =
-    AutoDisposeProvider<DeleteNoteUseCase>.internal(
+    AutoDisposeFutureProvider<DeleteNoteUseCase>.internal(
       deleteNoteUseCase,
       name: r'deleteNoteUseCaseProvider',
       debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
@@ -164,16 +168,16 @@ final deleteNoteUseCaseProvider =
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-typedef DeleteNoteUseCaseRef = AutoDisposeProviderRef<DeleteNoteUseCase>;
+typedef DeleteNoteUseCaseRef = AutoDisposeFutureProviderRef<DeleteNoteUseCase>;
 String _$searchNotesUseCaseHash() =>
-    r'181603b665da9f7b9abd4fa878148c852018717b';
+    r'74b7402a36b5b578bbd97e7270f829efc027f6b3';
 
 /// SearchNotesUseCaseの依存性注入
 ///
 /// Copied from [searchNotesUseCase].
 @ProviderFor(searchNotesUseCase)
 final searchNotesUseCaseProvider =
-    AutoDisposeProvider<SearchNotesUseCase>.internal(
+    AutoDisposeFutureProvider<SearchNotesUseCase>.internal(
       searchNotesUseCase,
       name: r'searchNotesUseCaseProvider',
       debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
@@ -185,7 +189,8 @@ final searchNotesUseCaseProvider =
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-typedef SearchNotesUseCaseRef = AutoDisposeProviderRef<SearchNotesUseCase>;
+typedef SearchNotesUseCaseRef =
+    AutoDisposeFutureProviderRef<SearchNotesUseCase>;
 String _$noteAppConfigHash() => r'd870b8666f30b8fa55a937a584a1b4ade4935b56';
 
 /// アプリケーション設定プロバイダー
@@ -225,7 +230,7 @@ final databaseConfigProvider = Provider<DatabaseConfig>.internal(
 // ignore: unused_element
 typedef DatabaseConfigRef = ProviderRef<DatabaseConfig>;
 String _$databaseHealthCheckHash() =>
-    r'468955cad758edc54059e3286de3b9c21d51582b';
+    r'72d92d9d1ca488fdf47fc921ad0555397b85cf1f';
 
 /// データベースの健全性チェックプロバイダー
 ///
@@ -244,7 +249,7 @@ final databaseHealthCheckProvider = AutoDisposeFutureProvider<bool>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef DatabaseHealthCheckRef = AutoDisposeFutureProviderRef<bool>;
-String _$storageStatsHash() => r'7ff2b5d61e640dac44057801f8bdf016c8ca24ba';
+String _$storageStatsHash() => r'5e3aac082901ff8b5cc53ad7a3ae97f9571d368b';
 
 /// ストレージ統計情報プロバイダー
 ///
@@ -264,7 +269,7 @@ final storageStatsProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef StorageStatsRef = AutoDisposeFutureProviderRef<Map<String, dynamic>>;
-String _$optimizeDatabaseHash() => r'aa0bb1997f5ce1fb1cc464820a960fceb5f34b43';
+String _$optimizeDatabaseHash() => r'b19c710c981a593e401d3bf27681613b53277e90';
 
 /// データベース最適化プロバイダー（手動実行用）
 ///

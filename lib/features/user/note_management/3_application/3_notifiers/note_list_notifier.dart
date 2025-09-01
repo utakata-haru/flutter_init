@@ -31,7 +31,7 @@ class NoteListNotifier extends _$NoteListNotifier {
     state = const NoteListState.loading();
 
     try {
-      final getNotesUseCase = ref.read(getNotesUseCaseProvider);
+      final getNotesUseCase = await ref.read(getNotesUseCaseProvider.future);
       final notes = await getNotesUseCase.call(
         limit: limit,
         offset: offset,
@@ -53,7 +53,7 @@ class NoteListNotifier extends _$NoteListNotifier {
   /// メモを削除する（一覧から削除）
   Future<void> deleteNote(String noteId) async {
     try {
-      final deleteNoteUseCase = ref.read(deleteNoteUseCaseProvider);
+      final deleteNoteUseCase = await ref.read(deleteNoteUseCaseProvider.future);
       await deleteNoteUseCase.call(noteId);
 
       // 現在の状態が loaded の場合、そのメモを一覧から削除

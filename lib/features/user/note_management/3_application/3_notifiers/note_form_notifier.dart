@@ -91,7 +91,7 @@ class NoteFormNotifier extends _$NoteFormNotifier {
       
       if (originalNote != null) {
         // 更新処理
-        final updateNoteUseCase = ref.read(updateNoteUseCaseProvider);
+        final updateNoteUseCase = await ref.read(updateNoteUseCaseProvider.future);
         savedNote = await updateNoteUseCase.call(
           id: originalNote!.id,
           title: title!,
@@ -99,7 +99,7 @@ class NoteFormNotifier extends _$NoteFormNotifier {
         );
       } else {
         // 新規作成処理
-        final createNoteUseCase = ref.read(createNoteUseCaseProvider);
+        final createNoteUseCase = await ref.read(createNoteUseCaseProvider.future);
         savedNote = await createNoteUseCase.call(
           title: title!,
           content: content!,
@@ -121,7 +121,7 @@ class NoteFormNotifier extends _$NoteFormNotifier {
     state = const NoteFormState.deleting();
 
     try {
-      final deleteNoteUseCase = ref.read(deleteNoteUseCaseProvider);
+      final deleteNoteUseCase = await ref.read(deleteNoteUseCaseProvider.future);
       await deleteNoteUseCase.call(noteId);
 
       // 削除完了状態に変更
@@ -136,7 +136,7 @@ class NoteFormNotifier extends _$NoteFormNotifier {
   /// 既存のメモを編集状態で読み込む
   Future<void> loadNoteForEditing(String noteId) async {
     try {
-      final getNoteByIdUseCase = ref.read(getNoteByIdUseCaseProvider);
+      final getNoteByIdUseCase = await ref.read(getNoteByIdUseCaseProvider.future);
       final note = await getNoteByIdUseCase.call(noteId);
 
       if (note != null) {
