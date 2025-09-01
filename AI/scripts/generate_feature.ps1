@@ -125,18 +125,22 @@ $dirs = @(
   "lib/core/routing",
   "lib/core/theme",
   "lib/core/api",
+  "lib/core/exceptions",
 
   # Feature ディレクトリ
   "$basePath/1_domain/1_entities",
   "$basePath/1_domain/2_repositories",
   "$basePath/1_domain/3_usecases",
+  "$basePath/1_domain/exceptions",
 
   "$basePath/3_application/1_states",
   "$basePath/3_application/2_providers",
   "$basePath/3_application/3_notifiers",
 
   "$basePath/2_infrastructure/2_data_sources/1_local",
+  "$basePath/2_infrastructure/2_data_sources/1_local/exceptions",
   "$basePath/2_infrastructure/2_data_sources/2_remote",
+  "$basePath/2_infrastructure/2_data_sources/2_remote/exceptions",
   "$basePath/2_infrastructure/1_models",
   "$basePath/2_infrastructure/3_repositories",
 

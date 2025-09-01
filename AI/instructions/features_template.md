@@ -31,12 +31,15 @@ lib/features/{permission_level}/{feature_name_snake}/
 ├── 1_domain/
 │   ├── 1_entities/           # エンティティ（ビジネスオブジェクト）
 │   ├── 2_repositories/       # リポジトリインターフェース
-│   └── 3_usecases/           # ユースケース（ビジネスロジック）
+│   ├── 3_usecases/           # ユースケース（ビジネスロジック）
+│   └── exceptions/           # ドメイン例外
 ├── 2_infrastructure/
 │   ├── 1_models/           # データモデル
 │   ├── 2_data_sources/
 │   │   ├── 1_local/        # ローカルデータソース
+│   │   │   └── exceptions/ # ローカルデータソース例外
 │   │   └── 2_remote/       # リモートデータソース
+│   │       └── exceptions/ # リモートデータソース例外
 │   └── 3_repositories/     # リポジトリ実装
 ├── 3_application/
 │   ├── 1_states/             # 状態クラス
@@ -48,6 +51,191 @@ lib/features/{permission_level}/{feature_name_snake}/
         ├── 1_atoms/        # 原子コンポーネント
         ├── 2_molecules/    # 分子コンポーネント
         └── 3_organisms/    # 有機体コンポーネント
+```
+
+### 共通例外ディレクトリ
+
+```
+lib/core/
+└── exceptions/               # 共通例外（全フィーチャーで使用）
+    ├── base_exception.dart   # 基底例外クラス
+    ├── network_exception.dart # ネットワーク関連例外
+    └── storage_exception.dart # ストレージ関連例外
+```
+
+## 例外処理アーキテクチャ
+
+### 例外の階層構造
+
+#### 1. 共通例外（lib/core/exceptions/）
+
+**基底例外クラス**
+```dart
+// core/exceptions/base_exception.dart
+abstract class BaseException implements Exception {
+  final String message;
+  final String? code;
+  final dynamic originalError;
+  
+  const BaseException(this.message, {this.code, this.originalError});
+  
+  @override
+  String toString() => 'BaseException: $message';
+}
+```
+
+**ネットワーク例外**
+```dart
+// core/exceptions/network_exception.dart
+class NetworkException extends BaseException {
+  const NetworkException(super.message, {super.code, super.originalError});
+  
+  factory NetworkException.connectionTimeout() => 
+    const NetworkException('接続がタイムアウトしました', code: 'CONNECTION_TIMEOUT');
+  
+  factory NetworkException.noInternet() => 
+    const NetworkException('インターネット接続がありません', code: 'NO_INTERNET');
+}
+```
+
+**ストレージ例外**
+```dart
+// core/exceptions/storage_exception.dart
+class StorageException extends BaseException {
+  const StorageException(super.message, {super.code, super.originalError});
+  
+  factory StorageException.databaseError(String details) => 
+    StorageException('データベースエラー: $details', code: 'DATABASE_ERROR');
+  
+  factory StorageException.fileNotFound(String path) => 
+    StorageException('ファイルが見つかりません: $path', code: 'FILE_NOT_FOUND');
+}
+```
+
+#### 2. ドメイン例外（各フィーチャーの1_domain/exceptions/）
+
+```dart
+// features/user/1_domain/exceptions/user_domain_exception.dart
+class UserNotFoundException extends BaseException {
+  const UserNotFoundException(String userId) 
+    : super('ユーザーが見つかりません: $userId', code: 'USER_NOT_FOUND');
+}
+
+class InvalidUserDataException extends BaseException {
+  const InvalidUserDataException(String reason) 
+    : super('無効なユーザーデータ: $reason', code: 'INVALID_USER_DATA');
+}
+
+class UserAlreadyExistsException extends BaseException {
+  const UserAlreadyExistsException(String email) 
+    : super('ユーザーは既に存在します: $email', code: 'USER_ALREADY_EXISTS');
+}
+```
+
+#### 3. データソース例外
+
+**Drift例外**
+```dart
+// features/user/2_infrastructure/2_data_sources/1_local/exceptions/drift_exception.dart
+class DriftDatabaseException extends StorageException {
+  const DriftDatabaseException(super.message, {super.code, super.originalError});
+  
+  factory DriftDatabaseException.insertFailed(String table) => 
+    DriftDatabaseException('データの挿入に失敗しました: $table', code: 'INSERT_FAILED');
+  
+  factory DriftDatabaseException.queryFailed(String query) => 
+    DriftDatabaseException('クエリの実行に失敗しました: $query', code: 'QUERY_FAILED');
+}
+```
+
+**API例外**
+```dart
+// features/user/2_infrastructure/2_data_sources/2_remote/exceptions/api_exception.dart
+class ApiException extends NetworkException {
+  final int? statusCode;
+  
+  const ApiException(super.message, {this.statusCode, super.code, super.originalError});
+  
+  factory ApiException.unauthorized() => 
+    const ApiException('認証が必要です', statusCode: 401, code: 'UNAUTHORIZED');
+  
+  factory ApiException.forbidden() => 
+    const ApiException('アクセスが拒否されました', statusCode: 403, code: 'FORBIDDEN');
+  
+  factory ApiException.notFound() => 
+    const ApiException('リソースが見つかりません', statusCode: 404, code: 'NOT_FOUND');
+}
+```
+
+### エラーハンドリングパターン
+
+#### Repository層での例外変換
+```dart
+// features/user/2_infrastructure/3_repositories/user_repository_impl.dart
+class UserRepositoryImpl implements UserRepository {
+  @override
+  Future<UserEntity> getUser(String id) async {
+    try {
+      // ローカルデータソースから取得を試行
+      final localUser = await _localDataSource.getUser(id);
+      if (localUser != null) return localUser.toEntity();
+      
+      // リモートデータソースから取得
+      final remoteUser = await _remoteDataSource.getUser(id);
+      await _localDataSource.saveUser(remoteUser);
+      return remoteUser.toEntity();
+    } on DriftDatabaseException catch (e) {
+      // インフラ例外をドメイン例外に変換
+      throw StorageException('ローカルストレージエラー: ${e.message}', originalError: e);
+    } on ApiException catch (e) {
+      if (e.statusCode == 404) {
+        throw UserNotFoundException(id);
+      }
+      throw NetworkException('リモート取得エラー: ${e.message}', originalError: e);
+    } catch (e) {
+      throw UserNotFoundException(id);
+    }
+  }
+}
+```
+
+#### UseCase層での例外処理
+```dart
+// features/user/1_domain/3_usecases/get_user_usecase.dart
+class GetUserUseCase {
+  Future<UserEntity> call(String id) async {
+    try {
+      return await _repository.getUser(id);
+    } on UserNotFoundException {
+      rethrow; // ドメイン例外はそのまま上位に伝播
+    } on StorageException catch (e) {
+      // インフラ例外をドメイン例外に変換
+      throw UserNotFoundException(id);
+    }
+  }
+}
+```
+
+#### Presentation層での例外処理
+```dart
+// features/user/3_application/3_notifiers/user_notifier.dart
+class UserNotifier extends _$UserNotifier {
+  Future<void> getUser(String id) async {
+    state = const UserState.loading();
+    try {
+      final user = await ref.read(getUserUseCaseProvider)(id);
+      state = UserState.loaded(user);
+    } on UserNotFoundException {
+      state = const UserState.error('ユーザーが見つかりません');
+    } on NetworkException {
+      state = const UserState.error('ネットワークエラーが発生しました');
+    } on StorageException {
+      state = const UserState.error('データの保存に失敗しました');
+    } catch (e) {
+      state = const UserState.error('予期しないエラーが発生しました');
+    }
+  }
+}
 ```
 
 ## 開発ガイドライン
@@ -491,10 +679,14 @@ class UserInfoCard extends StatelessWidget {
 ### ファイル命名
 - **snake_case**を使用
 - 例：`user_profile_page.dart`, `get_user_usecase.dart`
+- **例外ファイル**: `{対象名}_exception.dart`
+- 例：`user_domain_exception.dart`, `drift_exception.dart`
 
 ### クラス命名
 - **PascalCase**を使用
 - 例：`UserProfilePage`, `GetUserUseCase`
+- **例外クラス**: `{対象名}Exception`
+- 例：`UserNotFoundException`, `NetworkException`
 
 ### 変数・関数命名
 - **camelCase**を使用
@@ -540,10 +732,56 @@ final appProviders = [
 ```
 ## ベストプラクティス
 
-1. **単一責任の原則**: 各クラスは一つの責任のみを持つ
-2. **依存性の逆転**: 上位層は下位層に依存しない
-3. **コードレビュー**: プルリクエストでの品質管理
-4. **ドキュメント**: 複雑なロジックには適切なコメント
+### 単一責任の原則
+- 各クラスは一つの責任のみを持つ
+- 機能の変更理由は一つに限定
+
+### 依存性の逆転
+- 上位層は下位層の抽象に依存
+- 具象クラスではなくインターフェースに依存
+
+### テスタビリティ
+- 依存性注入によるモックテストの実現
+- 各層の独立したテストが可能
+
+### 状態管理
+- Riverpodによる宣言的な状態管理
+- 状態の変更は予測可能で追跡可能
+
+### 例外処理のベストプラクティス
+
+#### 1. 例外の階層設計
+- 共通の基底例外クラス（`BaseException`）を継承
+- 層ごとに適切な例外クラスを定義
+- 具体的で意味のある例外名を使用
+
+#### 2. エラーメッセージの統一
+- ユーザー向けメッセージと開発者向けメッセージを分離
+- 国際化（i18n）に対応した構造
+- ログ出力用の詳細情報を含める
+
+#### 3. 例外の変換と伝播
+- 下位層の例外を上位層で適切に変換
+- 必要な情報を保持しながら抽象化
+- スタックトレースの保持
+
+#### 4. リソース管理
+- try-finally文やusing文の活用
+- データベース接続やファイルハンドルの確実なクローズ
+- メモリリークの防止
+
+#### 5. ログ記録
+- 例外発生時の適切なログレベル設定
+- 機密情報の除外
+- デバッグに必要な情報の記録
+
+### コードレビュー
+- プルリクエストでの品質管理
+- アーキテクチャ原則の遵守確認
+
+### ドキュメント
+- 複雑なロジックには適切なコメント
+- API仕様書の維持
 
 ## 参考資料
 

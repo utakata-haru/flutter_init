@@ -155,18 +155,22 @@ echo "🚀 ディレクトリを生成中..."
 mkdir -p lib/core/routing
 mkdir -p lib/core/theme
 mkdir -p lib/core/api
+mkdir -p lib/core/exceptions
 
 # Featureディレクトリ
 mkdir -p "${BASE_PATH}/1_domain/1_entities"
 mkdir -p "${BASE_PATH}/1_domain/2_repositories"
 mkdir -p "${BASE_PATH}/1_domain/3_usecases"
+mkdir -p "${BASE_PATH}/1_domain/exceptions"
 
 mkdir -p "${BASE_PATH}/3_application/3_notifiers"
 mkdir -p "${BASE_PATH}/3_application/2_providers"
 mkdir -p "${BASE_PATH}/3_application/1_states"
 
 mkdir -p "${BASE_PATH}/2_infrastructure/2_data_sources/1_local"
+mkdir -p "${BASE_PATH}/2_infrastructure/2_data_sources/1_local/exceptions"
 mkdir -p "${BASE_PATH}/2_infrastructure/2_data_sources/2_remote"
+mkdir -p "${BASE_PATH}/2_infrastructure/2_data_sources/2_remote/exceptions"
 mkdir -p "${BASE_PATH}/2_infrastructure/1_models"
 mkdir -p "${BASE_PATH}/2_infrastructure/3_repositories"
 

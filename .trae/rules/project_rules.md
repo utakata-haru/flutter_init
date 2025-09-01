@@ -195,6 +195,7 @@ graph LR
 **🔧 事前準備**
 - [ ] `flutter create .` でプロジェクトを初期化
 - [ ] `AI/scripts/generate_feature.sh` または `AI/scripts/generate_feature.ps1` を引数付きで実行
+- [ ] 共通例外ファイル生成（`lib/core/exceptions/` ディレクトリ内）
 
 **🏗️ 実装順序**
 
@@ -202,14 +203,19 @@ graph LR
 - [ ] AI/instructions/architecture/lib/features/1_domain/1_entities/instructions.md　を確認後　entities ファイル生成
 - [ ] AI/instructions/architecture/lib/features/1_domain/2_repositories/instructions.md　を確認後　repositories ファイル生成
 - [ ] AI/instructions/architecture/lib/features/1_domain/3_usecases/instructions.md　を確認後　usecases ファイル生成
+- [ ] Domain層の例外処理ファイル生成（`exceptions/` ディレクトリ内）
 - [ ] コード生成時の遵守事項確認
 - [ ] ファイルパス・ファイル名明記でユーザー提示
 - [ ] `flutter analyze` 実行・検証
 
 ##### 3-2: Infrastructure層の実装
 - [ ] AI/instructions/architecture/lib/features/2_infrastructure/1_models/instructions.md　を確認後　models ファイル生成
-- [ ] AI/instructions/architecture/lib/features/2_infrastructure/2_data_sources/1_local/instructions.md　を確認後　local ファイル生成
-- [ ] AI/instructions/architecture/lib/features/2_infrastructure/2_data_sources/2_remote/instructions.md　を確認後　remote ファイル生成
+- [ ] AI/instructions/architecture/lib/features/2_infrastructure/2_data_sources/1_local/instructions.md　を確認後　local インターフェイスファイル生成
+- [ ] ローカルデータソースの実装ファイル生成（インターフェイスの具象実装）
+- [ ] ローカルデータソースの例外処理ファイル生成（`2_data_sources/1_local/exceptions/` ディレクトリ内）
+- [ ] AI/instructions/architecture/lib/features/2_infrastructure/2_data_sources/2_remote/instructions.md　を確認後　remote インターフェイスファイル生成
+- [ ] リモートデータソースの実装ファイル生成（インターフェイスの具象実装）
+- [ ] リモートデータソースの例外処理ファイル生成（`2_data_sources/2_remote/exceptions/` ディレクトリ内）
 - [ ] AI/instructions/architecture/lib/features/2_infrastructure/3_repositories/instructions.md　を確認後　repositories ファイル生成
 - [ ] `flutter analyze` 実行・検証
 ##### 3-3: Application層の実装

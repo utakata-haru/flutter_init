@@ -24,12 +24,25 @@ applyTo: 'lib/features/**/2_infrastructure/2_data_sources/1_local/**'
 
 ## 実装ガイドライン
 
-### 1. Driftデータソースの基本実装
+### 1. ファイル分割構造
+
+**📁 推奨ファイル構造**
+```
+lib/features/{feature_name}/2_infrastructure/2_data_sources/1_local/
+├── user_local_data_source.dart          # インターフェース定義
+├── user_local_data_source_impl.dart     # Drift実装
+├── settings_local_data_source.dart      # インターフェース定義
+├── settings_local_data_source_impl.dart # SharedPreferences実装
+└── exceptions/
+    └── local_data_source_exceptions.dart # 例外クラス
+```
+
+### 2. Driftデータソースの基本実装
+
+#### インターフェース定義
 ```dart
-// data_sources/local/user_local_data_source.dart
-import 'package:drift/drift.dart';
+// user_local_data_source.dart
 import '../../1_models/user_db_model.dart';
-import '../../../core/database/app_database.dart';
 
 abstract class UserLocalDataSource {
   Future<UserDbModel?> getUser(String id);
@@ -44,6 +57,16 @@ abstract class UserLocalDataSource {
   Stream<List<UserDbModel>> watchAllUsers();
   Stream<UserDbModel?> watchUser(String id);
 }
+```
+
+#### Drift実装クラス
+```dart
+// user_local_data_source_impl.dart
+import 'package:drift/drift.dart';
+import '../../1_models/user_db_model.dart';
+import '../../../core/database/app_database.dart';
+import 'user_local_data_source.dart';
+import 'exceptions/local_data_source_exceptions.dart';
 
 class UserLocalDataSourceImpl implements UserLocalDataSource {
   final AppDatabase _database;
@@ -191,11 +214,11 @@ class UserLocalDataSourceImpl implements UserLocalDataSource {
 }
 ```
 
-### 2. SharedPreferencesデータソース
-```dart
-// data_sources/local/settings_local_data_source.dart
-import 'package:shared_preferences/shared_preferences.dart';
+### 3. SharedPreferencesデータソースの実装
 
+#### インターフェース定義
+```dart
+// settings_local_data_source.dart
 abstract class SettingsLocalDataSource {
   Future<String?> getString(String key);
   Future<int?> getInt(String key);
@@ -212,17 +235,26 @@ abstract class SettingsLocalDataSource {
   Future<void> remove(String key);
   Future<void> clear();
   Future<bool> containsKey(String key);
+  Future<Set<String>> getKeys();
 }
+```
+
+#### SharedPreferences実装クラス
+```dart
+// settings_local_data_source_impl.dart
+import 'package:shared_preferences/shared_preferences.dart';
+import 'settings_local_data_source.dart';
+import 'exceptions/local_data_source_exceptions.dart';
 
 class SettingsLocalDataSourceImpl implements SettingsLocalDataSource {
-  final SharedPreferences _preferences;
+  final SharedPreferences _prefs;
 
-  SettingsLocalDataSourceImpl(this._preferences);
+  SettingsLocalDataSourceImpl(this._prefs);
 
   @override
   Future<String?> getString(String key) async {
     try {
-      return _preferences.getString(key);
+      return _prefs.getString(key);
     } catch (e) {
       throw LocalDataSourceException('Failed to get string: $e');
     }
@@ -231,7 +263,7 @@ class SettingsLocalDataSourceImpl implements SettingsLocalDataSource {
   @override
   Future<void> setString(String key, String value) async {
     try {
-      final success = await _preferences.setString(key, value);
+      final success = await _prefs.setString(key, value);
       if (!success) {
         throw LocalDataSourceException('Failed to set string for key: $key');
       }
@@ -241,9 +273,30 @@ class SettingsLocalDataSourceImpl implements SettingsLocalDataSource {
   }
 
   @override
+  Future<int?> getInt(String key) async {
+    try {
+      return _prefs.getInt(key);
+    } catch (e) {
+      throw LocalDataSourceException('Failed to get int: $e');
+    }
+  }
+
+  @override
+  Future<void> setInt(String key, int value) async {
+    try {
+      final success = await _prefs.setInt(key, value);
+      if (!success) {
+        throw LocalDataSourceException('Failed to set int for key: $key');
+      }
+    } catch (e) {
+      throw LocalDataSourceException('Failed to set int: $e');
+    }
+  }
+
+  @override
   Future<bool?> getBool(String key) async {
     try {
-      return _preferences.getBool(key);
+      return _prefs.getBool(key);
     } catch (e) {
       throw LocalDataSourceException('Failed to get bool: $e');
     }
@@ -252,7 +305,7 @@ class SettingsLocalDataSourceImpl implements SettingsLocalDataSource {
   @override
   Future<void> setBool(String key, bool value) async {
     try {
-      final success = await _preferences.setBool(key, value);
+      final success = await _prefs.setBool(key, value);
       if (!success) {
         throw LocalDataSourceException('Failed to set bool for key: $key');
       }
@@ -261,12 +314,64 @@ class SettingsLocalDataSourceImpl implements SettingsLocalDataSource {
     }
   }
 
-  // 他のメソッドも同様に実装...
+  @override
+  Future<double?> getDouble(String key) async {
+    try {
+      return _prefs.getDouble(key);
+    } catch (e) {
+      throw LocalDataSourceException('Failed to get double: $e');
+    }
+  }
+
+  @override
+  Future<void> setDouble(String key, double value) async {
+    try {
+      final success = await _prefs.setDouble(key, value);
+      if (!success) {
+        throw LocalDataSourceException('Failed to set double for key: $key');
+      }
+    } catch (e) {
+      throw LocalDataSourceException('Failed to set double: $e');
+    }
+  }
+
+  @override
+  Future<List<String>?> getStringList(String key) async {
+    try {
+      return _prefs.getStringList(key);
+    } catch (e) {
+      throw LocalDataSourceException('Failed to get string list: $e');
+    }
+  }
+
+  @override
+  Future<void> setStringList(String key, List<String> value) async {
+    try {
+      final success = await _prefs.setStringList(key, value);
+      if (!success) {
+        throw LocalDataSourceException('Failed to set string list for key: $key');
+      }
+    } catch (e) {
+      throw LocalDataSourceException('Failed to set string list: $e');
+    }
+  }
+
+  @override
+  Future<void> remove(String key) async {
+    try {
+      final success = await _prefs.remove(key);
+      if (!success) {
+        throw LocalDataSourceException('Failed to remove key: $key');
+      }
+    } catch (e) {
+      throw LocalDataSourceException('Failed to remove key: $e');
+    }
+  }
 
   @override
   Future<void> clear() async {
     try {
-      final success = await _preferences.clear();
+      final success = await _prefs.clear();
       if (!success) {
         throw LocalDataSourceException('Failed to clear preferences');
       }
@@ -274,16 +379,32 @@ class SettingsLocalDataSourceImpl implements SettingsLocalDataSource {
       throw LocalDataSourceException('Failed to clear preferences: $e');
     }
   }
+
+  @override
+  Future<bool> containsKey(String key) async {
+    try {
+      return _prefs.containsKey(key);
+    } catch (e) {
+      throw LocalDataSourceException('Failed to check key existence: $e');
+    }
+  }
+
+  @override
+  Future<Set<String>> getKeys() async {
+    try {
+      return _prefs.getKeys();
+    } catch (e) {
+      throw LocalDataSourceException('Failed to get keys: $e');
+    }
+  }
 }
 ```
 
-### 3. ファイルシステムデータソース
-```dart
-// data_sources/local/file_local_data_source.dart
-import 'dart:io';
-import 'dart:convert';
-import 'package:path_provider/path_provider.dart';
+### 4. ファイルシステムデータソースの実装
 
+#### インターフェース定義
+```dart
+// file_local_data_source.dart
 abstract class FileLocalDataSource {
   Future<String> readTextFile(String fileName);
   Future<void> writeTextFile(String fileName, String content);
@@ -292,7 +413,20 @@ abstract class FileLocalDataSource {
   Future<bool> fileExists(String fileName);
   Future<void> deleteFile(String fileName);
   Future<List<String>> listFiles({String? extension});
+  Future<void> copyFile(String sourceFileName, String targetFileName);
+  Future<int> getFileSize(String fileName);
+  Future<DateTime> getLastModified(String fileName);
 }
+```
+
+#### ファイルシステム実装クラス
+```dart
+// file_local_data_source_impl.dart
+import 'dart:io';
+import 'dart:convert';
+import 'package:path_provider/path_provider.dart';
+import 'file_local_data_source.dart';
+import 'exceptions/local_data_source_exceptions.dart';
 
 class FileLocalDataSourceImpl implements FileLocalDataSource {
   late final Directory _appDocumentDir;
@@ -390,6 +524,48 @@ class FileLocalDataSourceImpl implements FileLocalDataSource {
       throw LocalDataSourceException('Failed to list files: $e');
     }
   }
+
+  @override
+  Future<void> copyFile(String sourceFileName, String targetFileName) async {
+    try {
+      final sourceFile = _getFile(sourceFileName);
+      final targetFile = _getFile(targetFileName);
+      
+      if (!await sourceFile.exists()) {
+        throw LocalDataSourceException('Source file does not exist: $sourceFileName');
+      }
+      
+      await sourceFile.copy(targetFile.path);
+    } catch (e) {
+      throw LocalDataSourceException('Failed to copy file: $e');
+    }
+  }
+
+  @override
+  Future<int> getFileSize(String fileName) async {
+    try {
+      final file = _getFile(fileName);
+      if (!await file.exists()) {
+        throw LocalDataSourceException('File does not exist: $fileName');
+      }
+      return await file.length();
+    } catch (e) {
+      throw LocalDataSourceException('Failed to get file size: $e');
+    }
+  }
+
+  @override
+  Future<DateTime> getLastModified(String fileName) async {
+    try {
+      final file = _getFile(fileName);
+      if (!await file.exists()) {
+        throw LocalDataSourceException('File does not exist: $fileName');
+      }
+      return await file.lastModified();
+    } catch (e) {
+      throw LocalDataSourceException('Failed to get last modified date: $e');
+    }
+  }
 }
 ```
 
@@ -465,25 +641,103 @@ class CacheEntry<T> {
 
 ## 命名規則
 
-### ファイル名
+### ファイル名規則
+
+#### インターフェースファイル
 - **命名形式**: `{対象名}_local_data_source.dart`
 - **例**: `user_local_data_source.dart`, `settings_local_data_source.dart`
 
-### クラス名
-- **インターフェース**: `{対象名}LocalDataSource`
-- **実装クラス**: `{対象名}LocalDataSourceImpl`
-- **例**: `UserLocalDataSource`, `UserLocalDataSourceImpl`
+#### 実装ファイル
+- **命名形式**: `{対象名}_local_data_source_impl.dart`
+- **例**: `user_local_data_source_impl.dart`, `settings_local_data_source_impl.dart`
 
-### メソッド名
-- **取得系**: `get{対象}`, `getAll{対象}`, `find{対象}`
-- **保存系**: `save{対象}`, `insert{対象}`, `store{対象}`
-- **更新系**: `update{対象}`, `modify{対象}`
-- **削除系**: `delete{対象}`, `remove{対象}`
-- **存在確認**: `{対象}Exists`, `contains{対象}`
+#### 例外ファイル
+- **命名形式**: `exceptions/local_data_source_exceptions.dart`
+
+### クラス名規則
+
+#### インターフェース
+- **命名形式**: `{対象名}LocalDataSource`
+- **例**: `UserLocalDataSource`, `SettingsLocalDataSource`
+
+#### 実装クラス
+- **命名形式**: `{対象名}LocalDataSourceImpl`
+- **例**: `UserLocalDataSourceImpl`, `SettingsLocalDataSourceImpl`
+
+#### 例外クラス
+- **基底クラス**: `LocalDataSourceException`
+- **Drift関連**: `DatabaseException`
+- **SharedPreferences関連**: `CacheException`
+- **ファイル操作関連**: `FileSystemException`
+
+### メソッド名規則
+
+#### CRUD操作
+- **取得系**: `get{対象}`, `getAll{対象}`, `get{対象}By{条件}`
+- **保存系**: `save{対象}`, `save{対象}s` (新規作成・更新両対応)
+- **作成系**: `create{対象}`, `create{対象}s` (新規作成専用)
+- **更新系**: `update{対象}`, `update{対象}s` (更新専用)
+- **削除系**: `delete{対象}`, `deleteAll{対象}s`, `delete{対象}sBy{条件}`
+- **存在確認**: `{対象}Exists`, `has{対象}`
+
+#### リアクティブ操作
+- **監視系**: `watch{対象}`, `watchAll{対象}s`, `watch{対象}sBy{条件}`
+- **ストリーム系**: `stream{対象}`, `streamAll{対象}s`
+
+#### 設定操作（SharedPreferences）
+- **取得系**: `get{Type}`, `getString`, `getInt`, `getBool`, `getDouble`, `getStringList`
+- **設定系**: `set{Type}`, `setString`, `setInt`, `setBool`, `setDouble`, `setStringList`
+- **削除系**: `remove`, `removeKey`
+- **クリア系**: `clear`, `clearAll`
+- **確認系**: `containsKey`, `hasKey`
+
+#### ファイル操作
+- **読み込み系**: `readFile`, `readTextFile`, `readJsonFile`, `readBinaryFile`
+- **書き込み系**: `writeFile`, `writeTextFile`, `writeJsonFile`, `writeBinaryFile`
+- **削除系**: `deleteFile`, `deleteFiles`
+- **操作系**: `copyFile`, `moveFile`
+- **情報取得系**: `getFileSize`, `getLastModified`, `listFiles`
 
 ## ベストプラクティス
 
-### 1. トランザクション処理
+### 1. ファイル分割の原則
+
+#### インターフェースと実装の分離
+```dart
+// ✅ 良い例: インターフェースファイル
+// user_local_data_source.dart
+abstract class UserLocalDataSource {
+  Future<UserDbModel?> getUser(String id);
+  // メソッド定義のみ
+}
+
+// ✅ 良い例: 実装ファイル
+// user_local_data_source_impl.dart
+class UserLocalDataSourceImpl implements UserLocalDataSource {
+  // 具体的な実装
+}
+
+// ❌ 悪い例: 一つのファイルに両方
+// user_local_data_source.dart
+abstract class UserLocalDataSource { /* ... */ }
+class UserLocalDataSourceImpl implements UserLocalDataSource { /* ... */ }
+```
+
+#### 依存関係の管理
+```dart
+// ✅ 良い例: インターフェースファイルでは外部依存を最小化
+// user_local_data_source.dart
+import '../../1_models/user_db_model.dart'; // モデルのみ
+
+// ✅ 良い例: 実装ファイルで具体的な依存関係
+// user_local_data_source_impl.dart
+import 'package:drift/drift.dart';
+import '../../../core/database/app_database.dart';
+import 'user_local_data_source.dart';
+import 'exceptions/local_data_source_exceptions.dart';
+```
+
+### 2. トランザクション処理
 ```dart
 class UserLocalDataSourceImpl implements UserLocalDataSource {
   final Database _database;
@@ -606,11 +860,73 @@ import '../../../3_application/states/user_state.dart';
 
 ## テスト指針
 
-### 1. Driftテスト
+### ファイル分割に対応したテスト構造
+
+**📁 推奨テストファイル構造**
+```
+test/features/{feature_name}/data/data_sources/local/
+├── user_local_data_source_test.dart          # インターフェーステスト
+├── user_local_data_source_impl_test.dart     # Drift実装テスト
+├── settings_local_data_source_test.dart      # インターフェーステスト
+├── settings_local_data_source_impl_test.dart # SharedPreferences実装テスト
+└── file_local_data_source_impl_test.dart     # ファイルシステム実装テスト
+```
+
+### 1. Driftデータソースのテスト
+
+#### インターフェーステスト（契約テスト）
 ```dart
-// test/infrastructure/data_sources/local/user_local_data_source_test.dart
+// test/features/user/data/data_sources/local/user_local_data_source_test.dart
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/mockito.dart';
+import 'package:mockito/annotations.dart';
+import '../../../../../lib/features/user/data/data_sources/local/user_local_data_source.dart';
+import '../../../../../lib/features/user/data/models/user_db_model.dart';
+
+@GenerateMocks([UserLocalDataSource])
+import 'user_local_data_source_test.mocks.dart';
+
 void main() {
-  group('UserLocalDataSource', () {
+  late MockUserLocalDataSource mockDataSource;
+
+  setUp(() {
+    mockDataSource = MockUserLocalDataSource();
+  });
+
+  group('UserLocalDataSource Contract Tests', () {
+    test('should define all required methods', () {
+      // インターフェースの契約をテスト
+      expect(mockDataSource.getUser, isA<Function>());
+      expect(mockDataSource.saveUser, isA<Function>());
+      expect(mockDataSource.deleteUser, isA<Function>());
+      expect(mockDataSource.watchAllUsers, isA<Function>());
+    });
+
+    test('should handle user retrieval contract', () async {
+      // Arrange
+      const user = UserDbModel(
+        id: '1',
+        name: 'Test User',
+        email: 'test@example.com',
+      );
+      when(mockDataSource.getUser('1')).thenAnswer((_) async => user);
+
+      // Act
+      final result = await mockDataSource.getUser('1');
+
+      // Assert
+      expect(result, equals(user));
+      verify(mockDataSource.getUser('1')).called(1);
+    });
+  });
+}
+```
+
+#### 実装クラステスト
+```dart
+// test/features/user/data/data_sources/local/user_local_data_source_impl_test.dart
+void main() {
+  group('UserLocalDataSourceImpl', () {
     late AppDatabase database;
     late UserLocalDataSourceImpl dataSource;
 
@@ -650,8 +966,305 @@ void main() {
       // Then
       expect(user, isNull);
     });
+
+    test('should handle batch operations', () async {
+      // Arrange
+      final users = [
+        UserDbModel(
+          id: '1',
+          name: 'User 1',
+          email: 'user1@example.com',
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+        ),
+        UserDbModel(
+          id: '2',
+          name: 'User 2',
+          email: 'user2@example.com',
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+        ),
+      ];
+
+      // Act
+      await dataSource.saveUsers(users);
+      final result = await dataSource.getAllUsers();
+
+      // Assert
+      expect(result.length, equals(2));
+      expect(result.map((u) => u.id), containsAll(['1', '2']));
+    });
+
+    test('should handle stream operations', () async {
+      // Arrange
+      final user = UserDbModel(
+        id: '1',
+        name: 'Test User',
+        email: 'test@example.com',
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      );
+
+      // Act
+      final stream = dataSource.watchAllUsers();
+      await dataSource.saveUser(user);
+
+      // Assert
+      await expectLater(
+        stream,
+        emits(isA<List<UserDbModel>>()),
+      );
+    });
   });
 }
+```
+
+### 2. SharedPreferencesデータソースのテスト
+
+```dart
+// test/features/settings/data/data_sources/local/settings_local_data_source_impl_test.dart
+import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../../../../../lib/features/settings/data/data_sources/local/settings_local_data_source_impl.dart';
+
+void main() {
+  late SettingsLocalDataSourceImpl dataSource;
+
+  setUp(() async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+    dataSource = SettingsLocalDataSourceImpl(prefs);
+  });
+
+  group('SettingsLocalDataSourceImpl', () {
+    test('should save and retrieve string value', () async {
+      // Arrange
+      const key = 'test_key';
+      const value = 'test_value';
+
+      // Act
+      await dataSource.setString(key, value);
+      final result = await dataSource.getString(key);
+
+      // Assert
+      expect(result, equals(value));
+    });
+
+    test('should return null for non-existent key', () async {
+      // Act
+      final result = await dataSource.getString('non_existent_key');
+
+      // Assert
+      expect(result, isNull);
+    });
+
+    test('should handle boolean values', () async {
+      // Arrange
+      const key = 'bool_key';
+      const value = true;
+
+      // Act
+      await dataSource.setBool(key, value);
+      final result = await dataSource.getBool(key);
+
+      // Assert
+      expect(result, equals(value));
+    });
+
+    test('should clear all preferences', () async {
+      // Arrange
+      await dataSource.setString('key1', 'value1');
+      await dataSource.setString('key2', 'value2');
+
+      // Act
+      await dataSource.clear();
+      final result1 = await dataSource.getString('key1');
+      final result2 = await dataSource.getString('key2');
+
+      // Assert
+      expect(result1, isNull);
+      expect(result2, isNull);
+    });
+  });
+}
+```
+
+### 3. ファイルシステムデータソースのテスト
+
+```dart
+// test/features/file/data/data_sources/local/file_local_data_source_impl_test.dart
+import 'dart:io';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
+import '../../../../../lib/features/file/data/data_sources/local/file_local_data_source_impl.dart';
+
+class MockPathProviderPlatform extends PathProviderPlatform {
+  @override
+  Future<String?> getApplicationDocumentsPath() async {
+    return Directory.systemTemp.path;
+  }
+}
+
+void main() {
+  late FileLocalDataSourceImpl dataSource;
+  late Directory tempDir;
+
+  setUpAll(() {
+    PathProviderPlatform.instance = MockPathProviderPlatform();
+  });
+
+  setUp(() async {
+    tempDir = await Directory.systemTemp.createTemp('test_');
+    dataSource = FileLocalDataSourceImpl();
+    await dataSource.initialize();
+  });
+
+  tearDown(() async {
+    if (await tempDir.exists()) {
+      await tempDir.delete(recursive: true);
+    }
+  });
+
+  group('FileLocalDataSourceImpl', () {
+    test('should write and read text file', () async {
+      // Arrange
+      const fileName = 'test.txt';
+      const content = 'Hello, World!';
+
+      // Act
+      await dataSource.writeTextFile(fileName, content);
+      final result = await dataSource.readTextFile(fileName);
+
+      // Assert
+      expect(result, equals(content));
+    });
+
+    test('should handle JSON files', () async {
+      // Arrange
+      const fileName = 'test.json';
+      final data = {'key': 'value', 'number': 42};
+
+      // Act
+      await dataSource.writeJsonFile(fileName, data);
+      final result = await dataSource.readJsonFile(fileName);
+
+      // Assert
+      expect(result, equals(data));
+    });
+
+    test('should check file existence', () async {
+      // Arrange
+      const fileName = 'test.txt';
+      const content = 'test content';
+
+      // Act & Assert
+      expect(await dataSource.fileExists(fileName), isFalse);
+      
+      await dataSource.writeTextFile(fileName, content);
+      expect(await dataSource.fileExists(fileName), isTrue);
+    });
+
+    test('should delete file', () async {
+      // Arrange
+      const fileName = 'test.txt';
+      const content = 'test content';
+      await dataSource.writeTextFile(fileName, content);
+
+      // Act
+      await dataSource.deleteFile(fileName);
+
+      // Assert
+      expect(await dataSource.fileExists(fileName), isFalse);
+    });
+  });
+}
+```
+
+## 依存性注入
+
+### GetItを使用した登録例
+```dart
+// core/di/injection_container.dart
+import 'package:get_it/get_it.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../database/app_database.dart';
+
+// インターフェース
+import '../../features/user/data/data_sources/local/user_local_data_source.dart';
+import '../../features/user/data/data_sources/local/settings_local_data_source.dart';
+import '../../features/user/data/data_sources/local/file_local_data_source.dart';
+
+// 実装クラス
+import '../../features/user/data/data_sources/local/user_local_data_source_impl.dart';
+import '../../features/user/data/data_sources/local/settings_local_data_source_impl.dart';
+import '../../features/user/data/data_sources/local/file_local_data_source_impl.dart';
+
+final sl = GetIt.instance;
+
+Future<void> init() async {
+  // Database
+  sl.registerLazySingleton<AppDatabase>(() => AppDatabase());
+  
+  // SharedPreferences
+  final sharedPreferences = await SharedPreferences.getInstance();
+  sl.registerLazySingleton<SharedPreferences>(() => sharedPreferences);
+  
+  // Data Sources - インターフェースに対して実装クラスを登録
+  sl.registerLazySingleton<UserLocalDataSource>(
+    () => UserLocalDataSourceImpl(sl<AppDatabase>()),
+  );
+  
+  sl.registerLazySingleton<SettingsLocalDataSource>(
+    () => SettingsLocalDataSourceImpl(sl<SharedPreferences>()),
+  );
+  
+  sl.registerLazySingleton<FileLocalDataSource>(
+    () => FileLocalDataSourceImpl(),
+  );
+}
+```
+
+### Riverpodを使用した登録例
+```dart
+// core/providers/local_data_source_providers.dart
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../database/app_database.dart';
+
+// インターフェース
+import '../../features/user/data/data_sources/local/user_local_data_source.dart';
+import '../../features/user/data/data_sources/local/settings_local_data_source.dart';
+import '../../features/user/data/data_sources/local/file_local_data_source.dart';
+
+// 実装クラス
+import '../../features/user/data/data_sources/local/user_local_data_source_impl.dart';
+import '../../features/user/data/data_sources/local/settings_local_data_source_impl.dart';
+import '../../features/user/data/data_sources/local/file_local_data_source_impl.dart';
+
+// Database Provider
+final appDatabaseProvider = Provider<AppDatabase>((ref) {
+  return AppDatabase();
+});
+
+// SharedPreferences Provider
+final sharedPreferencesProvider = FutureProvider<SharedPreferences>((ref) async {
+  return await SharedPreferences.getInstance();
+});
+
+// Local Data Source Providers
+final userLocalDataSourceProvider = Provider<UserLocalDataSource>((ref) {
+  final database = ref.watch(appDatabaseProvider);
+  return UserLocalDataSourceImpl(database);
+});
+
+final settingsLocalDataSourceProvider = FutureProvider<SettingsLocalDataSource>((ref) async {
+  final prefs = await ref.watch(sharedPreferencesProvider.future);
+  return SettingsLocalDataSourceImpl(prefs);
+});
+
+final fileLocalDataSourceProvider = Provider<FileLocalDataSource>((ref) {
+  return FileLocalDataSourceImpl();
+});
 ```
 
 ## 注意事項

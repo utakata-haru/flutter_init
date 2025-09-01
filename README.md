@@ -109,12 +109,15 @@ lib/features/{permission_level}/{feature_name_snake}/
 ├── 1_domain/
 │   ├── 1_entities/           # エンティティ（ビジネスオブジェクト）
 │   ├── 2_repositories/       # リポジトリインターフェース
-│   └── 3_usecases/           # ユースケース（ビジネスロジック）
+│   ├── 3_usecases/           # ユースケース（ビジネスロジック）
+│   └── exceptions/           # ドメイン例外
 ├── 2_infrastructure/
 │   ├── 1_models/           # データモデル
 │   ├── 2_data_sources/
 │   │   ├── 1_local/        # ローカルデータソース
+│   │   │   └── exceptions/ # ローカルデータソース例外
 │   │   └── 2_remote/       # リモートデータソース
+│   │       └── exceptions/ # リモートデータソース例外
 │   └── 3_repositories/     # リポジトリ実装
 ├── 3_application/
 │   ├── 1_states/             # 状態クラス
