@@ -1,4 +1,4 @@
-# PowerShell 版 Flutter Feature Generator Script
+# PowerShell版 Flutter Feature Generator Script
 # ---------------------------------
 # このスクリプトは、Flutterプロジェクトのルートディレクトリで実行してください。
 # 対話形式または引数指定でフィーチャー名と権限レベルを受け取り、
@@ -7,27 +7,27 @@
 param(
   # フィーチャー名（例: UserProfile, order_history）
   [Parameter(Mandatory = $false)]
-  [Alias('n','name')]
+  [Alias('n')]
   [string]$Name,
 
   # 権限（1|2|3|4 または admin|user|shared|direct）
   [Parameter(Mandatory = $false)]
-  [Alias('p','permission')]
+  [Alias('p')]
   [string]$Permission,
 
   # 明示的な権限レベル（admin|user|shared|direct）
   [Parameter(Mandatory = $false)]
-  [Alias('l','permissionlevel')]
+  [Alias('l')]
   [string]$PermissionLevel,
 
   # 確認プロンプトのスキップ
   [Parameter(Mandatory = $false)]
-  [Alias('y','yes')]
+  [Alias('y')]
   [switch]$Yes,
 
   # ヘルプ表示
   [Parameter(Mandatory = $false)]
-  [Alias('h','help')]
+  [Alias('h')]
   [switch]$Help
 )
 
@@ -48,7 +48,7 @@ if ($Help) {
 }
 
 # 開始メッセージ
-Write-Host "✨ Flutterフィーチャー生成スクリプトを開始します ✨" -ForegroundColor Green
+Write-Host "Flutter feature generator script started" -ForegroundColor Green
 
 # --- フィーチャー名の入力 or 引数 ---
 if (-not $Name) {
@@ -56,7 +56,7 @@ if (-not $Name) {
 }
 
 if (-not $Name) {
-  Write-Host "❌エラー: フィーチャー名が入力されていません。処理を中断します。"
+  Write-Host "Error: Feature name is required. Exiting." -ForegroundColor Red
   exit 1
 }
 
@@ -81,7 +81,7 @@ if ($PermissionLevel) {
     Write-Host "  1) admin"
     Write-Host "  2) user"
     Write-Host "  3) shared"
-    Write-Host "  4) direct (features下に直接配置)"
+    Write-Host "  4) direct (place directly under features)"
     $choice = Read-Host "Enter number (default: 2)"
     switch ($choice) {
       '1' { $PermissionLevel = 'admin' }
@@ -92,7 +92,7 @@ if ($PermissionLevel) {
   }
 }
 
-Write-Host ("-> 選択された権限レベル: {0}" -f $PermissionLevel) -ForegroundColor Yellow
+Write-Host ("-> Selected permission level: {0}" -f $PermissionLevel) -ForegroundColor Yellow
 
 # --- フィーチャー名をsnake_caseに変換（大文字→小文字、スペース/ハイフン→アンダースコア） ---
 $featureSnake = $Name.ToLower().Replace(' ', '_').Replace('-', '_')
@@ -104,21 +104,21 @@ if ($PermissionLevel -eq 'direct') {
   $basePath = "lib/features/$PermissionLevel/$featureSnake"
 }
 
-Write-Host ("-> 生成パス: {0}" -f $basePath) -ForegroundColor Yellow
+Write-Host ("-> Generation path: {0}" -f $basePath) -ForegroundColor Yellow
 Write-Host "-----------------------------------------------------"
 
 # --- 確認 ---
 if (-not $Yes) {
-  $confirm = Read-Host "以下のディレクトリ構造を生成します。よろしいですか？ (y/n)"
+  $confirm = Read-Host "Generate the following directory structure? (y/n)"
   if ($confirm -ne 'y') {
-    Write-Host "処理を中断しました。"
+    Write-Host "Process cancelled."
     exit 0
   }
 }
 Write-Host "-----------------------------------------------------"
 
 # --- ディレクトリ生成 ---
-Write-Host "🚀 ディレクトリを生成中..."
+Write-Host "Generating directories..." -ForegroundColor Cyan
 
 $dirs = @(
   # Core ディレクトリ（存在しない場合のみ作成）
@@ -154,10 +154,10 @@ foreach ($d in $dirs) {
   try {
     New-Item -ItemType Directory -Path $d -Force | Out-Null
   } catch {
-    Write-Host "ディレクトリ作成中にエラーが発生しました: $d" -ForegroundColor Red
+    Write-Host "Error creating directory: $d" -ForegroundColor Red
     Write-Host $_.Exception.Message -ForegroundColor Red
     exit 1
   }
 }
 
-Write-Host ("✅ 完了: フィーチャー「{0}」のディレクトリが正常に作成されました！" -f $featureSnake) -ForegroundColor Green
+Write-Host ("Completed: Feature '{0}' directories created successfully!" -f $featureSnake) -ForegroundColor Green
