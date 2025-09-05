@@ -32,18 +32,32 @@ flutter_init/
 │   └── chatmodes/
 │       └── flutter.chatmode.md     # VS Code用AIアシスタント設定
 ├── .cursor/
-│   └── rules/                      # Cursor IDE用ワークスペースルール
+│   └── rules/
+│       └── project-rules.mdc       # Cursor IDE用ワークスペースルール
 ├── .trae/
 │   └── rules/
 │       └── project_rules.md        # Trae AI IDE用プロジェクトルール
 ├── AI/
-│   ├── generate_feature.sh         # フィーチャー自動生成スクリプト
+│   ├── document/
+│   │   ├── application_specification.md  # アプリケーション仕様書
+│   │   └── structure_plan.md             # 構造計画書
 │   ├── instructions/
+│   │   ├── architecture/                 # クリーンアーキテクチャ詳細設計
+│   │   │   └── lib/
+│   │   │       └── features/
+│   │   │           ├── 1_domain/         # ドメイン層設計
+│   │   │           ├── 2_infrastructure/ # インフラ層設計
+│   │   │           ├── 3_application/    # アプリケーション層設計
+│   │   │           └── 4_presentation/   # プレゼンテーション層設計
 │   │   ├── features_template.md     # クリーンアーキテクチャテンプレート
 │   │   └── technology_stack.md     # 技術スタック定義
-│   └── logs/
-│       └── conversation_log.md     # 開発ログ
+│   ├── logs/
+│   │   └── conversation_log.md     # 開発ログ
+│   └── scripts/
+│       ├── generate_feature.ps1    # フィーチャー自動生成スクリプト（Windows）
+│       └── generate_feature.sh     # フィーチャー自動生成スクリプト（Unix）
 ├── .gitignore                      # Git除外設定
+├── LICENSE                         # ライセンス
 └── README.md                       # このファイル
 ```
 
