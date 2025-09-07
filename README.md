@@ -20,7 +20,31 @@
    git checkout -b feature/your-app-name
    ```
 
-2. **開発の開始**:
+2. **新しいリポジトリとして開発を開始する場合**:
+   ```bash
+   # このリポジトリをクローン
+   git clone https://github.com/utakata-haru/flutter_init.git
+   cd flutter_init
+   
+   # 既存のGit履歴を削除
+   rm -rf .git
+   
+   # 新しいGitリポジトリを初期化
+   git init
+   
+   # 初期コミットを作成
+   git add .
+   git commit -m "Initial commit: Flutter project template"
+   
+   # 新しいリモートリポジトリを追加（GitHubで新しいリポジトリを作成後）
+   git remote add origin https://github.com/your-username/your-new-repo.git
+   
+   # メインブランチにプッシュ
+   git branch -M main
+   git push -u origin main
+   ```
+
+3. **開発の開始**:
    - ブランチを作成後、AIアシスタントまたは手動でFlutterプロジェクトを初期化
    - 提供されたテンプレートとスクリプトを活用して開発を進める
 
