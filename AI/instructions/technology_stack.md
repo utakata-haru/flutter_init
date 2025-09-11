@@ -98,6 +98,7 @@ dev_dependencies:
   freezed: ^2.4.0
   json_serializable: ^6.7.0
   drift_dev: ^2.14.0
+  riverpod_generator: ^2.4.0
 
 ```
 
