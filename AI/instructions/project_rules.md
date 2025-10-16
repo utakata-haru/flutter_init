@@ -26,34 +26,34 @@
 詳細は以下のファイルを順に参照してください。
 
 - 第一段階（仕様策定）
-  - `AI/instructions/project_rules_stage1_step1.md`（プロセス開始とヒアリング）
-  - `AI/instructions/project_rules_stage1_step2.md`（仕様書草案の作成）
-  - `AI/instructions/project_rules_stage1_step3.md`（仕様の深掘りと厳密化）
-  - `AI/instructions/project_rules_stage1_step4.md`（仕様書完成とフェーズ完了）
+  - `AI/instructions/001/project_rules_stage1_step1.md`（プロセス開始とヒアリング）
+  - `AI/instructions/001/project_rules_stage1_step2.md`（仕様書草案の作成）
+  - `AI/instructions/001/project_rules_stage1_step3.md`（仕様の深掘りと厳密化）
+  - `AI/instructions/001/project_rules_stage1_step4.md`（仕様書完成とフェーズ完了）
 
 - 第二段階（構造計画）
-  - `AI/instructions/project_rules_stage2_step1.md`（プロセス開始とルール確認）
-  - `AI/instructions/project_rules_stage2_step2.md`（構造計画書草案の作成）
-  - `AI/instructions/project_rules_stage2_step3.md`（計画のレビューと修正）
-  - `AI/instructions/project_rules_stage2_step4.md`（構造計画書完成とフェーズ完了）
+  - `AI/instructions/002/project_rules_stage2_step1.md`（プロセス開始とルール確認）
+  - `AI/instructions/002/project_rules_stage2_step2.md`（構造計画書草案の作成）
+  - `AI/instructions/002/project_rules_stage2_step3.md`（計画のレビューと修正）
+  - `AI/instructions/002/project_rules_stage2_step4.md`（構造計画書完成とフェーズ完了）
 
 - 第三段階（実装）
-  - `AI/instructions/project_rules_stage3_step1.md`（プロセス開始とルール再確認）
-  - `AI/instructions/project_rules_stage3_step2.md`（実装計画の提示と合意）
-  - 準備／遵守事項: `AI/instructions/project_rules_stage3_step3_overview.md`
+  - `AI/instructions/003/project_rules_stage3_step1.md`（プロセス開始とルール再確認）
+  - `AI/instructions/003/project_rules_stage3_step2.md`（実装計画の提示と合意）
+  - 準備／遵守事項: `AI/instructions/003/project_rules_stage3_step3_0_overview.md`
   - レイヤー別実装
-    - Domain: `AI/instructions/project_rules_stage3_step3_1_domain.md`
-    - Infrastructure: `AI/instructions/project_rules_stage3_step3_2_infrastructure.md`
-    - Application: `AI/instructions/project_rules_stage3_step3_3_application.md`
-    - Presentation: `AI/instructions/project_rules_stage3_step3_4_presentation.md`
-  - レビューとイテレーション: `AI/instructions/project_rules_stage3_step4.md`
+    - Domain: `AI/instructions/003/project_rules_stage3_step3_1_domain.md`
+    - Infrastructure: `AI/instructions/003/project_rules_stage3_step3_2_infrastructure.md`
+    - Application: `AI/instructions/003/project_rules_stage3_step3_3_application.md`
+    - Presentation: `AI/instructions/003/project_rules_stage3_step3_4_presentation.md`
+  - レビューとイテレーション: `AI/instructions/003/project_rules_stage3_step4.md`
   - 最終検証・ドキュメント再確認・保存・ログ
-    - `AI/instructions/project_rules_stage3_step5_1_final_verification.md`
-    - `AI/instructions/project_rules_stage3_step5_2_document_reconfirmation.md`
-    - `AI/instructions/project_rules_stage3_step5_3_save_and_reference.md`
-    - `AI/instructions/project_rules_stage3_step5_4_logging.md`
-  - フェーズ完了: `AI/instructions/project_rules_stage3_step6.md`
-  - 次のフィーチャーへ: `AI/instructions/project_rules_stage3_step7.md`
+    - `AI/instructions/003/project_rules_stage3_step5_1_final_verification.md`
+    - `AI/instructions/003/project_rules_stage3_step5_2_document_reconfirmation.md`
+    - `AI/instructions/003/project_rules_stage3_step5_3_save_and_reference.md`
+    - `AI/instructions/003/project_rules_stage3_step5_4_logging.md`
+  - フェーズ完了: `AI/instructions/003/project_rules_stage3_step6.md`
+  - 次のフィーチャーへ: `AI/instructions/003/project_rules_stage3_step7.md`
 
 ## 重要事項（抽象）
 
