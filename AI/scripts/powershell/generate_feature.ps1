@@ -32,7 +32,7 @@ param(
 )
 
 function Show-Usage {
-  Write-Host "Usage: .\AI\generate_feature.ps1 [-Name <NAME>] [-Permission <NUM_OR_STR>] [-PermissionLevel <LEVEL>] [-Yes] [-Help]"
+  Write-Host "Usage: .\AI\scripts\powershell\generate_feature.ps1 [-Name <NAME>] [-Permission <NUM_OR_STR>] [-PermissionLevel <LEVEL>] [-Yes] [-Help]"
   Write-Host ""
   Write-Host "Options:"
   Write-Host "  -Name, -n                 Feature name (e.g., UserProfile or order_history)"

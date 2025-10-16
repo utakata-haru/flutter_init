@@ -3,13 +3,13 @@
 ## 概要
 
 このドキュメントは、Flutter プロジェクトにおける Core ライブラリの構成とガイドラインを提供します。
-`AI/scripts/generate_core.sh` を使ってアプリ共通の基盤となるディレクトリを生成し、フィーチャー開発に依存しない横断的関心事（ルーティング、テーマ、API、例外、データベースなど）を整理します。
+`AI/scripts/bash/generate_core.sh` を使ってアプリ共通の基盤となるディレクトリを生成し、フィーチャー開発に依存しない横断的関心事（ルーティング、テーマ、API、例外、データベースなど）を整理します。
 
 Core は「どのフィーチャーからも参照可能な共通モジュール」であり、UI や各フィーチャー固有のロジックを含めません。Clean Architecture の各層から安全に参照できるよう、責務を最小限に保ちます。
 
 ## 生成されるディレクトリ構造（Core）
 
-`AI/scripts/generate_core.sh` により、以下の構造が生成されます。
+`AI/scripts/bash/generate_core.sh` により、以下の構造が生成されます。
 
 ```
 lib/core/
@@ -24,7 +24,7 @@ lib/core/
 
 補足:
 - 共通例外の詳細は `AI/instructions/architecture/lib/core/exceptions/instructions.md` を参照してください。
-- 例外ファイルの生成は `AI/scripts/init_core_exceptions.sh` で自動化できます。
+- 例外ファイルの生成は `AI/scripts/bash/init_core_exceptions.sh` で自動化できます。
 
 ## 役割と責務（ディレクトリ別）
 
@@ -76,10 +76,10 @@ lib/core/
 ## 導入手順
 
 1. Core 構造の生成
-   - `AI/scripts/generate_core.sh --yes`
+   - `AI/scripts/bash/generate_core.sh --yes`
 2. 共通例外ファイルの生成（必要時）
-   - `AI/scripts/init_core_exceptions.sh --yes`
+   - `AI/scripts/bash/init_core_exceptions.sh --yes`
 3. 依存関係の追加（必要時）
-   - `AI/scripts/add_dependencies.sh --yes`
+   - `AI/scripts/bash/add_dependencies.sh --yes`
 
 これらのスクリプトにより、プロジェクトの基盤が自動生成され、フィーチャー開発に集中できる環境が整備されます。

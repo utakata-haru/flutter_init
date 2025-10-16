@@ -132,4 +132,4 @@ class App extends ConsumerWidget {
 - `AI/instructions/architecture/lib/core/api/instructions.md`
 - `AI/instructions/architecture/lib/core/database/instructions.md`
 - `AI/instructions/architecture/lib/core/database/table/instructions.md`
-- 例外設計：`AI/instructions/architecture/lib/core/exceptions/instructions.md`（`init_core_exceptions.sh` 参照）
+- 例外設計：`AI/instructions/architecture/lib/core/exceptions/instructions.md`（`AI/scripts/bash/init_core_exceptions.sh` 参照）

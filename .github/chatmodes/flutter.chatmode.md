@@ -198,10 +198,10 @@ graph LR
 #### ステップ3: レイヤーごとのコード生成と検証
 
 **🔧 事前準備**
-- [ ] `AI/scripts/init_project.sh --yes` でプロジェクトを初期化（必要に応じて `--keep-comments`）
-- [ ] `AI/scripts/add_dependencies.sh --yes` で推奨依存を追加（runtime / dev）
-- [ ] `AI/scripts/generate_core.sh --yes` で Core ディレクトリ構造を生成（`routing/path` と `database/table` を含む）
-- [ ] `AI/scripts/init_core_exceptions.sh --yes` で共通例外ファイル生成（`lib/core/exceptions/`）
+- [ ] `AI/scripts/bash/init_project.sh --yes` でプロジェクトを初期化（必要に応じて `--keep-comments`）
+- [ ] `AI/scripts/bash/add_dependencies.sh --yes` で推奨依存を追加（runtime / dev）
+- [ ] `AI/scripts/bash/generate_core.sh --yes` で Core ディレクトリ構造を生成（`routing/path` と `database/table` を含む）
+- [ ] `AI/scripts/bash/init_core_exceptions.sh --yes` で共通例外ファイル生成（`lib/core/exceptions/`）
 
 **🏗️ 実装順序**
 

@@ -78,8 +78,14 @@ flutter_init/
 │   ├── logs/
 │   │   └── conversation_log.md     # 開発ログ
 │   └── scripts/
-│       ├── generate_feature.ps1    # フィーチャー自動生成スクリプト（Windows）
-│       └── generate_feature.sh     # フィーチャー自動生成スクリプト（Unix）
+│       ├── powershell/
+│       │   └── generate_feature.ps1      # フィーチャー自動生成スクリプト（Windows）
+│       └── bash/
+│           ├── init_project.sh           # プロジェクト初期化
+│           ├── add_dependencies.sh       # 推奨依存関係の追加
+│           ├── generate_core.sh          # Core ディレクトリ生成
+│           ├── init_core_exceptions.sh   # Core 例外ファイル生成
+│           └── generate_feature.sh       # フィーチャー自動生成スクリプト（Unix）
 ├── .gitignore                      # Git除外設定
 ├── LICENSE                         # ライセンス
 └── README.md                       # このファイル
@@ -127,10 +133,10 @@ flutter_init/
 
 ```bash
 # 対話形式で実行
-./AI/generate_feature.sh
+./AI/scripts/bash/generate_feature.sh
 
 # コマンドライン引数で実行
-./AI/generate_feature.sh -n UserProfile -p user -y
+./AI/scripts/bash/generate_feature.sh -n UserProfile -p user -y
 ```
 
 #### 権限レベル
@@ -192,7 +198,7 @@ lib/features/{permission_level}/{feature_name_snake}/
 
 ### 1. 新機能開発の流れ
 
-1. **フィーチャー生成**: `generate_feature.sh`でディレクトリ構造を作成
+1. **フィーチャー生成**: `AI/scripts/bash/generate_feature.sh`でディレクトリ構造を作成
 2. **ドメイン層**: エンティティとユースケースを定義
 3. **インフラ層**: データソースとリポジトリを実装
 4. **アプリケーション層**: 状態管理とビジネスロジックを実装
@@ -229,11 +235,18 @@ lib/features/{permission_level}/{feature_name_snake}/
 
 3. **Flutterプロジェクトの初期化**:
    ```bash
+   # 推奨: スクリプトを使用
+   ./AI/scripts/bash/init_project.sh --yes
+
+   # 代替: 手動で実行
    flutter create .
    ```
 
 4. **依存関係の追加**:
-   `AI/instructions/technology_stack.md`を参考にpubspec.yamlを設定
+   ```bash
+   ./AI/scripts/bash/add_dependencies.sh --yes
+   ```
+   詳細は `AI/instructions/technology_stack.md` を参照
 
 ### AI環境別セットアップ
 
