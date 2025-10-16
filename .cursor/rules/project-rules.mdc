@@ -76,12 +76,12 @@ graph LR
 ✅ 画面遷移
 ✅ データ要件
 ✅ エッジケース
-✅ 技術選定（AI/instructions/technology_stack.md優先）
+✅ 技術選定（AI/instructions/architecture/technology_stack.md優先）
 ```
 
 - [ ] 仕様書への追記・修正
 
-> ⚠️ **重要**: 技術選定は `AI/instructions/technology_stack.md` の内容を最優先で反映
+> ⚠️ **重要**: 技術選定は `AI/instructions/architecture/technology_stack.md` の内容を最優先で反映
 
 #### ステップ4: 仕様書完成とフェーズ完了
 
@@ -255,7 +255,7 @@ graph LR
 ```
 ✅ 仕様書の要件
 ✅ 構造計画書の役割
-✅ AI/instructions/technology_stack.md のライブラリ
+✅ AI/instructions/architecture/technology_stack.md のライブラリ
 ✅ AI/instructions/architecture/lib/features/features_architecture.md のアーキテクチャ・命名規則
 ✅ Notifier では Riverpod のアノテーション（例：@riverpod）を用いて定義し、コード生成により型安全な Notifier/AsyncNotifier を提供する
 ✅ Presentation層では StatefulWidget の使用を避け、基本は HookWidget を採用する。Riverpod と併用する場合は HookConsumerWidget を使用する
@@ -284,7 +284,7 @@ graph LR
 ##### 5-2: ドキュメント再確認
 - [ ] `.github/chatmodes/flutter.chatmode.md` 整合性確認
 - [ ] `AI/instructions/architecture/lib/features/features_architecture.md` 遵守状況確認
-- [ ] `AI/instructions/technology_stack.md` 整合性確認
+- [ ] `AI/instructions/architecture/technology_stack.md` 整合性確認
 - [ ] `AI/generate_feature.sh` 整合性確認
 
 ##### 5-3: 仕様書・構造計画書の保存と参照

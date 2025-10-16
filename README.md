@@ -246,7 +246,7 @@ lib/features/{permission_level}/{feature_name_snake}/
    ```bash
    ./AI/scripts/bash/add_dependencies.sh --yes
    ```
-   詳細は `AI/instructions/technology_stack.md` を参照
+   詳細は `AI/instructions/architecture/technology_stack.md` を参照
 
 ### AI環境別セットアップ
 
