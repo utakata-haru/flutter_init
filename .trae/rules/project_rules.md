@@ -112,7 +112,7 @@ graph LR
 **🏛️ アーキテクチャルール**
 ```
 ⚠️ 重要制約:
-✅ AI/instructions/features_template.md のクリーンアーキテクチャ構造を厳格遵守
+✅ AI/instructions/architecture/lib/features_architecture.md のクリーンアーキテクチャ構造を厳格遵守
 ❌ 新しいフォルダ（ディレクトリ）の作成禁止
 ✅ 定義済みフォルダ内への必要ファイル配置のみ許可
 ```
@@ -252,7 +252,7 @@ graph LR
 ✅ 仕様書の要件
 ✅ 構造計画書の役割
 ✅ AI/instructions/technology_stack.md のライブラリ
-✅ AI/instructions/features_template.md のアーキテクチャ・命名規則
+✅ AI/instructions/architecture/lib/features_architecture.md のアーキテクチャ・命名規則
 ✅ Notifier では Riverpod のアノテーション（例：@riverpod）を用いて定義し、コード生成により型安全な Notifier/AsyncNotifier を提供する
 ✅ Presentation層では StatefulWidget の使用を避け、基本は HookWidget を採用する。Riverpod と併用する場合は HookConsumerWidget を使用する
 ```
@@ -279,7 +279,7 @@ graph LR
 
 ##### 5-2: ドキュメント再確認
 - [ ] `.github/chatmodes/flutter.chatmode.md` 整合性確認
-- [ ] `AI/instructions/features_template.md` 遵守状況確認
+- [ ] `AI/instructions/architecture/lib/features_architecture.md` 遵守状況確認
 - [ ] `AI/instructions/technology_stack.md` 整合性確認
 - [ ] `AI/generate_feature.sh` 整合性確認
 

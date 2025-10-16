@@ -73,7 +73,7 @@ flutter_init/
 │   │   │           ├── 2_infrastructure/ # インフラ層設計
 │   │   │           ├── 3_application/    # アプリケーション層設計
 │   │   │           └── 4_presentation/   # プレゼンテーション層設計
-│   │   ├── features_template.md     # クリーンアーキテクチャテンプレート
+│   │   ├── features_architecture.md     # クリーンアーキテクチャテンプレート
 │   │   └── technology_stack.md     # 技術スタック定義
 │   ├── logs/
 │   │   └── conversation_log.md     # 開発ログ
