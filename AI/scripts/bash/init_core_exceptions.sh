@@ -5,7 +5,8 @@ set -Eeuo pipefail
 # lib/core/exceptions の共通例外ファイルを生成するユーティリティ
 
 SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
-ROOT_DIR=$(cd "${SCRIPT_DIR}/../.." && pwd)
+# リポジトリ直下をプロジェクトルートとして扱う
+ROOT_DIR=$(cd "${SCRIPT_DIR}/../../.." && pwd)
 
 OVERWRITE=false
 YES=false
