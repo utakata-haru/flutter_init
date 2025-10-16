@@ -8,10 +8,22 @@ set -Eeuo pipefail
 
 
 SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
-ROOT_DIR=$(cd "${SCRIPT_DIR}/../.." && pwd)
+# プロジェクトのルートは scripts ディレクトリから3階層上（リポジトリ直下）を想定
+# 例: <repo_root>/AI/scripts/bash -> <repo_root>
+ROOT_DIR=$(cd "${SCRIPT_DIR}/../../.." && pwd)
 
 ORG="com.example"
-PROJECT_NAME="$(basename "${ROOT_DIR}")"
+# ルートディレクトリ名から Dart パッケージ名に適した形へ正規化
+# - 小文字化
+# - 非 [a-z0-9_] の文字はアンダースコアに置換
+# - 先頭が数字の場合は先頭にアンダースコアを付与
+_BASENAME="$(basename "${ROOT_DIR}")"
+_NORMALIZED="$(echo "${_BASENAME}" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9_]+/_/g')"
+if [[ "${_NORMALIZED}" =~ ^[0-9] ]]; then
+  PROJECT_NAME="_${_NORMALIZED}"
+else
+  PROJECT_NAME="${_NORMALIZED}"
+fi
 DESCRIPTION="Flutter Clean Architecture app"
 PLATFORMS="android,ios,web,macos"
 OVERWRITE=false
