@@ -22,6 +22,10 @@ coverage/
 *.ipr
 *.iws
 
+# MCP TypeScript プロジェクト
+mcp/node_modules/
+mcp/dist/
+
 # Android 関連（生成物・秘密情報）
 android/.gradle/
 android/local.properties

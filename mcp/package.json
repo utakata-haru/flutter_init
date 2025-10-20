@@ -1,0 +1,24 @@
+{
+  "name": "mcp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "node --loader ts-node/esm src/index.ts",
+    "lint": "tsc --noEmit",
+    "start": "node dist/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "type": "module",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.20.1",
+    "@types/node": "^24.8.1",
+    "commander": "^14.0.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3",
+    "zod": "^3.25.76"
+  }
+}
