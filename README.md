@@ -59,10 +59,40 @@
 
 ## セットアップ手順
 
-```bash
-git clone https://github.com/utakata-haru/flutter_init.git
-cd flutter_init
-git checkout -b feature/your-task
+
+1. **新しいアプリを作成する場合**:
+   ```bash
+   # このリポジトリをクローン
+   git clone https://github.com/utakata-haru/flutter_init.git
+   cd flutter_init
+   
+   # 新しいブランチを作成して開発開始
+   git checkout -b feature/your-app-name
+   ```
+
+2. **新しいリポジトリとして開発を開始する場合**:
+   ```bash
+   # このリポジトリをクローン
+   git clone https://github.com/utakata-haru/flutter_init.git
+   cd flutter_init
+   
+   # 既存のGit履歴を削除
+   rm -rf .git
+   
+   # 新しいGitリポジトリを初期化
+   git init
+   
+   # 初期コミットを作成
+   git add .
+   git commit -m "Initial commit: Flutter project template"
+   
+   # 新しいリモートリポジトリを追加（GitHubで新しいリポジトリを作成後）
+   git remote add origin https://github.com/your-username/your-new-repo.git
+   
+   # メインブランチにプッシュ
+   git branch -M main
+   git push -u origin main
+   ```
 
 # Flutter プロジェクト初期化（既存の lib/ を上書きする場合は注意）
 ./AI/scripts/bash/init_project.sh --yes
