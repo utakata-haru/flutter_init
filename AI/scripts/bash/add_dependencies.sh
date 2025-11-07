@@ -5,7 +5,9 @@ set -Eeuo pipefail
 # 推奨依存関係を pubspec.yaml に追加するユーティリティ
 
 SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
-ROOT_DIR=$(cd "${SCRIPT_DIR}/../.." && pwd)
+# リポジトリ直下（Flutter プロジェクトルート）を指すように 3 階層上に設定
+# 例: <repo_root>/AI/scripts/bash -> <repo_root>
+ROOT_DIR=$(cd "${SCRIPT_DIR}/../../.." && pwd)
 
 YES=false
 
