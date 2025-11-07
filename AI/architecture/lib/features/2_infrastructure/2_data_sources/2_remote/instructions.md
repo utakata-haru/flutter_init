@@ -25,6 +25,7 @@ applyTo: 'lib/features/**/2_infrastructure/2_data_sources/2_remote/**'
 ## 実装ガイドライン
 
 ### 1. 基本的なHTTPクライアント実装
+※ インターフェースと実装は必ず別ファイルに分割してください（インターフェース: `{対象名}_remote_data_source.dart`、実装: `{対象名}_remote_data_source_impl.dart`）。以下のコードは説明のため1つのブロックにまとめていますが、実際のプロジェクトでは分割して配置します。
 ```dart
 // data_sources/remote/user_remote_data_source.dart
 import 'package:dio/dio.dart';
@@ -649,8 +650,19 @@ class ChatWebSocketDataSourceImpl implements ChatWebSocketDataSource {
 ## 命名規則
 
 ### ファイル名
-- **命名形式**: `{対象名}_remote_data_source.dart`
-- **例**: `user_remote_data_source.dart`, `auth_remote_data_source.dart`
+インターフェースと実装を別ファイルに分割します。
+- **インターフェースファイル**: `{対象名}_remote_data_source.dart`
+- **実装ファイル**: `{対象名}_remote_data_source_impl.dart`
+- **例**: `user_remote_data_source.dart`（インターフェース）, `user_remote_data_source_impl.dart`（実装）, `auth_remote_data_source.dart`, `auth_remote_data_source_impl.dart`
+
+### ファイル分割構造（推奨）
+```
+lib/features/{feature_name}/2_infrastructure/2_data_sources/2_remote/
+├── user_remote_data_source.dart          # インターフェース定義
+├── user_remote_data_source_impl.dart     # Dioベースの実装
+└── exceptions/
+    └── remote_data_source_exceptions.dart # 例外クラス
+```
 
 ### クラス名
 - **インターフェース**: `{対象名}RemoteDataSource`
