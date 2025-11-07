@@ -24,6 +24,7 @@ applyTo: 'lib/features/**/1_domain/1_entities/**'
 ## 実装ガイドライン
 
 ### 1. Freezedパッケージの使用
+Freezed v3以降では、ファクトリーコンストラクターを用いるデータクラス定義において、ベースクラスにabstractもしくはsealedを付与することが推奨・必要です。これにより、コード生成（copyWith、等価比較、パターンマッチングなど）が正しく機能し、ユニオン型（複数のfactory）を安全に表現できます。
 ```dart
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -31,7 +32,7 @@ part 'user_entity.freezed.dart';
 part 'user_entity.g.dart';
 
 @freezed
-class UserEntity with _$UserEntity {
+abstract class UserEntity with _$UserEntity {
   const factory UserEntity({
     required String id,
     required String name,
@@ -48,8 +49,8 @@ class UserEntity with _$UserEntity {
 ### 2. ビジネスロジックの実装
 ```dart
 @freezed
-class UserEntity with _$UserEntity {
-  const UserEntity._(); // private constructor for methods
+abstract class UserEntity with _$UserEntity {
+  const UserEntity._(); // メソッド定義用のプライベートコンストラクター
   
   const factory UserEntity({
     required String id,
@@ -109,7 +110,7 @@ enum UserRole {
 ```dart
 // ✅ Good: Freezedによる不変オブジェクト
 @freezed
-class UserEntity with _$UserEntity {
+abstract class UserEntity with _$UserEntity {
   const factory UserEntity({
     required String id,
     required String name,
@@ -128,7 +129,7 @@ class UserEntity {
 ### 2. バリデーションロジック
 ```dart
 @freezed
-class UserEntity with _$UserEntity {
+abstract class UserEntity with _$UserEntity {
   const UserEntity._();
   
   const factory UserEntity({
@@ -159,7 +160,7 @@ class UserEntity with _$UserEntity {
 ### 3. ファクトリーコンストラクターの活用
 ```dart
 @freezed
-class UserEntity with _$UserEntity {
+abstract class UserEntity with _$UserEntity {
   const UserEntity._();
   
   const factory UserEntity({

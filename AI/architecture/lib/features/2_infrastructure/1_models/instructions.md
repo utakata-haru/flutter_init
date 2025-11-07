@@ -178,11 +178,16 @@ class OrderItemModel {
 ```
 
 ### 3. Drift用のモデル（データベース）
+Drift向けのDBモデルでも、キャッシュやバックアップ、デバッグ用途でJSON入出力を行えるように、`@JsonSerializable` を付与しておくことを推奨します。
 ```dart
 // models/user_db_model.dart
+import 'package:json_annotation/json_annotation.dart';
 import 'package:drift/drift.dart';
 import '../../../core/database/app_database.dart';
 
+part 'user_db_model.g.dart';
+
+@JsonSerializable()
 class UserDbModel {
   final String id;
   final String name;
@@ -201,6 +206,13 @@ class UserDbModel {
     required this.updatedAt,
     this.profileImageUrl,
   });
+
+  /// JSONからUserDbModelを生成（JSONシリアライズ対応）
+  factory UserDbModel.fromJson(Map<String, dynamic> json) =>
+      _$UserDbModelFromJson(json);
+
+  /// UserDbModelをJSONに変換（JSONシリアライズ対応）
+  Map<String, dynamic> toJson() => _$UserDbModelToJson(this);
 
   /// DriftのUserデータからモデルを生成
   factory UserDbModel.fromDriftUser(User user) {
@@ -267,6 +279,11 @@ class UserDbModel {
   ///   Set<Column> get primaryKey => {id};
   /// }
 }
+```
+
+補足: `json_serializable` を用いたコード生成を有効にするため、以下のコマンドを実行してください。
+```
+flutter pub run build_runner build --delete-conflicting-outputs
 ```
 
 ### 4. エラーレスポンス用のモデル

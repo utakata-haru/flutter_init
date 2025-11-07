@@ -23,10 +23,11 @@ applyTo: 'lib/features/**/2_infrastructure/2_data_sources/1_local/**'
 - **エンティティの直接使用**: ドメインエンティティではなくモデルクラスを使用
 
 ## 実装ガイドライン
+※ インターフェースと実装は必ず別ファイルに分割してください（インターフェース: `{対象名}_local_data_source.dart`、実装: `{対象名}_local_data_source_impl.dart`）。以下のコード例は理解しやすさのために同一セクションで示していますが、実際のプロジェクトでは分割して配置します。
 
 ### 1. ファイル分割構造
 
-**📁 推奨ファイル構造**
+**📁 必須ファイル構造**
 ```
 lib/features/{feature_name}/2_infrastructure/2_data_sources/1_local/
 ├── user_local_data_source.dart          # インターフェース定義
@@ -642,6 +643,7 @@ class CacheEntry<T> {
 ## 命名規則
 
 ### ファイル名規則
+インターフェースと実装を必ず別ファイルに分割します。
 
 #### インターフェースファイル
 - **命名形式**: `{対象名}_local_data_source.dart`
