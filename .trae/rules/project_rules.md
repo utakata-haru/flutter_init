@@ -3,70 +3,39 @@
 > **役割**: アプリケーション開発を専門とするAIアシスタント  
 > **目的**: ユーザーと対話しながら段階的にFlutterアプリケーションを構築
  
-## 概要（このファイルの役割）
+# 🧭 モード選択（初期画面）
 
-- 本ファイルは「全体の流れ」を抽象的に示すインデックスです。
-- 具体的な手順・チェックリスト・コマンドは、段階ごとに分割したファイルを参照してください。
-- フローは「仕様策定 → 構造計画 → 実装」の3段階で進行し、必要に応じて前段階に戻って合意形成を行います。
+> まず開発モードを選択してください。選択したモードに応じて参照すべき指示ファイルと進行ルールが切り替わります。未選択の場合は、私から選択を確認します。
 
-## プロセス全体像（抽象）
+## モード一覧
 
-- 第一段階（仕様策定）
-  - ヒアリングで要件を集め、仕様書草案を作成し、詳細化して合意します。
-  - 成果物: アプリケーション仕様書（`AI/document/application_specification.md`）
-- 第二段階（構造計画）
-  - 既存のアーキテクチャルールに厳密準拠し、必要ファイルを計画・レビュー・合意します。
-  - 成果物: 構造計画書（`AI/document/structure_plan.md`）
-- 第三段階（実装）
-  - 実装ルールを再確認し、レイヤー別に実装 → レビュー → 最終検証 → ドキュメント更新 → ログ記録 → 次のフィーチャーへ。
-  - 成果物: 動作するアプリケーションと更新済みドキュメント／ログ
+1. 新規アプリ開発モード（ゼロから構築）
+   - 対象: 新規で Flutter アプリを開始するケース
+   - 進行: 既存の Stage1/2/3 に厳密準拠（仕様策定 → 構造計画 → 実装）
+   - 参照: `AI/instructions/new_app/index.md`
 
-## 詳細ドキュメントへの案内（段階別ファイル）
+2. 既存アプリ開発モード（このリポジトリの構造ルール使用中）
+   - 対象: 既に本リポジトリの構造規約（lib/core, lib/features/...の4層）で作られている既存コード
+   - 進行: 現在のコードから仕様書と構造計画書を「逆算生成」し、以降の機能追加/修正で両ドキュメントを同期更新
+   - 参照: `AI/instructions/existing_app/with_rules/index.md`
 
-詳細は以下のファイルを順に参照してください。
+3. 既存アプリ開発モード（このリポジトリの構造ルール未使用）
+   - 対象: 既存コードが本テンプレートの構造規約に従っていないケース
+   - 進行: 段階的リファクタリング計画を作成し、影響を局所化しながら本リポジトリのルールへ移行
+   - 参照: `AI/instructions/existing_app/without_rules/index.md`
 
-- 第一段階（仕様策定）
-  - `AI/instructions/001/project_rules_stage1_step1.md`（プロセス開始とヒアリング）
-  - `AI/instructions/001/project_rules_stage1_step2.md`（仕様書草案の作成）
-  - `AI/instructions/001/project_rules_stage1_step3.md`（仕様の深掘りと厳密化）
-  - `AI/instructions/001/project_rules_stage1_step4.md`（仕様書完成とフェーズ完了）
+## 運用ルール（重要）
 
-- 第二段階（構造計画）
-  - `AI/instructions/002/project_rules_stage2_step1.md`（プロセス開始とルール確認）
-  - `AI/instructions/002/project_rules_stage2_step2.md`（構造計画書草案の作成）
-  - `AI/instructions/002/project_rules_stage2_step3.md`（計画のレビューと修正）
-  - `AI/instructions/002/project_rules_stage2_step4.md`（構造計画書完成とフェーズ完了）
+- コンテキスト分離: 選択中のモード以外の指示ファイルは参照しない。モード変更が必要な場合は「モード変更」を宣言してから再選択する。
+- ドリフト防止: コード変更に伴い `AI/document/application_specification.md` と `AI/document/structure_plan.md` を必ず更新する。更新なしでのコード変更は不可。
 
-- 第三段階（実装）
-  - `AI/instructions/003/project_rules_stage3_step1.md`（プロセス開始とルール再確認）
-  - `AI/instructions/003/project_rules_stage3_step2.md`（実装計画の提示と合意）
-  - 準備／遵守事項: `AI/instructions/003/project_rules_stage3_step3_0_overview.md`
-  - レイヤー別実装
-    - Domain: `AI/instructions/003/project_rules_stage3_step3_1_domain.md`
-    - Infrastructure: `AI/instructions/003/project_rules_stage3_step3_2_infrastructure.md`
-    - Application: `AI/instructions/003/project_rules_stage3_step3_3_application.md`
-    - Presentation: `AI/instructions/003/project_rules_stage3_step3_4_presentation.md`
-  - レビューとイテレーション: `AI/instructions/003/project_rules_stage3_step4.md`
-  - 最終検証・ドキュメント再確認・保存・ログ
-    - `AI/instructions/003/project_rules_stage3_step5_1_final_verification.md`
-    - `AI/instructions/003/project_rules_stage3_step5_2_document_reconfirmation.md`
-    - `AI/instructions/003/project_rules_stage3_step5_3_save_and_reference.md`
-    - `AI/instructions/003/project_rules_stage3_step5_4_logging.md`
-  - フェーズ完了: `AI/instructions/003/project_rules_stage3_step6.md`
-  - 次のフィーチャーへ: `AI/instructions/003/project_rules_stage3_step7.md`
 
-## 重要事項（抽象）
+## モード選択の宣言（例）
 
-- 段階の厳守: 各フェーズの目的に集中し、先の内容に飛ばない。
-- 主導権の維持: プロジェクトマネージャーとして対話をリードし、合意形成を重視。
-- ドキュメント駆動: 仕様書／構造計画書への反映と更新履歴の記録を徹底。
+- 「モード1（新規アプリ開発）で進めます」
+- 「モード2（既存アプリ・ルール使用中）を選択」
+- 「モード3（既存アプリ・ルール未使用）に切り替え」
 
-## 開発サイクル（抽象）
-
-- 仕様策定 → 構造計画 → 実装 → 次のフィーチャーへ（必要なら仕様策定に回帰）。
-
----
-
-詳細なチェックリストやコマンドは、上記の分割ファイルを参照してください。
+宣言後、以下の分岐に従います。
 
 ---

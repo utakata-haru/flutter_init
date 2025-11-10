@@ -93,7 +93,7 @@ lib/
 
 ## 実装順序（構造計画ベース）
 - ドメイン → インフラ → アプリケーション → プレゼンテーション
-- 詳細: `AI/instructions/003/project_rules_stage3_step3_0_overview.md`
+- 詳細: `AI/instructions/new_app/003/project_rules_stage3_step3_0_overview.md`
 
 ## 検証・合意
 - レビュー観点（網羅性／分割の妥当性／役割の過不足／解像度）
@@ -106,9 +106,9 @@ lib/
 
 ## 参考・関連
 - プロセス詳細（第二段階）:
-  - `AI/instructions/002/project_rules_stage2_step1.md`
-  - `AI/instructions/002/project_rules_stage2_step2.md`
-  - `AI/instructions/002/project_rules_stage2_step3.md`
-  - `AI/instructions/002/project_rules_stage2_step4.md`
+  - `AI/instructions/new_app/002/project_rules_stage2_step1.md`
+  - `AI/instructions/new_app/002/project_rules_stage2_step2.md`
+  - `AI/instructions/new_app/002/project_rules_stage2_step3.md`
+  - `AI/instructions/new_app/002/project_rules_stage2_step4.md`
 - 上位方針: `AI/instructions/project_rules.md`
 - アーキテクチャ規約: `AI/architecture/lib/features/features_architecture.md`
