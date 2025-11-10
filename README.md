@@ -63,7 +63,7 @@
 1. **新しいアプリを作成する場合**:
    ```bash
    # このリポジトリをクローン
-   git clone https://github.com/utakata-haru/flutter_init.git
+   git clone https://github.com/utakata-code/flutter_init.git
    cd flutter_init
    
    # 新しいブランチを作成して開発開始
@@ -73,7 +73,7 @@
 2. **新しいリポジトリとして開発を開始する場合**:
    ```bash
    # このリポジトリをクローン
-   git clone https://github.com/utakata-haru/flutter_init.git
+   git clone https://github.com/utakata-code/flutter_init.git
    cd flutter_init
    
    # 既存のGit履歴を削除
