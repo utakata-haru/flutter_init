@@ -77,7 +77,7 @@ dependencies:
   flutter_hooks: ^0.20.0
   
   # データモデル
-  freezed_annotation: ^2.4.0
+  freezed_annotation: ^3.1.0
   json_annotation: ^4.8.0
   
   # 画面遷移
@@ -95,7 +95,7 @@ dev_dependencies:
   
   # コード生成
   build_runner: ^2.4.0
-  freezed: ^2.4.0
+  freezed: ^3.2.3
   json_serializable: ^6.7.0
   drift_dev: ^2.14.0
   riverpod_generator: ^2.4.0
