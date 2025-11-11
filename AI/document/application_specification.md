@@ -5,7 +5,7 @@
 ## メタ情報
 - プロジェクト名: TBD（要確認）
 - バージョン: 0.1.0-draft
-- 最終更新日: 2025-11-10
+- 最終更新日: 2025-11-12
 - 作成者: GitHub Copilot（App_Builder）
 
 ## 概要
@@ -50,10 +50,9 @@
 - 画面遷移（テキスト／図示可）: トップ → ルーチン編集（新規・更新）、トップ → 設定
 - ナビゲーション原則: シンプルな下部またはトップメニューは持たず、トップ画面からモーダルやページ遷移で操作する
 
-## データ要件
 - エンティティ定義（名称／属性／型／制約）: ルーチン（id、name、targetTime、allowableDelayMinutes、criticalDelayMinutes?、status、lastCompletedAt）
 - バリデーション要件: ルーチン名必須、目標時刻必須、許容ズレ時間は0以上、criticalDelayMinutesはallowableDelayMinutes以上
-- 永続化・保存戦略: ローカルストレージ（例: SharedPreferences／Hive 等）を想定（詳細は後続検討）
+- 永続化・保存戦略: Drift（ローカルDB）で端末内に保存し、完了履歴・閾値設定を同一DBで管理。`RoutineModel` や `RoutineSettingsModel` を介してドメインエンティティとDriftデータを変換し、JSONシリアライズにも対応してデバッグ／バックアップ用途を想定。ローカルデータソース層（RoutineLocalDataSource／RoutineSettingsLocalDataSource）がCRUDと監視ストリームを提供し、例外を集約する
 
 ## 非機能要件
 - 性能（応答時間／安定性）: 操作からフィードバックまで1秒未満、オフラインでも即時操作可能
@@ -61,18 +60,16 @@
 - 可用性・運用: 単一端末利用を想定、同期機能は範囲外
 - アクセシビリティ: 視覚的ステータス差が明確になる配色とアイコンの併用
 
-## 技術選定（参照）
 - 参照ドキュメント: `AI/architecture/technology_stack.md`
-- 採用技術（言語／フレームワーク／主要ライブラリ）: Flutter（Dart）、状態管理にRiverpod、ローカルストレージにHiveまたはSharedPreferences（要検討）
+- 採用技術（言語／フレームワーク／主要ライブラリ）: Flutter（Dart）、状態管理にRiverpod、ローカルDBにDrift、画面遷移にGoRouter、データモデルにFreezed
 
 ## リスク・前提・制約
 - 主要リスク: 設定可能な閾値の理解負荷が高まる可能性、ローカルストレージ選定による実装コスト
 - 重要前提: マルチデバイス同期や通知は初期リリース対象外、想定ユーザー数は少人数（家族・チーム単位）でスケール対応は後続検討
 - 制約条件: UIはステータスサイト風の緑／黄／赤を基調にしたデザイン
 
-## 依存関係
 - 外部API／サービス: 現時点なし
-- ライブラリ／プラグイン: Riverpod、hooks、HiveまたはSharedPreferences（候補）
+- ライブラリ／プラグイン: Riverpod、hooks_riverpod、flutter_hooks、Drift、sqlite3、sqlite3_flutter_libs、Freezed、GoRouter、path_provider、json_annotation（および開発向け `json_serializable`）
 
 ## マイルストーン（仕様策定観点）
 - M1: 仕様草案提示（2025-11-12 目標）
@@ -82,11 +79,18 @@
 ## 受け入れ基準（全体）
 - 合意文言: 「仕様内容に合意し、構造計画へ進む」
 - 必要ドキュメント: 本仕様書最新版、補助資料（必要に応じて）
+  - 備考: 大幅遅延閾値（criticalDelayMinutes）の初期値は後続検討
 
 ## 更新履歴
 - 2025-11-10: テンプレート初期値入力
 - 2025-11-10: 仕様草案初稿（コンセプト／要件追記）
-- YYYY-MM-DD: 合意版更新
+- 2025-11-11: 仕様草案合意（第二段階へ移行）
+- 2025-11-11: 永続化の詳細を追記（RoutineModelによるDriftマッピングを補足）
+- 2025-11-11: パッケージ一覧に path_provider を追加
+- 2025-11-11: JSONシリアライズ対応のため json_annotation / json_serializable を追加
+- 2025-11-11: RoutineModel が JSON シリアライズに対応することを仕様に明記
+- 2025-11-11: RoutineSettingsModel の実装と役割を永続化方針に追記
+- 2025-11-11: ローカルデータソース層の責務（Drift操作・例外集約）を追記
 
 ## 参考・関連
 - プロセス詳細（第一段階）:
