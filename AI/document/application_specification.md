@@ -53,7 +53,7 @@
 ## データ要件
 - エンティティ定義（名称／属性／型／制約）: ルーチン（id、name、targetTime、allowableDelayMinutes、criticalDelayMinutes?、status、lastCompletedAt）
 - バリデーション要件: ルーチン名必須、目標時刻必須、許容ズレ時間は0以上、criticalDelayMinutesはallowableDelayMinutes以上
-- 永続化・保存戦略: ローカルストレージ（例: SharedPreferences／Hive 等）を想定（詳細は後続検討）
+- 永続化・保存戦略: ローカルストレージ Driftを使用
 
 ## 非機能要件
 - 性能（応答時間／安定性）: 操作からフィードバックまで1秒未満、オフラインでも即時操作可能
@@ -62,8 +62,8 @@
 - アクセシビリティ: 視覚的ステータス差が明確になる配色とアイコンの併用
 
 ## 技術選定（参照）
-- 参照ドキュメント: `AI/architecture/technology_stack.md`
-- 採用技術（言語／フレームワーク／主要ライブラリ）: Flutter（Dart）、状態管理にRiverpod、ローカルストレージにHiveまたはSharedPreferences（要検討）
+- ドキュメント: `AI/architecture/technology_stack.md`
+- 主な採用技術（言語／フレームワーク／主要ライブラリ）: Flutter（Dart）、状態管理にRiverpod、ローカルストレージにDrift
 
 ## リスク・前提・制約
 - 主要リスク: 設定可能な閾値の理解負荷が高まる可能性、ローカルストレージ選定による実装コスト
@@ -72,7 +72,7 @@
 
 ## 依存関係
 - 外部API／サービス: 現時点なし
-- ライブラリ／プラグイン: Riverpod、hooks、HiveまたはSharedPreferences（候補）
+- ライブラリ／プラグイン: `AI/architecture/technology_stack.md`を使用
 
 ## マイルストーン（仕様策定観点）
 - M1: 仕様草案提示（2025-11-12 目標）
