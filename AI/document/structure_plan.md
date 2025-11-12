@@ -123,15 +123,35 @@ lib/
 - パス: `lib/features/user/routine_status/2_infrastructure/2_data_sources/1_local/routine_settings_local_data_source_impl.dart`
   - 役割: Drift テーブルを利用して閾値設定を読み書きする実装クラス
 - パス: `lib/features/user/routine_status/3_application/1_states/routine_dashboard_state.dart`
-  - 役割: ダッシュボード画面の状態（ルーチン一覧・読み込み状態・日付など）を保持するFreezedステート
+  - 役割: ダッシュボード画面の状態（ルーチン一覧・読み込み状態・閾値・エラー）を保持する Freezed ステート
+- パス: `lib/features/user/routine_status/3_application/1_states/routine_settings_state.dart`
+  - 役割: 閾値設定画面の状態（入力値・保存中フラグ・結果通知）を保持する Freezed ステート
+- パス: `lib/features/user/routine_status/3_application/2_providers/routine_repository_provider.dart`
+  - 役割: AppDatabase を共有し、ローカルデータソース／リポジトリ／ユースケースを Riverpod で依存性注入する
+- パス: `lib/features/user/routine_status/3_application/2_providers/routine_settings_repository_provider.dart`
+  - 役割: 閾値設定リポジトリとユースケース（全ルーチンへの閾値反映）を組み立てる Provider 群
+- パス: `lib/features/user/routine_status/3_application/2_providers/routine_threshold_provider.dart`
+  - 役割: 閾値を Stream / Future として UI へ供給する専用 Provider
 - パス: `lib/features/user/routine_status/3_application/3_notifiers/routine_dashboard_notifier.dart`
-  - 役割: ダッシュボードの状態管理（@riverpod）とユースケース呼び出しを担う
+  - 役割: ダッシュボード状態をストリーム連携で更新し、完了処理やルーチン保存／削除を仲介する Notifier
+- パス: `lib/features/user/routine_status/3_application/3_notifiers/routine_settings_notifier.dart`
+  - 役割: 閾値設定の読み込み・保存・検証を担い、保存結果やエラーを状態に反映する Notifier
 - パス: `lib/features/user/routine_status/4_presentation/2_pages/routine_dashboard_page.dart`
   - 役割: ステータスサイト風のトップ画面（緑／黄／赤の表示を行う）
+- パス: `lib/features/user/routine_status/4_presentation/2_pages/routine_settings_page.dart`
+  - 役割: 閾値を編集・保存するフォーム画面。Riverpodステートと連携し、保存結果を通知する
 - パス: `lib/core/routing/routine_status_route.dart`
   - 役割: ルーチン機能のGoRouter定義（ダッシュボード／設定ページ）
+- パス: `lib/core/routing/path/routine_dashboard_path.dart`
+  - 役割: ルーチンダッシュボード画面のパスとルート名を定義する共通定数
+- パス: `lib/core/routing/path/routine_settings_path.dart`
+  - 役割: 閾値設定画面のパス定義とロケーションヘルパーを提供する
 - パス: `lib/features/user/routine_status/4_presentation/1_widgets/2_molecules/routine_card.dart`
   - 役割: ルーチンごとのステータス情報と完了ボタンをまとめたUIコンポーネント
+- パス: `lib/features/user/routine_status/4_presentation/1_widgets/1_atoms/status_indicator.dart`
+  - 役割: ルーチンの達成ステータスを色付きアイコンとラベルで表示する最小コンポーネント
+- パス: `lib/features/user/routine_status/4_presentation/1_widgets/3_organisms/routine_status_list_view.dart`
+  - 役割: 閾値サマリーとルーチンカード群をまとめ、プルリフレッシュやコールバックを提供するリストUI
 - パス: `lib/core/database/database.dart`
   - 役割: Driftの接続初期化・DAO登録を行いアプリ全体で共有する
 - パス: `lib/core/database/table/routine_table.dart`
@@ -179,6 +199,10 @@ lib/
 - 2025-11-12: routine_settings_model を追加（Drift／ドメイン／JSON の変換方針を明示）
 - 2025-11-12: routine_local_data_source / routine_settings_local_data_source の実装内容を反映（Drift操作と例外方針）
 - 2025-11-12: routine_repository_impl / routine_settings_repository_impl の実装指針（ローカルDS連携・例外変換）を反映
+- 2025-11-12: Application層（State/Provider/Notifier）の実装方針と責務を反映
+- 2025-11-12: プレゼンテーション層（ステータス表示ウィジェット／ダッシュボード／設定ページ）とルーティング定義を追記
+- 2025-11-12: Riverpodリスナーの初期化タイミングを見直し、非同期ストリームで初期データを取得する方針を追記
+- 2025-11-12: 閾値設定ページでマウント時にNotifierのrefreshを呼び出すUIフローを追記
 
 ## 参考・関連
 - プロセス詳細（第二段階）:
