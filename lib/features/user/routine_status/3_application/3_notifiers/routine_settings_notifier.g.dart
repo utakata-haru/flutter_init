@@ -42,7 +42,7 @@ final class RoutineSettingsNotifierProvider
 }
 
 String _$routineSettingsNotifierHash() =>
-    r'195cc186467c45c2785e5c2acd0eccb36b7852ee';
+    r'04b06b2c9fd24b92d4510110a88e56147a1c4156';
 
 abstract class _$RoutineSettingsNotifier
     extends $Notifier<RoutineSettingsState> {

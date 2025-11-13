@@ -44,12 +44,14 @@ class RoutineDashboardNotifier extends _$RoutineDashboardNotifier {
     }
   }
 
-  Future<void> saveRoutine(RoutineEntity routine) async {
+  Future<bool> saveRoutine(RoutineEntity routine) async {
     final useCase = ref.read(updateRoutineUseCaseProvider);
     try {
       await useCase(routine);
+      return true;
     } catch (error) {
       state = state.copyWith(errorMessage: _formatError(error));
+      return false;
     }
   }
 
@@ -72,6 +74,15 @@ class RoutineDashboardNotifier extends _$RoutineDashboardNotifier {
         routine: routine,
         completedAt: completedAt ?? DateTime.now(),
       );
+    } catch (error) {
+      state = state.copyWith(errorMessage: _formatError(error));
+    }
+  }
+
+  Future<void> undoCompletion(RoutineEntity routine) async {
+    final useCase = ref.read(resetRoutineCompletionUseCaseProvider);
+    try {
+      await useCase(routine);
     } catch (error) {
       state = state.copyWith(errorMessage: _formatError(error));
     }

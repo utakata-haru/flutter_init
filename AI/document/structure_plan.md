@@ -5,7 +5,7 @@
 ## メタ情報
 - プロジェクト名: TBD（要確認）
 - バージョン: 0.1.0
-- 最終更新日: 2025-11-12
+- 最終更新日: 2025-11-13
 - 作成者: GitHub Copilot（App_Builder）
 
 ## 構造ポリシー（重要制約）
@@ -30,6 +30,7 @@ lib/
     routing/path/
       routine_dashboard_path.dart
       routine_settings_path.dart
+  routine_status_help_path.dart
     database/
       database.dart
       table/
@@ -137,7 +138,9 @@ lib/
 - パス: `lib/features/user/routine_status/3_application/3_notifiers/routine_settings_notifier.dart`
   - 役割: 閾値設定の読み込み・保存・検証を担い、保存結果やエラーを状態に反映する Notifier
 - パス: `lib/features/user/routine_status/4_presentation/2_pages/routine_dashboard_page.dart`
-  - 役割: ステータスサイト風のトップ画面（緑／黄／赤の表示を行う）
+  - 役割: ステータスサイト風のトップ画面（緑／黄／赤の表示を行う）。ルーチン追加FABと次のルーチンを即完了にするクイックボタンを備える
+- パス: `lib/features/user/routine_status/4_presentation/2_pages/routine_status_help_page.dart`
+  - 役割: ステータスカード／アイコンの意味や現在の閾値を案内するヘルプページ
 - パス: `lib/features/user/routine_status/4_presentation/2_pages/routine_settings_page.dart`
   - 役割: 閾値を編集・保存するフォーム画面。Riverpodステートと連携し、保存結果を通知する
 - パス: `lib/core/routing/routine_status_route.dart`
@@ -146,12 +149,16 @@ lib/
   - 役割: ルーチンダッシュボード画面のパスとルート名を定義する共通定数
 - パス: `lib/core/routing/path/routine_settings_path.dart`
   - 役割: 閾値設定画面のパス定義とロケーションヘルパーを提供する
+- パス: `lib/core/routing/path/routine_status_help_path.dart`
+  - 役割: ステータス説明ページへのパス定義とルート名を提供する
 - パス: `lib/features/user/routine_status/4_presentation/1_widgets/2_molecules/routine_card.dart`
-  - 役割: ルーチンごとのステータス情報と完了ボタンをまとめたUIコンポーネント
+  - 役割: ルーチンごとのステータス情報と完了／完了解除ボタンをまとめたUIコンポーネント。完了履歴がない場合は中立アイコンを表示し、完了済みでは「完了を取り消す」を提示する
 - パス: `lib/features/user/routine_status/4_presentation/1_widgets/1_atoms/status_indicator.dart`
   - 役割: ルーチンの達成ステータスを色付きアイコンとラベルで表示する最小コンポーネント
 - パス: `lib/features/user/routine_status/4_presentation/1_widgets/3_organisms/routine_status_list_view.dart`
-  - 役割: 閾値サマリーとルーチンカード群をまとめ、プルリフレッシュやコールバックを提供するリストUI
+  - 役割: 全体の完了状況を集約したステータスカード（緑／黄／赤の動的表示）とルーチンカード群をまとめ、プルリフレッシュや完了／完了解除コールバックを提供するリストUI
+- パス: `lib/features/user/routine_status/4_presentation/1_widgets/3_organisms/routine_editor_sheet.dart`
+  - 役割: ルーチン名称と目標時刻を入力するボトムシートフォーム。保存時にRoutineEntityを生成して呼び出し元へ返却する
 - パス: `lib/core/database/database.dart`
   - 役割: Driftの接続初期化・DAO登録を行いアプリ全体で共有する
 - パス: `lib/core/database/table/routine_table.dart`
@@ -203,6 +210,11 @@ lib/
 - 2025-11-12: プレゼンテーション層（ステータス表示ウィジェット／ダッシュボード／設定ページ）とルーティング定義を追記
 - 2025-11-12: Riverpodリスナーの初期化タイミングを見直し、非同期ストリームで初期データを取得する方針を追記
 - 2025-11-12: 閾値設定ページでマウント時にNotifierのrefreshを呼び出すUIフローを追記
+- 2025-11-13: ルーチン追加ボトムシート、ダッシュボードのFAB導線、UUID利用方針を追記
+- 2025-11-13: 完了解除ボタンの出し分けと関連コールバックをプレゼンテーション層の役割に追記
+- 2025-11-13: 全体状態説明カードのビジュアル仕様（緑／黄／赤の凡例）をプレゼンテーション層の役割に追記
+- 2025-11-13: 全体完了状況に応じてステータスカードを動的に色分けする役割を追記
+- 2025-11-13: ステータス説明ページとヘルプルートの定義を追記
 
 ## 参考・関連
 - プロセス詳細（第二段階）:

@@ -42,7 +42,7 @@ final class RoutineDashboardNotifierProvider
 }
 
 String _$routineDashboardNotifierHash() =>
-    r'b8e77b970f2d53a1d3083c79fc837288d14afe01';
+    r'b8a1321434035ab445476d43861b627c0ad45114';
 
 abstract class _$RoutineDashboardNotifier
     extends $Notifier<RoutineDashboardState> {

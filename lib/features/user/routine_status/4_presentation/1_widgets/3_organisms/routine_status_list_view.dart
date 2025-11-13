@@ -11,6 +11,7 @@ class RoutineStatusListView extends StatelessWidget {
     required this.onRefresh,
     this.onTap,
     this.onComplete,
+    this.onUndo,
     this.onDelete,
   });
 
@@ -19,12 +20,13 @@ class RoutineStatusListView extends StatelessWidget {
   final Future<void> Function() onRefresh;
   final void Function(RoutineEntity routine)? onTap;
   final void Function(RoutineEntity routine)? onComplete;
+  final void Function(RoutineEntity routine)? onUndo;
   final void Function(RoutineEntity routine)? onDelete;
 
   @override
   Widget build(BuildContext context) {
-    final hasSummary = thresholds != null;
-    final totalCount = routines.length + (hasSummary ? 1 : 0);
+    final showOverallStatus = thresholds != null;
+    final totalCount = routines.length + (showOverallStatus ? 1 : 0);
 
     return RefreshIndicator(
       onRefresh: onRefresh,
@@ -32,17 +34,21 @@ class RoutineStatusListView extends StatelessWidget {
         physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
         itemBuilder: (context, index) {
-          if (hasSummary && index == 0) {
-            return _ThresholdSummaryCard(setting: thresholds!);
+          if (showOverallStatus && index == 0) {
+            return _OverallStatusCard(
+              routines: routines,
+              thresholds: thresholds!,
+            );
           }
 
-          final routineIndex = hasSummary ? index - 1 : index;
+          final routineIndex = showOverallStatus ? index - 1 : index;
           final routine = routines[routineIndex];
 
           return RoutineCard(
             routine: routine,
             onTap: onTap == null ? null : () => onTap!(routine),
             onComplete: onComplete == null ? null : () => onComplete!(routine),
+            onUndo: onUndo == null ? null : () => onUndo!(routine),
             onDelete: onDelete == null ? null : () => onDelete!(routine),
           );
         },
@@ -53,32 +59,66 @@ class RoutineStatusListView extends StatelessWidget {
   }
 }
 
-class _ThresholdSummaryCard extends StatelessWidget {
-  const _ThresholdSummaryCard({required this.setting});
+class _OverallStatusCard extends StatelessWidget {
+  const _OverallStatusCard({
+    required this.routines,
+    required this.thresholds,
+  });
 
-  final RoutineThresholdSetting setting;
+  final List<RoutineEntity> routines;
+  final RoutineThresholdSetting thresholds;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final data = _OverallStatusViewData.from(
+      routines: routines,
+      thresholds: thresholds,
+    );
+    final textTheme = Theme.of(context).textTheme;
 
     return Card(
       elevation: 0,
-      color: theme.colorScheme.surfaceContainerHigh,
+      color: data.backgroundColor,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _ThresholdValue(
-              label: 'オンタイム判定',
-              minutes: setting.allowableDelayMinutes,
-              color: theme.colorScheme.primary,
+            CircleAvatar(
+              backgroundColor: Colors.white,
+              foregroundColor: data.iconColor,
+              child: Icon(data.icon),
             ),
-            _ThresholdValue(
-              label: '警告判定',
-              minutes: setting.criticalDelayMinutes,
-              color: theme.colorScheme.tertiary,
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    data.title,
+                    style: textTheme.titleMedium?.copyWith(
+                      color: data.textColor,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    data.message,
+                    style: textTheme.bodySmall?.copyWith(
+                      color: data.textColor,
+                    ),
+                  ),
+                  if (data.detail != null) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      data.detail!,
+                      style: textTheme.bodySmall?.copyWith(
+                        color: data.textColor,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
             ),
           ],
         ),
@@ -87,42 +127,137 @@ class _ThresholdSummaryCard extends StatelessWidget {
   }
 }
 
-class _ThresholdValue extends StatelessWidget {
-  const _ThresholdValue({
-    required this.label,
-    required this.minutes,
-    required this.color,
+enum _AggregateLevel { onTime, warning, late }
+
+class _OverallStatusViewData {
+  const _OverallStatusViewData({
+    required this.level,
+    required this.backgroundColor,
+    required this.textColor,
+    required this.icon,
+    required this.iconColor,
+    required this.title,
+    required this.message,
+    this.detail,
   });
 
-  final String label;
-  final int minutes;
-  final Color color;
+  final _AggregateLevel level;
+  final Color backgroundColor;
+  final Color textColor;
+  final IconData icon;
+  final Color iconColor;
+  final String title;
+  final String message;
+  final String? detail;
 
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+  factory _OverallStatusViewData.from({
+    required List<RoutineEntity> routines,
+    required RoutineThresholdSetting thresholds,
+  }) {
+    var onTimeCount = 0;
+    var warningCount = 0;
+    var lateCount = 0;
+    var pendingCount = 0;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: theme.textTheme.labelSmall?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
-          ),
-        ),
-        const SizedBox(height: 4),
-        Row(
-          children: [
-            Icon(Icons.timer_outlined, size: 18, color: color),
-            const SizedBox(width: 6),
-            Text(
-              '$minutes 分以内',
-              style: theme.textTheme.bodyMedium?.copyWith(color: color),
-            ),
-          ],
-        ),
-      ],
+    for (final routine in routines) {
+      final status = routine.lastResult?.status;
+      if (status == null) {
+        pendingCount++;
+        continue;
+      }
+
+      switch (status) {
+        case RoutineComplianceStatus.onTime:
+          onTimeCount++;
+          break;
+        case RoutineComplianceStatus.warning:
+          warningCount++;
+          break;
+        case RoutineComplianceStatus.late:
+          lateCount++;
+          break;
+      }
+    }
+
+    final hasAnyCompletion = onTimeCount + warningCount + lateCount > 0;
+
+    final _AggregateLevel level;
+    if (lateCount > 0) {
+      level = _AggregateLevel.late;
+    } else if (warningCount > 0) {
+      level = _AggregateLevel.warning;
+    } else {
+      level = _AggregateLevel.onTime;
+    }
+
+    Color backgroundColor;
+    Color textColor;
+    Color iconColor;
+    IconData icon;
+    String title;
+    String message;
+    String? detail;
+
+    switch (level) {
+      case _AggregateLevel.onTime:
+        backgroundColor = Colors.green.shade600;
+        textColor = Colors.white;
+        icon = Icons.check_circle;
+        iconColor = Colors.green.shade900;
+        title = 'オンタイム';
+        if (hasAnyCompletion) {
+          message = '全体的に予定どおりに進んでいます。';
+          if (pendingCount > 0) {
+            detail = '未記録のルーチン: $pendingCount件';
+          }
+        } else {
+          message = 'まだ完了記録がありません。最初の完了を登録して状況を確認しましょう。';
+          if (pendingCount > 0) {
+            detail = '登録済みルーチン: $pendingCount件';
+          }
+        }
+        break;
+      case _AggregateLevel.warning:
+        backgroundColor = Colors.amber.shade600;
+        textColor = Colors.black87;
+        icon = Icons.warning_amber_rounded;
+        iconColor = Colors.amber.shade900;
+        title = '遅延';
+        message = '一部のルーチンが遅延気味です。早めに調整しましょう。';
+        detail = '注意レベルの遅延: $warningCount件';
+        if (lateCount > 0) {
+          detail = '$detail／大幅遅延: $lateCount件';
+        }
+        if (pendingCount > 0) {
+          detail = '$detail／未記録: $pendingCount件';
+        }
+        break;
+      case _AggregateLevel.late:
+        backgroundColor = Colors.red.shade600;
+        textColor = Colors.white;
+        icon = Icons.close_rounded;
+        iconColor = Colors.red.shade900;
+        title = '乱れています';
+        message = '複数のルーチンで大幅な遅れが発生しています。至急見直しが必要です。';
+        detail = '大幅遅延: $lateCount件';
+        if (warningCount > 0) {
+          detail = '$detail／注意レベル: $warningCount件';
+        }
+        if (pendingCount > 0) {
+          detail = '$detail／未記録: $pendingCount件';
+        }
+        break;
+    }
+
+    return _OverallStatusViewData(
+      level: level,
+      backgroundColor: backgroundColor,
+      textColor: textColor,
+      icon: icon,
+      iconColor: iconColor,
+      title: title,
+      message: message,
+      detail: detail,
     );
   }
 }

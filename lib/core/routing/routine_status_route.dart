@@ -3,8 +3,10 @@ import 'package:go_router/go_router.dart';
 
 import 'package:flutter_init_3/core/routing/path/routine_dashboard_path.dart';
 import 'package:flutter_init_3/core/routing/path/routine_settings_path.dart';
+import 'package:flutter_init_3/core/routing/path/routine_status_help_path.dart';
 import 'package:flutter_init_3/features/user/routine_status/4_presentation/2_pages/routine_dashboard_page.dart';
 import 'package:flutter_init_3/features/user/routine_status/4_presentation/2_pages/routine_settings_page.dart';
+import 'package:flutter_init_3/features/user/routine_status/4_presentation/2_pages/routine_status_help_page.dart';
 
 final List<RouteBase> routineStatusRoutes = <RouteBase>[
   GoRoute(
@@ -18,6 +20,12 @@ final List<RouteBase> routineStatusRoutes = <RouteBase>[
         name: routineSettingsRouteName,
         pageBuilder: (context, state) =>
             const NoTransitionPage<void>(child: RoutineSettingsPage()),
+      ),
+      GoRoute(
+        path: routineStatusHelpPathSegment,
+        name: routineStatusHelpRouteName,
+        pageBuilder: (context, state) =>
+            const NoTransitionPage<void>(child: RoutineStatusHelpPage()),
       ),
     ],
   ),

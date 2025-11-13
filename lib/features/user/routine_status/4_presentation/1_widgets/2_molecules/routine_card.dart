@@ -9,23 +9,42 @@ class RoutineCard extends StatelessWidget {
     required this.routine,
     this.onTap,
     this.onComplete,
+    this.onUndo,
     this.onDelete,
   });
 
   final RoutineEntity routine;
   final VoidCallback? onTap;
   final VoidCallback? onComplete;
+  final VoidCallback? onUndo;
   final VoidCallback? onDelete;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final hasResult = routine.lastResult != null;
     final status = routine.lastResult?.status ?? RoutineComplianceStatus.onTime;
     final targetTime = _formatTime(
       routine.targetTime.hour,
       routine.targetTime.minute,
     );
     final lastResultText = _buildLastResultText();
+    final indicator = hasResult
+        ? StatusIndicator(status: status)
+        : CircleAvatar(
+            radius: 16,
+            backgroundColor: theme.colorScheme.surfaceContainerHigh,
+            child: Icon(
+              Icons.schedule,
+              size: 18,
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          );
+    final actionCallback = hasResult ? onUndo : onComplete;
+    final actionLabel = hasResult ? '完了を取り消す' : '完了として記録';
+    final actionIcon = hasResult
+        ? const Icon(Icons.undo)
+        : const Icon(Icons.check_circle_outline);
 
     return Card(
       margin: EdgeInsets.zero,
@@ -40,7 +59,7 @@ class RoutineCard extends StatelessWidget {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  StatusIndicator(status: status),
+                  indicator,
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(
@@ -75,14 +94,14 @@ class RoutineCard extends StatelessWidget {
                     ),
                 ],
               ),
-              if (onComplete != null) ...[
+              if (actionCallback != null) ...[
                 const SizedBox(height: 16),
                 Align(
                   alignment: Alignment.centerRight,
                   child: FilledButton.icon(
-                    onPressed: onComplete,
-                    icon: const Icon(Icons.check_circle_outline),
-                    label: const Text('完了として記録'),
+                    onPressed: actionCallback,
+                    icon: actionIcon,
+                    label: Text(actionLabel),
                   ),
                 ),
               ],

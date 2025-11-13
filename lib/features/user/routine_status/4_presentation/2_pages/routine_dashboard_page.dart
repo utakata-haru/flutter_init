@@ -4,8 +4,11 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:flutter_init_3/core/routing/path/routine_settings_path.dart';
+import 'package:flutter_init_3/core/routing/path/routine_status_help_path.dart';
+import 'package:flutter_init_3/features/user/routine_status/1_domain/1_entities/routine_entity.dart';
 import 'package:flutter_init_3/features/user/routine_status/3_application/1_states/routine_dashboard_state.dart';
 import 'package:flutter_init_3/features/user/routine_status/3_application/3_notifiers/routine_dashboard_notifier.dart';
+import 'package:flutter_init_3/features/user/routine_status/4_presentation/1_widgets/3_organisms/routine_editor_sheet.dart';
 import 'package:flutter_init_3/features/user/routine_status/4_presentation/1_widgets/3_organisms/routine_status_list_view.dart';
 
 class RoutineDashboardPage extends HookConsumerWidget {
@@ -15,6 +18,11 @@ class RoutineDashboardPage extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(routineDashboardProvider);
     final notifier = ref.read(routineDashboardProvider.notifier);
+    final nextRoutine = _findNextIncompleteRoutine(state.routines);
+    final canQuickComplete = nextRoutine != null;
+    final quickCompleteLabel = nextRoutine != null
+        ? '${nextRoutine.name}を完了として記録'
+        : '完了すべきルーチンはありません';
 
     useEffect(() {
       Future.microtask(() => notifier.refresh());
@@ -43,6 +51,11 @@ class RoutineDashboardPage extends HookConsumerWidget {
             tooltip: '設定',
             icon: const Icon(Icons.tune),
             onPressed: () => context.pushNamed(routineSettingsRouteName),
+          ),
+          IconButton(
+            tooltip: 'ヘルプ',
+            icon: const Icon(Icons.help_outline),
+            onPressed: () => context.pushNamed(routineStatusHelpRouteName),
           ),
           IconButton(
             tooltip: '再読み込み',
@@ -80,12 +93,30 @@ class RoutineDashboardPage extends HookConsumerWidget {
             thresholds: state.thresholds,
             onRefresh: notifier.refresh,
             onComplete: notifier.completeRoutine,
+            onUndo: notifier.undoCompletion,
             onDelete: (routine) {
               _confirmDelete(context, notifier, routine.id);
             },
           );
         },
       ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => _openRoutineEditor(context, ref, state, notifier),
+        icon: const Icon(Icons.add),
+        label: const Text('ルーチン追加'),
+      ),
+      bottomNavigationBar: state.routines.isEmpty
+          ? null
+          : SafeArea(
+              minimum: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+              child: FilledButton.icon(
+                onPressed: canQuickComplete
+                    ? () => _completeNextRoutine(context, notifier, state)
+                    : null,
+                icon: const Icon(Icons.playlist_add_check),
+                label: Text(quickCompleteLabel),
+              ),
+            ),
     );
   }
 
@@ -114,5 +145,79 @@ class RoutineDashboardPage extends HookConsumerWidget {
         ],
       ),
     );
+  }
+
+  Future<void> _openRoutineEditor(
+    BuildContext context,
+    WidgetRef ref,
+    RoutineDashboardState state,
+    RoutineDashboardNotifier notifier,
+  ) async {
+    final thresholds = state.thresholds ?? const RoutineThresholdSetting();
+    final routine = await showRoutineEditorSheet(
+      context: context,
+      defaultThresholds: thresholds,
+    );
+
+    if (routine == null) {
+      return;
+    }
+
+    final success = await notifier.saveRoutine(routine);
+    if (!context.mounted) {
+      return;
+    }
+
+    if (success) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('${routine.name}を追加しました')));
+    }
+  }
+
+  Future<void> _completeNextRoutine(
+    BuildContext context,
+    RoutineDashboardNotifier notifier,
+    RoutineDashboardState state,
+  ) async {
+    final target = _findNextIncompleteRoutine(state.routines);
+    if (target == null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('完了すべきルーチンはありません。')));
+      return;
+    }
+
+    await notifier.completeRoutine(target, completedAt: DateTime.now());
+    if (!context.mounted) {
+      return;
+    }
+
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('${target.name}を完了として記録しました')));
+  }
+
+  RoutineEntity? _findNextIncompleteRoutine(List<RoutineEntity> routines) {
+    if (routines.isEmpty) {
+      return null;
+    }
+
+    final sorted = [...routines]
+      ..sort((a, b) {
+        final hourCompare = a.targetTime.hour.compareTo(b.targetTime.hour);
+        if (hourCompare != 0) {
+          return hourCompare;
+        }
+        return a.targetTime.minute.compareTo(b.targetTime.minute);
+      });
+
+    for (final routine in sorted) {
+      if (routine.lastResult == null) {
+        return routine;
+      }
+    }
+
+    return null;
   }
 }
