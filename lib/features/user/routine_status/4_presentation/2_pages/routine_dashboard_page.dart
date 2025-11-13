@@ -221,17 +221,15 @@ class RoutineDashboardPage extends HookConsumerWidget {
     }
 
     if (success) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(
-            SnackBar(
-              content: Text(
-                existing == null
-                    ? '${routine.name}を追加しました'
-                    : '${routine.name}を更新しました',
-              ),
-            ),
-          );
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            existing == null
+                ? '${routine.name}を追加しました'
+                : '${routine.name}を更新しました',
+          ),
+        ),
+      );
     }
   }
 

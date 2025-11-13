@@ -10,7 +10,8 @@ Future<RoutineEntity?> showRoutineEditorSheet({
   TimeOfDay? initialTime,
   RoutineEntity? existing,
 }) {
-  final time = initialTime ??
+  final time =
+      initialTime ??
       (existing != null
           ? TimeOfDay(
               hour: existing.targetTime.hour,

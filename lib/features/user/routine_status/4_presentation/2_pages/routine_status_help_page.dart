@@ -307,10 +307,7 @@ class _BodyText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      text,
-      style: Theme.of(context).textTheme.bodyMedium,
-    );
+    return Text(text, style: Theme.of(context).textTheme.bodyMedium);
   }
 }
 
@@ -366,7 +363,9 @@ class _StepItem extends StatelessWidget {
           backgroundColor: theme.colorScheme.primary,
           child: Text(
             stepNumber,
-            style: theme.textTheme.labelLarge?.copyWith(color: theme.colorScheme.onPrimary),
+            style: theme.textTheme.labelLarge?.copyWith(
+              color: theme.colorScheme.onPrimary,
+            ),
           ),
         ),
         const SizedBox(width: 12),
@@ -376,7 +375,9 @@ class _StepItem extends StatelessWidget {
             children: [
               Text(
                 title,
-                style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               const SizedBox(height: 4),
               Text(
