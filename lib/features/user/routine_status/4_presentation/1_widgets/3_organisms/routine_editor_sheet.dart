@@ -8,8 +8,15 @@ Future<RoutineEntity?> showRoutineEditorSheet({
   required BuildContext context,
   required RoutineThresholdSetting defaultThresholds,
   TimeOfDay? initialTime,
+  RoutineEntity? existing,
 }) {
-  final time = initialTime ?? TimeOfDay.now();
+  final time = initialTime ??
+      (existing != null
+          ? TimeOfDay(
+              hour: existing.targetTime.hour,
+              minute: existing.targetTime.minute,
+            )
+          : TimeOfDay.now());
 
   return showModalBottomSheet<RoutineEntity>(
     context: context,
@@ -22,6 +29,7 @@ Future<RoutineEntity?> showRoutineEditorSheet({
         child: RoutineEditorSheet(
           defaultThresholds: defaultThresholds,
           initialTime: time,
+          existing: existing,
         ),
       );
     },
@@ -33,16 +41,18 @@ class RoutineEditorSheet extends HookWidget {
     super.key,
     required this.defaultThresholds,
     required this.initialTime,
+    this.existing,
   });
 
   final RoutineThresholdSetting defaultThresholds;
   final TimeOfDay initialTime;
+  final RoutineEntity? existing;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final navigator = Navigator.of(context);
-    final nameController = useTextEditingController();
+    final nameController = useTextEditingController(text: existing?.name ?? '');
     final nameValue = useValueListenable(nameController);
     final selectedTime = useState(initialTime);
     final uuid = useMemoized(Uuid.new);
@@ -68,13 +78,14 @@ class RoutineEditorSheet extends HookWidget {
       }
 
       final entity = RoutineEntity(
-        id: uuid.v4(),
+        id: existing?.id ?? uuid.v4(),
         name: trimmedName,
         targetTime: RoutineTime(
           hour: selectedTime.value.hour,
           minute: selectedTime.value.minute,
         ),
-        thresholds: defaultThresholds,
+        thresholds: existing?.thresholds ?? defaultThresholds,
+        lastResult: existing?.lastResult,
       );
 
       navigator.pop(entity);
@@ -93,7 +104,10 @@ class RoutineEditorSheet extends HookWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('ルーチンを追加', style: theme.textTheme.titleLarge),
+                Text(
+                  existing == null ? 'ルーチンを追加' : 'ルーチンを編集',
+                  style: theme.textTheme.titleLarge,
+                ),
                 IconButton(
                   tooltip: '閉じる',
                   onPressed: navigator.pop,
@@ -122,7 +136,7 @@ class RoutineEditorSheet extends HookWidget {
             FilledButton.icon(
               onPressed: isSaveEnabled ? submit : null,
               icon: const Icon(Icons.save),
-              label: const Text('保存'),
+              label: Text(existing == null ? '保存' : '更新する'),
             ),
             const SizedBox(height: 8),
           ],

@@ -10,6 +10,7 @@ class RoutineCard extends StatelessWidget {
     this.onTap,
     this.onComplete,
     this.onUndo,
+    this.onEdit,
     this.onDelete,
   });
 
@@ -17,6 +18,7 @@ class RoutineCard extends StatelessWidget {
   final VoidCallback? onTap;
   final VoidCallback? onComplete;
   final VoidCallback? onUndo;
+  final VoidCallback? onEdit;
   final VoidCallback? onDelete;
 
   @override
@@ -86,6 +88,12 @@ class RoutineCard extends StatelessWidget {
                       ],
                     ),
                   ),
+                  if (onEdit != null)
+                    IconButton(
+                      tooltip: '編集',
+                      icon: const Icon(Icons.edit_outlined),
+                      onPressed: onEdit,
+                    ),
                   if (onDelete != null)
                     IconButton(
                       tooltip: '削除',

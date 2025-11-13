@@ -58,6 +58,11 @@ class RoutineDashboardPage extends HookConsumerWidget {
             onPressed: () => context.pushNamed(routineStatusHelpRouteName),
           ),
           IconButton(
+            tooltip: '完了履歴を初期化',
+            icon: const Icon(Icons.delete_forever),
+            onPressed: () => _confirmResetAll(context, notifier),
+          ),
+          IconButton(
             tooltip: '再読み込み',
             icon: const Icon(Icons.refresh),
             onPressed: () => notifier.refresh(),
@@ -94,6 +99,13 @@ class RoutineDashboardPage extends HookConsumerWidget {
             onRefresh: notifier.refresh,
             onComplete: notifier.completeRoutine,
             onUndo: notifier.undoCompletion,
+            onEdit: (routine) => _openRoutineEditor(
+              context,
+              ref,
+              state,
+              notifier,
+              existing: routine,
+            ),
             onDelete: (routine) {
               _confirmDelete(context, notifier, routine.id);
             },
@@ -147,16 +159,56 @@ class RoutineDashboardPage extends HookConsumerWidget {
     );
   }
 
+  Future<void> _confirmResetAll(
+    BuildContext context,
+    RoutineDashboardNotifier notifier,
+  ) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('完了記録をすべて初期化しますか？'),
+        content: const Text('全ルーチンの完了履歴を削除して未完了状態に戻します。この操作は元に戻せません。'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: const Text('キャンセル'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: const Text('初期化する'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) {
+      return;
+    }
+
+    final success = await notifier.resetAllCompletions();
+    if (!context.mounted) {
+      return;
+    }
+
+    if (success) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('全てのルーチンを未完了状態に戻しました')));
+    }
+  }
+
   Future<void> _openRoutineEditor(
     BuildContext context,
     WidgetRef ref,
     RoutineDashboardState state,
-    RoutineDashboardNotifier notifier,
-  ) async {
+    RoutineDashboardNotifier notifier, {
+    RoutineEntity? existing,
+  }) async {
     final thresholds = state.thresholds ?? const RoutineThresholdSetting();
     final routine = await showRoutineEditorSheet(
       context: context,
       defaultThresholds: thresholds,
+      existing: existing,
     );
 
     if (routine == null) {
@@ -171,7 +223,15 @@ class RoutineDashboardPage extends HookConsumerWidget {
     if (success) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('${routine.name}を追加しました')));
+      ).showSnackBar(
+            SnackBar(
+              content: Text(
+                existing == null
+                    ? '${routine.name}を追加しました'
+                    : '${routine.name}を更新しました',
+              ),
+            ),
+          );
     }
   }
 

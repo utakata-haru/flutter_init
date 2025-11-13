@@ -88,6 +88,17 @@ class RoutineDashboardNotifier extends _$RoutineDashboardNotifier {
     }
   }
 
+  Future<bool> resetAllCompletions() async {
+    final useCase = ref.read(resetAllRoutineCompletionsUseCaseProvider);
+    try {
+      await useCase();
+      return true;
+    } catch (error) {
+      state = state.copyWith(errorMessage: _formatError(error));
+      return false;
+    }
+  }
+
   void clearError() {
     if (state.errorMessage != null) {
       state = state.copyWith(errorMessage: null);

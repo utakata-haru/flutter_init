@@ -7,7 +7,7 @@ class ResetAllRoutineCompletionsUseCase {
   final RoutineRepository _repository;
 
   Future<void> call() async {
-  final List<RoutineEntity> routines = await _repository.fetchAll();
+    final List<RoutineEntity> routines = await _repository.fetchAll();
     for (final routine in routines) {
       if (routine.lastResult == null) {
         continue;

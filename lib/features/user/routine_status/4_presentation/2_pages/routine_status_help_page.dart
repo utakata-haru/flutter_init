@@ -41,6 +41,16 @@ class _HelpContent extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
+        const _SectionTitle('アプリ概要'),
+        const SizedBox(height: 8),
+        const _BodyText(
+          '「ルーチンダッシュボード」は日々の決まったタスクをステータスページのように管理し、遅延状況を色とアイコンで即時に把握できるようにするアプリです。',
+        ),
+        const SizedBox(height: 16),
+        const _SectionTitle('基本的な使い方'),
+        const SizedBox(height: 8),
+        const _UsageSteps(),
+        const SizedBox(height: 24),
         const _SectionTitle('全体ステータスカード'),
         const SizedBox(height: 8),
         _LegendCard(
@@ -82,13 +92,15 @@ class _HelpContent extends StatelessWidget {
         _ThresholdTile(
           icon: Icons.timer_outlined,
           title: 'オンタイム判定',
-          description: '完了時刻が目標から${thresholds.allowableDelayMinutes}分以内ならオンタイムです。',
+          description:
+              '完了時刻が目標から${thresholds.allowableDelayMinutes}分以内ならオンタイムです。',
         ),
         const SizedBox(height: 12),
         _ThresholdTile(
           icon: Icons.error_outline,
           title: '注意レベル',
-          description: '遅延が$warningRangeStart～${thresholds.criticalDelayMinutes}分なら注意表示になります。',
+          description:
+              '遅延が$warningRangeStart～${thresholds.criticalDelayMinutes}分なら注意表示になります。',
         ),
         const SizedBox(height: 12),
         _ThresholdTile(
@@ -192,10 +204,7 @@ class _IndicatorRow extends StatelessWidget {
         StatusIndicator(status: status, showLabel: true),
         const SizedBox(width: 12),
         Expanded(
-          child: Text(
-            label,
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
+          child: Text(label, style: Theme.of(context).textTheme.bodyMedium),
         ),
       ],
     );
@@ -263,9 +272,9 @@ class _SectionTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text,
-      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w700,
-          ),
+      style: Theme.of(
+        context,
+      ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
     );
   }
 }
@@ -284,12 +293,102 @@ class _ErrorView extends StatelessWidget {
         children: [
           Text(message),
           const SizedBox(height: 12),
-          FilledButton(
-            onPressed: onRetry,
-            child: const Text('再試行'),
-          ),
+          FilledButton(onPressed: onRetry, child: const Text('再試行')),
         ],
       ),
+    );
+  }
+}
+
+class _BodyText extends StatelessWidget {
+  const _BodyText(this.text);
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      text,
+      style: Theme.of(context).textTheme.bodyMedium,
+    );
+  }
+}
+
+class _UsageSteps extends StatelessWidget {
+  const _UsageSteps();
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: const [
+        _StepItem(
+          stepNumber: '1',
+          title: 'ルーチンを登録する',
+          description: 'ダッシュボード右下の「ルーチン追加」から名前と目標時刻を設定します。',
+        ),
+        SizedBox(height: 12),
+        _StepItem(
+          stepNumber: '2',
+          title: '完了したら記録する',
+          description: 'ルーチンカードの「完了として記録」やクイック完了ボタンで完了時刻を保存します。',
+        ),
+        SizedBox(height: 12),
+        _StepItem(
+          stepNumber: '3',
+          title: '状況を確認し調整する',
+          description: '色分けされたステータスを見ながら遅延が続くタスクを調整し、必要に応じて設定画面で閾値を変更します。',
+        ),
+      ],
+    );
+  }
+}
+
+class _StepItem extends StatelessWidget {
+  const _StepItem({
+    required this.stepNumber,
+    required this.title,
+    required this.description,
+  });
+
+  final String stepNumber;
+  final String title;
+  final String description;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        CircleAvatar(
+          radius: 16,
+          backgroundColor: theme.colorScheme.primary,
+          child: Text(
+            stepNumber,
+            style: theme.textTheme.labelLarge?.copyWith(color: theme.colorScheme.onPrimary),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                description,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

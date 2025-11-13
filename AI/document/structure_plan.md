@@ -50,6 +50,7 @@ lib/
             fetch_routines_usecase.dart
             complete_routine_usecase.dart
             update_routine_usecase.dart
+            reset_all_routine_completions_usecase.dart
             update_threshold_setting_usecase.dart
           exceptions/
             routine_failure.dart
@@ -89,6 +90,7 @@ lib/
               routine_card.dart
             3_organisms/
               routine_status_list_view.dart
+                routine_editor_sheet.dart
           2_pages/
             routine_dashboard_page.dart
             routine_settings_page.dart
@@ -107,6 +109,8 @@ lib/
   - 役割: ルーチンのドメインエンティティ（目標時刻・許容ズレ・閾値・完了履歴を保持）
 - パス: `lib/features/user/routine_status/1_domain/3_usecases/complete_routine_usecase.dart`
   - 役割: 完了ボタン押下時に実績時刻を記録し、ステータスを判定するドメインユースケース
+- パス: `lib/features/user/routine_status/1_domain/3_usecases/reset_all_routine_completions_usecase.dart`
+  - 役割: 全ルーチンの完了履歴を一括で削除し、未完了状態へ戻すユースケース
 - パス: `lib/features/user/routine_status/1_domain/1_entities/routine_completion_result_entity.dart`
   - 役割: ルーチン完了時の結果（達成ステータス、実績時刻、遅延差分）を表現する値オブジェクト
 - パス: `lib/features/user/routine_status/2_infrastructure/1_models/routine_model.dart`
@@ -138,9 +142,9 @@ lib/
 - パス: `lib/features/user/routine_status/3_application/3_notifiers/routine_settings_notifier.dart`
   - 役割: 閾値設定の読み込み・保存・検証を担い、保存結果やエラーを状態に反映する Notifier
 - パス: `lib/features/user/routine_status/4_presentation/2_pages/routine_dashboard_page.dart`
-  - 役割: ステータスサイト風のトップ画面（緑／黄／赤の表示を行う）。ルーチン追加FABと次のルーチンを即完了にするクイックボタンを備える
+  - 役割: ステータスサイト風のトップ画面（緑／黄／赤の表示を行う）。ルーチン追加FAB、クイック完了ボタン、完了履歴一括初期化ボタンを備える
 - パス: `lib/features/user/routine_status/4_presentation/2_pages/routine_status_help_page.dart`
-  - 役割: ステータスカード／アイコンの意味や現在の閾値を案内するヘルプページ
+  - 役割: アプリ概要と利用手順、ステータスカード／アイコンの意味、現在の閾値を案内するヘルプページ
 - パス: `lib/features/user/routine_status/4_presentation/2_pages/routine_settings_page.dart`
   - 役割: 閾値を編集・保存するフォーム画面。Riverpodステートと連携し、保存結果を通知する
 - パス: `lib/core/routing/routine_status_route.dart`
@@ -152,13 +156,13 @@ lib/
 - パス: `lib/core/routing/path/routine_status_help_path.dart`
   - 役割: ステータス説明ページへのパス定義とルート名を提供する
 - パス: `lib/features/user/routine_status/4_presentation/1_widgets/2_molecules/routine_card.dart`
-  - 役割: ルーチンごとのステータス情報と完了／完了解除ボタンをまとめたUIコンポーネント。完了履歴がない場合は中立アイコンを表示し、完了済みでは「完了を取り消す」を提示する
+  - 役割: ルーチンごとのステータス情報と完了／完了解除ボタン、編集／削除操作をまとめたUIコンポーネント。完了履歴がない場合は中立アイコンを表示し、完了済みでは「完了を取り消す」を提示する
 - パス: `lib/features/user/routine_status/4_presentation/1_widgets/1_atoms/status_indicator.dart`
   - 役割: ルーチンの達成ステータスを色付きアイコンとラベルで表示する最小コンポーネント
 - パス: `lib/features/user/routine_status/4_presentation/1_widgets/3_organisms/routine_status_list_view.dart`
-  - 役割: 全体の完了状況を集約したステータスカード（緑／黄／赤の動的表示）とルーチンカード群をまとめ、プルリフレッシュや完了／完了解除コールバックを提供するリストUI
+  - 役割: 全体の完了状況を集約したステータスカード（緑／黄／赤の動的表示）とルーチンカード群をまとめ、プルリフレッシュや完了／完了解除／編集／削除コールバックを提供するリストUI
 - パス: `lib/features/user/routine_status/4_presentation/1_widgets/3_organisms/routine_editor_sheet.dart`
-  - 役割: ルーチン名称と目標時刻を入力するボトムシートフォーム。保存時にRoutineEntityを生成して呼び出し元へ返却する
+  - 役割: ルーチン名称と目標時刻を入力するボトムシートフォーム。新規作成と既存編集の双方に対応し、保存時にRoutineEntityを返却する
 - パス: `lib/core/database/database.dart`
   - 役割: Driftの接続初期化・DAO登録を行いアプリ全体で共有する
 - パス: `lib/core/database/table/routine_table.dart`
@@ -215,6 +219,9 @@ lib/
 - 2025-11-13: 全体状態説明カードのビジュアル仕様（緑／黄／赤の凡例）をプレゼンテーション層の役割に追記
 - 2025-11-13: 全体完了状況に応じてステータスカードを動的に色分けする役割を追記
 - 2025-11-13: ステータス説明ページとヘルプルートの定義を追記
+- 2025-11-13: 完了履歴一括初期化ユースケースとダッシュボードのゴミ箱ボタンを追記
+- 2025-11-13: ヘルプページに概要と操作手順を記載する役割を追記
+- 2025-11-13: ルーチン編集ボタンとフォーム再利用（新規／既存）対応をプレゼンテーション層の役割に追記
 
 ## 参考・関連
 - プロセス詳細（第二段階）:

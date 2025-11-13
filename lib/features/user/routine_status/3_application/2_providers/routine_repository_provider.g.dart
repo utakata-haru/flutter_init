@@ -293,6 +293,58 @@ final class ResetRoutineCompletionUseCaseProvider
 String _$resetRoutineCompletionUseCaseHash() =>
     r'f2ea43592f8bcf30fe58495b23a0f2b67418ccbc';
 
+@ProviderFor(resetAllRoutineCompletionsUseCase)
+const resetAllRoutineCompletionsUseCaseProvider =
+    ResetAllRoutineCompletionsUseCaseProvider._();
+
+final class ResetAllRoutineCompletionsUseCaseProvider
+    extends
+        $FunctionalProvider<
+          ResetAllRoutineCompletionsUseCase,
+          ResetAllRoutineCompletionsUseCase,
+          ResetAllRoutineCompletionsUseCase
+        >
+    with $Provider<ResetAllRoutineCompletionsUseCase> {
+  const ResetAllRoutineCompletionsUseCaseProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'resetAllRoutineCompletionsUseCaseProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() =>
+      _$resetAllRoutineCompletionsUseCaseHash();
+
+  @$internal
+  @override
+  $ProviderElement<ResetAllRoutineCompletionsUseCase> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  ResetAllRoutineCompletionsUseCase create(Ref ref) {
+    return resetAllRoutineCompletionsUseCase(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(ResetAllRoutineCompletionsUseCase value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<ResetAllRoutineCompletionsUseCase>(
+        value,
+      ),
+    );
+  }
+}
+
+String _$resetAllRoutineCompletionsUseCaseHash() =>
+    r'a3d691c7e4d00ee41eb9b62d1e3a7a24925b986e';
+
 @ProviderFor(updateRoutineUseCase)
 const updateRoutineUseCaseProvider = UpdateRoutineUseCaseProvider._();
 

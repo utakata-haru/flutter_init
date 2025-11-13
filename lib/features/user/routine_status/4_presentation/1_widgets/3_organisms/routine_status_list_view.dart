@@ -12,6 +12,7 @@ class RoutineStatusListView extends StatelessWidget {
     this.onTap,
     this.onComplete,
     this.onUndo,
+    this.onEdit,
     this.onDelete,
   });
 
@@ -21,6 +22,7 @@ class RoutineStatusListView extends StatelessWidget {
   final void Function(RoutineEntity routine)? onTap;
   final void Function(RoutineEntity routine)? onComplete;
   final void Function(RoutineEntity routine)? onUndo;
+  final void Function(RoutineEntity routine)? onEdit;
   final void Function(RoutineEntity routine)? onDelete;
 
   @override
@@ -49,6 +51,7 @@ class RoutineStatusListView extends StatelessWidget {
             onTap: onTap == null ? null : () => onTap!(routine),
             onComplete: onComplete == null ? null : () => onComplete!(routine),
             onUndo: onUndo == null ? null : () => onUndo!(routine),
+            onEdit: onEdit == null ? null : () => onEdit!(routine),
             onDelete: onDelete == null ? null : () => onDelete!(routine),
           );
         },
@@ -60,10 +63,7 @@ class RoutineStatusListView extends StatelessWidget {
 }
 
 class _OverallStatusCard extends StatelessWidget {
-  const _OverallStatusCard({
-    required this.routines,
-    required this.thresholds,
-  });
+  const _OverallStatusCard({required this.routines, required this.thresholds});
 
   final List<RoutineEntity> routines;
   final RoutineThresholdSetting thresholds;
@@ -104,9 +104,7 @@ class _OverallStatusCard extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     data.message,
-                    style: textTheme.bodySmall?.copyWith(
-                      color: data.textColor,
-                    ),
+                    style: textTheme.bodySmall?.copyWith(color: data.textColor),
                   ),
                   if (data.detail != null) ...[
                     const SizedBox(height: 4),
