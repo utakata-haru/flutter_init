@@ -49,6 +49,18 @@ class RoutineRepositoryImpl implements RoutineRepository {
   }
 
   @override
+  Future<void> upsertAll(List<RoutineEntity> routines) async {
+    final models = routines
+        .map((routine) => RoutineModel.fromEntity(routine))
+        .toList(growable: false);
+    try {
+      await _localDataSource.upsertAll(models);
+    } on RoutineLocalException catch (error) {
+      throw _mapToStorageException(error);
+    }
+  }
+
+  @override
   Future<void> delete(String id) async {
     try {
       await _localDataSource.delete(id);

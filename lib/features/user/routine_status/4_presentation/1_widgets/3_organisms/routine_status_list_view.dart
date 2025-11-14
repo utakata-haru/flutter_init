@@ -53,6 +53,7 @@ class RoutineStatusListView extends StatelessWidget {
             onUndo: onUndo == null ? null : () => onUndo!(routine),
             onEdit: onEdit == null ? null : () => onEdit!(routine),
             onDelete: onDelete == null ? null : () => onDelete!(routine),
+            showLastResult: true,
           );
         },
         separatorBuilder: (context, index) => const SizedBox(height: 16),

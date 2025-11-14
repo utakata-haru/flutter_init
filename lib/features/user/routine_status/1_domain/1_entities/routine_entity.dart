@@ -68,6 +68,7 @@ abstract class RoutineEntity with _$RoutineEntity {
     required RoutineTime targetTime,
     @Default(RoutineThresholdSetting()) RoutineThresholdSetting thresholds,
     RoutineCompletionResultEntity? lastResult,
+    @Default(0) int sortIndex,
   }) = _RoutineEntity;
 
   factory RoutineEntity.fromJson(Map<String, dynamic> json) =>

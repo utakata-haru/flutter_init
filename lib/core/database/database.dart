@@ -21,14 +21,16 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase({QueryExecutor? executor}) : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
     onCreate: (m) => m.createAll(),
     onUpgrade: (m, from, to) async {
-      if (from < to) {
-        await m.createAll();
+      if (from < 2) {
+        await customStatement(
+          'ALTER TABLE routine_table ADD COLUMN sort_index INTEGER NOT NULL DEFAULT 0',
+        );
       }
     },
   );

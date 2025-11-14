@@ -12,6 +12,10 @@ class RoutineCard extends StatelessWidget {
     this.onUndo,
     this.onEdit,
     this.onDelete,
+    this.onMoveUp,
+    this.onMoveDown,
+    this.showLastResult = true,
+    this.showStatusIndicator = true,
   });
 
   final RoutineEntity routine;
@@ -20,6 +24,10 @@ class RoutineCard extends StatelessWidget {
   final VoidCallback? onUndo;
   final VoidCallback? onEdit;
   final VoidCallback? onDelete;
+  final VoidCallback? onMoveUp;
+  final VoidCallback? onMoveDown;
+  final bool showLastResult;
+  final bool showStatusIndicator;
 
   @override
   Widget build(BuildContext context) {
@@ -30,8 +38,8 @@ class RoutineCard extends StatelessWidget {
       routine.targetTime.hour,
       routine.targetTime.minute,
     );
-    final lastResultText = _buildLastResultText();
-    final indicator = hasResult
+    final lastResultText = showLastResult ? _buildLastResultText() : null;
+    final indicator = showStatusIndicator && hasResult
         ? StatusIndicator(status: status)
         : CircleAvatar(
             radius: 16,
@@ -47,6 +55,9 @@ class RoutineCard extends StatelessWidget {
     final actionIcon = hasResult
         ? const Icon(Icons.undo)
         : const Icon(Icons.check_circle_outline);
+    final showReorderControls = onMoveUp != null || onMoveDown != null;
+    final showEdit = onEdit != null;
+    final showDelete = onDelete != null;
 
     return Card(
       margin: EdgeInsets.zero,
@@ -78,16 +89,36 @@ class RoutineCard extends StatelessWidget {
                           '目標時刻: $targetTime',
                           style: theme.textTheme.bodyMedium,
                         ),
-                        const SizedBox(height: 4),
-                        Text(
-                          lastResultText,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
+                        if (lastResultText != null) ...[
+                          const SizedBox(height: 4),
+                          Text(
+                            lastResultText,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
                           ),
-                        ),
+                        ],
                       ],
                     ),
                   ),
+                  if (showReorderControls)
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          tooltip: '上に移動',
+                          icon: const Icon(Icons.arrow_upward),
+                          onPressed: onMoveUp,
+                        ),
+                        IconButton(
+                          tooltip: '下に移動',
+                          icon: const Icon(Icons.arrow_downward),
+                          onPressed: onMoveDown,
+                        ),
+                      ],
+                    ),
+                  if (showReorderControls && (showEdit || showDelete))
+                    const SizedBox(width: 4),
                   if (onEdit != null)
                     IconButton(
                       tooltip: '編集',

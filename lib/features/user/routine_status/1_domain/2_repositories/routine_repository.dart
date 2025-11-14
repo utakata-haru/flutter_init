@@ -10,6 +10,8 @@ abstract class RoutineRepository {
 
   Future<void> upsert(RoutineEntity routine);
 
+  Future<void> upsertAll(List<RoutineEntity> routines);
+
   Future<void> delete(String id);
 
   Future<void> applyCompletion(

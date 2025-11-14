@@ -17,6 +17,7 @@ class RoutineLocalDataSourceImpl implements RoutineLocalDataSource {
   Stream<List<RoutineModel>> watchAll() {
     final query = (_database.select(_database.routineTable)
       ..orderBy([
+        (tbl) => OrderingTerm.asc(tbl.sortIndex),
         (tbl) => OrderingTerm.asc(tbl.targetHour),
         (tbl) => OrderingTerm.asc(tbl.targetMinute),
         (tbl) => OrderingTerm.asc(tbl.name),
@@ -32,6 +33,7 @@ class RoutineLocalDataSourceImpl implements RoutineLocalDataSource {
     try {
       final rows =
           await (_database.select(_database.routineTable)..orderBy([
+                (tbl) => OrderingTerm.asc(tbl.sortIndex),
                 (tbl) => OrderingTerm.asc(tbl.targetHour),
                 (tbl) => OrderingTerm.asc(tbl.targetMinute),
                 (tbl) => OrderingTerm.asc(tbl.name),

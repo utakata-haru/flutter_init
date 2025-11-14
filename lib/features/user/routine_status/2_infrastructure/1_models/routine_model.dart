@@ -16,6 +16,7 @@ class RoutineModel {
     required this.targetMinute,
     required this.allowableDelayMinutes,
     required this.criticalDelayMinutes,
+    required this.sortIndex,
     this.lastScheduledAt,
     this.lastCompletedAt,
     this.lastDelayMinutes,
@@ -30,6 +31,7 @@ class RoutineModel {
   final int targetMinute;
   final int allowableDelayMinutes;
   final int criticalDelayMinutes;
+  final int sortIndex;
   final DateTime? lastScheduledAt;
   final DateTime? lastCompletedAt;
   final int? lastDelayMinutes;
@@ -54,6 +56,7 @@ class RoutineModel {
       targetTime: RoutineTime(hour: targetHour, minute: targetMinute),
       thresholds: thresholds,
       lastResult: _lastCompletionResult(),
+      sortIndex: sortIndex,
     );
   }
 
@@ -83,6 +86,7 @@ class RoutineModel {
       targetMinute: Value(targetMinute),
       allowableDelayMinutes: Value(allowableDelayMinutes),
       criticalDelayMinutes: Value(criticalDelayMinutes),
+      sortIndex: Value(sortIndex),
       lastScheduledAt: Value(lastScheduledAt),
       lastCompletedAt: Value(lastCompletedAt),
       lastDelayMinutes: Value(lastDelayMinutes),
@@ -107,6 +111,7 @@ class RoutineModel {
     int? targetMinute,
     int? allowableDelayMinutes,
     int? criticalDelayMinutes,
+    int? sortIndex,
     DateTime? lastScheduledAt,
     DateTime? lastCompletedAt,
     int? lastDelayMinutes,
@@ -122,6 +127,7 @@ class RoutineModel {
       allowableDelayMinutes:
           allowableDelayMinutes ?? this.allowableDelayMinutes,
       criticalDelayMinutes: criticalDelayMinutes ?? this.criticalDelayMinutes,
+        sortIndex: sortIndex ?? this.sortIndex,
       lastScheduledAt: lastScheduledAt ?? this.lastScheduledAt,
       lastCompletedAt: lastCompletedAt ?? this.lastCompletedAt,
       lastDelayMinutes: lastDelayMinutes ?? this.lastDelayMinutes,
@@ -140,6 +146,7 @@ class RoutineModel {
       targetMinute: entity.targetTime.minute,
       allowableDelayMinutes: entity.thresholds.allowableDelayMinutes,
       criticalDelayMinutes: entity.thresholds.criticalDelayMinutes,
+      sortIndex: entity.sortIndex,
       lastScheduledAt: lastResult?.scheduledDateTime,
       lastCompletedAt: lastResult?.completedAt,
       lastDelayMinutes: lastResult?.delayMinutes,
@@ -155,6 +162,7 @@ class RoutineModel {
       targetMinute: data.targetMinute,
       allowableDelayMinutes: data.allowableDelayMinutes,
       criticalDelayMinutes: data.criticalDelayMinutes,
+      sortIndex: data.sortIndex,
       lastScheduledAt: data.lastScheduledAt,
       lastCompletedAt: data.lastCompletedAt,
       lastDelayMinutes: data.lastDelayMinutes,

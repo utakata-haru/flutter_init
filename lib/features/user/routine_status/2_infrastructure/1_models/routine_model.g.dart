@@ -13,6 +13,7 @@ RoutineModel _$RoutineModelFromJson(Map<String, dynamic> json) => RoutineModel(
   targetMinute: (json['targetMinute'] as num).toInt(),
   allowableDelayMinutes: (json['allowableDelayMinutes'] as num).toInt(),
   criticalDelayMinutes: (json['criticalDelayMinutes'] as num).toInt(),
+  sortIndex: (json['sortIndex'] as num).toInt(),
   lastScheduledAt: json['lastScheduledAt'] == null
       ? null
       : DateTime.parse(json['lastScheduledAt'] as String),
@@ -40,6 +41,7 @@ Map<String, dynamic> _$RoutineModelToJson(RoutineModel instance) =>
       'targetMinute': instance.targetMinute,
       'allowableDelayMinutes': instance.allowableDelayMinutes,
       'criticalDelayMinutes': instance.criticalDelayMinutes,
+      'sortIndex': instance.sortIndex,
       'lastScheduledAt': instance.lastScheduledAt?.toIso8601String(),
       'lastCompletedAt': instance.lastCompletedAt?.toIso8601String(),
       'lastDelayMinutes': instance.lastDelayMinutes,

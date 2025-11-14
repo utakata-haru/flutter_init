@@ -547,7 +547,7 @@ as int,
 /// @nodoc
 mixin _$RoutineEntity {
 
- String get id; String get name; RoutineTime get targetTime; RoutineThresholdSetting get thresholds; RoutineCompletionResultEntity? get lastResult;
+ String get id; String get name; RoutineTime get targetTime; RoutineThresholdSetting get thresholds; RoutineCompletionResultEntity? get lastResult; int get sortIndex;
 /// Create a copy of RoutineEntity
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -560,16 +560,16 @@ $RoutineEntityCopyWith<RoutineEntity> get copyWith => _$RoutineEntityCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is RoutineEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.targetTime, targetTime) || other.targetTime == targetTime)&&(identical(other.thresholds, thresholds) || other.thresholds == thresholds)&&(identical(other.lastResult, lastResult) || other.lastResult == lastResult));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is RoutineEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.targetTime, targetTime) || other.targetTime == targetTime)&&(identical(other.thresholds, thresholds) || other.thresholds == thresholds)&&(identical(other.lastResult, lastResult) || other.lastResult == lastResult)&&(identical(other.sortIndex, sortIndex) || other.sortIndex == sortIndex));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,targetTime,thresholds,lastResult);
+int get hashCode => Object.hash(runtimeType,id,name,targetTime,thresholds,lastResult,sortIndex);
 
 @override
 String toString() {
-  return 'RoutineEntity(id: $id, name: $name, targetTime: $targetTime, thresholds: $thresholds, lastResult: $lastResult)';
+  return 'RoutineEntity(id: $id, name: $name, targetTime: $targetTime, thresholds: $thresholds, lastResult: $lastResult, sortIndex: $sortIndex)';
 }
 
 
@@ -580,7 +580,7 @@ abstract mixin class $RoutineEntityCopyWith<$Res>  {
   factory $RoutineEntityCopyWith(RoutineEntity value, $Res Function(RoutineEntity) _then) = _$RoutineEntityCopyWithImpl;
 @useResult
 $Res call({
- String id, String name, RoutineTime targetTime, RoutineThresholdSetting thresholds, RoutineCompletionResultEntity? lastResult
+ String id, String name, RoutineTime targetTime, RoutineThresholdSetting thresholds, RoutineCompletionResultEntity? lastResult, int sortIndex
 });
 
 
@@ -597,14 +597,15 @@ class _$RoutineEntityCopyWithImpl<$Res>
 
 /// Create a copy of RoutineEntity
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? targetTime = null,Object? thresholds = null,Object? lastResult = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? targetTime = null,Object? thresholds = null,Object? lastResult = freezed,Object? sortIndex = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,targetTime: null == targetTime ? _self.targetTime : targetTime // ignore: cast_nullable_to_non_nullable
 as RoutineTime,thresholds: null == thresholds ? _self.thresholds : thresholds // ignore: cast_nullable_to_non_nullable
 as RoutineThresholdSetting,lastResult: freezed == lastResult ? _self.lastResult : lastResult // ignore: cast_nullable_to_non_nullable
-as RoutineCompletionResultEntity?,
+as RoutineCompletionResultEntity?,sortIndex: null == sortIndex ? _self.sortIndex : sortIndex // ignore: cast_nullable_to_non_nullable
+as int,
   ));
 }
 /// Create a copy of RoutineEntity
@@ -719,10 +720,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  RoutineTime targetTime,  RoutineThresholdSetting thresholds,  RoutineCompletionResultEntity? lastResult)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  RoutineTime targetTime,  RoutineThresholdSetting thresholds,  RoutineCompletionResultEntity? lastResult,  int sortIndex)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _RoutineEntity() when $default != null:
-return $default(_that.id,_that.name,_that.targetTime,_that.thresholds,_that.lastResult);case _:
+return $default(_that.id,_that.name,_that.targetTime,_that.thresholds,_that.lastResult,_that.sortIndex);case _:
   return orElse();
 
 }
@@ -740,10 +741,10 @@ return $default(_that.id,_that.name,_that.targetTime,_that.thresholds,_that.last
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  RoutineTime targetTime,  RoutineThresholdSetting thresholds,  RoutineCompletionResultEntity? lastResult)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  RoutineTime targetTime,  RoutineThresholdSetting thresholds,  RoutineCompletionResultEntity? lastResult,  int sortIndex)  $default,) {final _that = this;
 switch (_that) {
 case _RoutineEntity():
-return $default(_that.id,_that.name,_that.targetTime,_that.thresholds,_that.lastResult);case _:
+return $default(_that.id,_that.name,_that.targetTime,_that.thresholds,_that.lastResult,_that.sortIndex);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -760,10 +761,10 @@ return $default(_that.id,_that.name,_that.targetTime,_that.thresholds,_that.last
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  RoutineTime targetTime,  RoutineThresholdSetting thresholds,  RoutineCompletionResultEntity? lastResult)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  RoutineTime targetTime,  RoutineThresholdSetting thresholds,  RoutineCompletionResultEntity? lastResult,  int sortIndex)?  $default,) {final _that = this;
 switch (_that) {
 case _RoutineEntity() when $default != null:
-return $default(_that.id,_that.name,_that.targetTime,_that.thresholds,_that.lastResult);case _:
+return $default(_that.id,_that.name,_that.targetTime,_that.thresholds,_that.lastResult,_that.sortIndex);case _:
   return null;
 
 }
@@ -775,7 +776,7 @@ return $default(_that.id,_that.name,_that.targetTime,_that.thresholds,_that.last
 @JsonSerializable()
 
 class _RoutineEntity extends RoutineEntity {
-  const _RoutineEntity({required this.id, required this.name, required this.targetTime, this.thresholds = const RoutineThresholdSetting(), this.lastResult}): super._();
+  const _RoutineEntity({required this.id, required this.name, required this.targetTime, this.thresholds = const RoutineThresholdSetting(), this.lastResult, this.sortIndex = 0}): super._();
   factory _RoutineEntity.fromJson(Map<String, dynamic> json) => _$RoutineEntityFromJson(json);
 
 @override final  String id;
@@ -783,6 +784,7 @@ class _RoutineEntity extends RoutineEntity {
 @override final  RoutineTime targetTime;
 @override@JsonKey() final  RoutineThresholdSetting thresholds;
 @override final  RoutineCompletionResultEntity? lastResult;
+@override@JsonKey() final  int sortIndex;
 
 /// Create a copy of RoutineEntity
 /// with the given fields replaced by the non-null parameter values.
@@ -797,16 +799,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RoutineEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.targetTime, targetTime) || other.targetTime == targetTime)&&(identical(other.thresholds, thresholds) || other.thresholds == thresholds)&&(identical(other.lastResult, lastResult) || other.lastResult == lastResult));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RoutineEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.targetTime, targetTime) || other.targetTime == targetTime)&&(identical(other.thresholds, thresholds) || other.thresholds == thresholds)&&(identical(other.lastResult, lastResult) || other.lastResult == lastResult)&&(identical(other.sortIndex, sortIndex) || other.sortIndex == sortIndex));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,targetTime,thresholds,lastResult);
+int get hashCode => Object.hash(runtimeType,id,name,targetTime,thresholds,lastResult,sortIndex);
 
 @override
 String toString() {
-  return 'RoutineEntity(id: $id, name: $name, targetTime: $targetTime, thresholds: $thresholds, lastResult: $lastResult)';
+  return 'RoutineEntity(id: $id, name: $name, targetTime: $targetTime, thresholds: $thresholds, lastResult: $lastResult, sortIndex: $sortIndex)';
 }
 
 
@@ -817,7 +819,7 @@ abstract mixin class _$RoutineEntityCopyWith<$Res> implements $RoutineEntityCopy
   factory _$RoutineEntityCopyWith(_RoutineEntity value, $Res Function(_RoutineEntity) _then) = __$RoutineEntityCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String name, RoutineTime targetTime, RoutineThresholdSetting thresholds, RoutineCompletionResultEntity? lastResult
+ String id, String name, RoutineTime targetTime, RoutineThresholdSetting thresholds, RoutineCompletionResultEntity? lastResult, int sortIndex
 });
 
 
@@ -834,14 +836,15 @@ class __$RoutineEntityCopyWithImpl<$Res>
 
 /// Create a copy of RoutineEntity
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? targetTime = null,Object? thresholds = null,Object? lastResult = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? targetTime = null,Object? thresholds = null,Object? lastResult = freezed,Object? sortIndex = null,}) {
   return _then(_RoutineEntity(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,targetTime: null == targetTime ? _self.targetTime : targetTime // ignore: cast_nullable_to_non_nullable
 as RoutineTime,thresholds: null == thresholds ? _self.thresholds : thresholds // ignore: cast_nullable_to_non_nullable
 as RoutineThresholdSetting,lastResult: freezed == lastResult ? _self.lastResult : lastResult // ignore: cast_nullable_to_non_nullable
-as RoutineCompletionResultEntity?,
+as RoutineCompletionResultEntity?,sortIndex: null == sortIndex ? _self.sortIndex : sortIndex // ignore: cast_nullable_to_non_nullable
+as int,
   ));
 }
 

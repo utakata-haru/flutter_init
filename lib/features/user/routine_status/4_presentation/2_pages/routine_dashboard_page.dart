@@ -8,7 +8,6 @@ import 'package:flutter_init_3/core/routing/path/routine_status_help_path.dart';
 import 'package:flutter_init_3/features/user/routine_status/1_domain/1_entities/routine_entity.dart';
 import 'package:flutter_init_3/features/user/routine_status/3_application/1_states/routine_dashboard_state.dart';
 import 'package:flutter_init_3/features/user/routine_status/3_application/3_notifiers/routine_dashboard_notifier.dart';
-import 'package:flutter_init_3/features/user/routine_status/4_presentation/1_widgets/3_organisms/routine_editor_sheet.dart';
 import 'package:flutter_init_3/features/user/routine_status/4_presentation/1_widgets/3_organisms/routine_status_list_view.dart';
 
 class RoutineDashboardPage extends HookConsumerWidget {
@@ -98,23 +97,8 @@ class RoutineDashboardPage extends HookConsumerWidget {
             onRefresh: notifier.refresh,
             onComplete: notifier.completeRoutine,
             onUndo: notifier.undoCompletion,
-            onEdit: (routine) => _openRoutineEditor(
-              context,
-              ref,
-              state,
-              notifier,
-              existing: routine,
-            ),
-            onDelete: (routine) {
-              _confirmDelete(context, notifier, routine.id);
-            },
           );
         },
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _openRoutineEditor(context, ref, state, notifier),
-        icon: const Icon(Icons.add),
-        label: const Text('ルーチン追加'),
       ),
       bottomNavigationBar: state.routines.isEmpty
           ? null
@@ -139,33 +123,6 @@ class RoutineDashboardPage extends HookConsumerWidget {
                 ),
               ),
             ),
-    );
-  }
-
-  void _confirmDelete(
-    BuildContext context,
-    RoutineDashboardNotifier notifier,
-    String routineId,
-  ) {
-    showDialog<void>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('ルーチンを削除しますか？'),
-        content: const Text('この操作は元に戻せません。'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('キャンセル'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              notifier.deleteRoutine(routineId);
-            },
-            child: const Text('削除'),
-          ),
-        ],
-      ),
     );
   }
 
@@ -204,44 +161,6 @@ class RoutineDashboardPage extends HookConsumerWidget {
       _showSnackBar(
         context,
         const SnackBar(content: Text('全てのルーチンを未完了状態に戻しました')),
-      );
-    }
-  }
-
-  Future<void> _openRoutineEditor(
-    BuildContext context,
-    WidgetRef ref,
-    RoutineDashboardState state,
-    RoutineDashboardNotifier notifier, {
-    RoutineEntity? existing,
-  }) async {
-    final thresholds = state.thresholds ?? const RoutineThresholdSetting();
-    final routine = await showRoutineEditorSheet(
-      context: context,
-      defaultThresholds: thresholds,
-      existing: existing,
-    );
-
-    if (routine == null) {
-      return;
-    }
-
-    final success = await notifier.saveRoutine(routine);
-    if (!context.mounted) {
-      return;
-    }
-
-    if (success) {
-      _showSnackBar(
-        context,
-        SnackBar(
-          duration: const Duration(seconds: 2),
-          content: Text(
-            existing == null
-                ? '${routine.name}を追加しました'
-                : '${routine.name}を更新しました',
-          ),
-        ),
       );
     }
   }

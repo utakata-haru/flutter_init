@@ -45,6 +45,7 @@ _RoutineEntity _$RoutineEntityFromJson(Map<String, dynamic> json) =>
           : RoutineCompletionResultEntity.fromJson(
               json['lastResult'] as Map<String, dynamic>,
             ),
+      sortIndex: (json['sortIndex'] as num?)?.toInt() ?? 0,
     );
 
 Map<String, dynamic> _$RoutineEntityToJson(_RoutineEntity instance) =>
@@ -54,4 +55,5 @@ Map<String, dynamic> _$RoutineEntityToJson(_RoutineEntity instance) =>
       'targetTime': instance.targetTime,
       'thresholds': instance.thresholds,
       'lastResult': instance.lastResult,
+      'sortIndex': instance.sortIndex,
     };

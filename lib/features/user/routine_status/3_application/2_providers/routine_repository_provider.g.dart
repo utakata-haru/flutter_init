@@ -345,6 +345,54 @@ final class ResetAllRoutineCompletionsUseCaseProvider
 String _$resetAllRoutineCompletionsUseCaseHash() =>
     r'a3d691c7e4d00ee41eb9b62d1e3a7a24925b986e';
 
+@ProviderFor(reorderRoutinesUseCase)
+const reorderRoutinesUseCaseProvider = ReorderRoutinesUseCaseProvider._();
+
+final class ReorderRoutinesUseCaseProvider
+    extends
+        $FunctionalProvider<
+          ReorderRoutinesUseCase,
+          ReorderRoutinesUseCase,
+          ReorderRoutinesUseCase
+        >
+    with $Provider<ReorderRoutinesUseCase> {
+  const ReorderRoutinesUseCaseProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'reorderRoutinesUseCaseProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$reorderRoutinesUseCaseHash();
+
+  @$internal
+  @override
+  $ProviderElement<ReorderRoutinesUseCase> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  ReorderRoutinesUseCase create(Ref ref) {
+    return reorderRoutinesUseCase(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(ReorderRoutinesUseCase value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<ReorderRoutinesUseCase>(value),
+    );
+  }
+}
+
+String _$reorderRoutinesUseCaseHash() =>
+    r'e04d3ab3063b6dd3c49342412c8dbd17b969075e';
+
 @ProviderFor(updateRoutineUseCase)
 const updateRoutineUseCaseProvider = UpdateRoutineUseCaseProvider._();
 

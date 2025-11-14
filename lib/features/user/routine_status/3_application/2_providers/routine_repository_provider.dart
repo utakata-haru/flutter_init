@@ -7,6 +7,7 @@ import 'package:flutter_init_3/features/user/routine_status/1_domain/3_usecases/
 import 'package:flutter_init_3/features/user/routine_status/1_domain/3_usecases/fetch_routines_usecase.dart';
 import 'package:flutter_init_3/features/user/routine_status/1_domain/3_usecases/reset_all_routine_completions_usecase.dart';
 import 'package:flutter_init_3/features/user/routine_status/1_domain/3_usecases/reset_routine_completion_usecase.dart';
+import 'package:flutter_init_3/features/user/routine_status/1_domain/3_usecases/reorder_routines_usecase.dart';
 import 'package:flutter_init_3/features/user/routine_status/1_domain/3_usecases/update_routine_usecase.dart';
 import 'package:flutter_init_3/features/user/routine_status/2_infrastructure/2_data_sources/1_local/routine_local_data_source.dart';
 import 'package:flutter_init_3/features/user/routine_status/2_infrastructure/2_data_sources/1_local/routine_local_data_source_impl.dart';
@@ -51,6 +52,12 @@ ResetRoutineCompletionUseCase resetRoutineCompletionUseCase(Ref ref) {
 ResetAllRoutineCompletionsUseCase resetAllRoutineCompletionsUseCase(Ref ref) {
   final repository = ref.watch(routineRepositoryProvider);
   return ResetAllRoutineCompletionsUseCase(repository);
+}
+
+@riverpod
+ReorderRoutinesUseCase reorderRoutinesUseCase(Ref ref) {
+  final repository = ref.watch(routineRepositoryProvider);
+  return ReorderRoutinesUseCase(repository);
 }
 
 @riverpod

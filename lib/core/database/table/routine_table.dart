@@ -15,6 +15,8 @@ class RoutineTable extends Table {
   IntColumn get criticalDelayMinutes =>
       integer().withDefault(const Constant(15))();
 
+  IntColumn get sortIndex => integer().withDefault(const Constant(0))();
+
   DateTimeColumn get lastScheduledAt => dateTime().nullable()();
 
   DateTimeColumn get lastCompletedAt => dateTime().nullable()();

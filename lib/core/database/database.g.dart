@@ -71,6 +71,18 @@ class $RoutineTableTable extends RoutineTable
     requiredDuringInsert: false,
     defaultValue: const Constant(15),
   );
+  static const VerificationMeta _sortIndexMeta = const VerificationMeta(
+    'sortIndex',
+  );
+  @override
+  late final GeneratedColumn<int> sortIndex = GeneratedColumn<int>(
+    'sort_index',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
   static const VerificationMeta _lastScheduledAtMeta = const VerificationMeta(
     'lastScheduledAt',
   );
@@ -149,6 +161,7 @@ class $RoutineTableTable extends RoutineTable
     targetMinute,
     allowableDelayMinutes,
     criticalDelayMinutes,
+    sortIndex,
     lastScheduledAt,
     lastCompletedAt,
     lastDelayMinutes,
@@ -216,6 +229,12 @@ class $RoutineTableTable extends RoutineTable
           data['critical_delay_minutes']!,
           _criticalDelayMinutesMeta,
         ),
+      );
+    }
+    if (data.containsKey('sort_index')) {
+      context.handle(
+        _sortIndexMeta,
+        sortIndex.isAcceptableOrUnknown(data['sort_index']!, _sortIndexMeta),
       );
     }
     if (data.containsKey('last_scheduled_at')) {
@@ -296,6 +315,10 @@ class $RoutineTableTable extends RoutineTable
         DriftSqlType.int,
         data['${effectivePrefix}critical_delay_minutes'],
       )!,
+      sortIndex: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}sort_index'],
+      )!,
       lastScheduledAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}last_scheduled_at'],
@@ -337,6 +360,7 @@ class RoutineTableData extends DataClass
   final int targetMinute;
   final int allowableDelayMinutes;
   final int criticalDelayMinutes;
+  final int sortIndex;
   final DateTime? lastScheduledAt;
   final DateTime? lastCompletedAt;
   final int? lastDelayMinutes;
@@ -350,6 +374,7 @@ class RoutineTableData extends DataClass
     required this.targetMinute,
     required this.allowableDelayMinutes,
     required this.criticalDelayMinutes,
+    required this.sortIndex,
     this.lastScheduledAt,
     this.lastCompletedAt,
     this.lastDelayMinutes,
@@ -366,6 +391,7 @@ class RoutineTableData extends DataClass
     map['target_minute'] = Variable<int>(targetMinute);
     map['allowable_delay_minutes'] = Variable<int>(allowableDelayMinutes);
     map['critical_delay_minutes'] = Variable<int>(criticalDelayMinutes);
+    map['sort_index'] = Variable<int>(sortIndex);
     if (!nullToAbsent || lastScheduledAt != null) {
       map['last_scheduled_at'] = Variable<DateTime>(lastScheduledAt);
     }
@@ -391,6 +417,7 @@ class RoutineTableData extends DataClass
       targetMinute: Value(targetMinute),
       allowableDelayMinutes: Value(allowableDelayMinutes),
       criticalDelayMinutes: Value(criticalDelayMinutes),
+      sortIndex: Value(sortIndex),
       lastScheduledAt: lastScheduledAt == null && nullToAbsent
           ? const Value.absent()
           : Value(lastScheduledAt),
@@ -424,6 +451,7 @@ class RoutineTableData extends DataClass
       criticalDelayMinutes: serializer.fromJson<int>(
         json['criticalDelayMinutes'],
       ),
+      sortIndex: serializer.fromJson<int>(json['sortIndex']),
       lastScheduledAt: serializer.fromJson<DateTime?>(json['lastScheduledAt']),
       lastCompletedAt: serializer.fromJson<DateTime?>(json['lastCompletedAt']),
       lastDelayMinutes: serializer.fromJson<int?>(json['lastDelayMinutes']),
@@ -442,6 +470,7 @@ class RoutineTableData extends DataClass
       'targetMinute': serializer.toJson<int>(targetMinute),
       'allowableDelayMinutes': serializer.toJson<int>(allowableDelayMinutes),
       'criticalDelayMinutes': serializer.toJson<int>(criticalDelayMinutes),
+      'sortIndex': serializer.toJson<int>(sortIndex),
       'lastScheduledAt': serializer.toJson<DateTime?>(lastScheduledAt),
       'lastCompletedAt': serializer.toJson<DateTime?>(lastCompletedAt),
       'lastDelayMinutes': serializer.toJson<int?>(lastDelayMinutes),
@@ -458,6 +487,7 @@ class RoutineTableData extends DataClass
     int? targetMinute,
     int? allowableDelayMinutes,
     int? criticalDelayMinutes,
+    int? sortIndex,
     Value<DateTime?> lastScheduledAt = const Value.absent(),
     Value<DateTime?> lastCompletedAt = const Value.absent(),
     Value<int?> lastDelayMinutes = const Value.absent(),
@@ -471,6 +501,7 @@ class RoutineTableData extends DataClass
     targetMinute: targetMinute ?? this.targetMinute,
     allowableDelayMinutes: allowableDelayMinutes ?? this.allowableDelayMinutes,
     criticalDelayMinutes: criticalDelayMinutes ?? this.criticalDelayMinutes,
+    sortIndex: sortIndex ?? this.sortIndex,
     lastScheduledAt: lastScheduledAt.present
         ? lastScheduledAt.value
         : this.lastScheduledAt,
@@ -500,6 +531,7 @@ class RoutineTableData extends DataClass
       criticalDelayMinutes: data.criticalDelayMinutes.present
           ? data.criticalDelayMinutes.value
           : this.criticalDelayMinutes,
+      sortIndex: data.sortIndex.present ? data.sortIndex.value : this.sortIndex,
       lastScheduledAt: data.lastScheduledAt.present
           ? data.lastScheduledAt.value
           : this.lastScheduledAt,
@@ -526,6 +558,7 @@ class RoutineTableData extends DataClass
           ..write('targetMinute: $targetMinute, ')
           ..write('allowableDelayMinutes: $allowableDelayMinutes, ')
           ..write('criticalDelayMinutes: $criticalDelayMinutes, ')
+          ..write('sortIndex: $sortIndex, ')
           ..write('lastScheduledAt: $lastScheduledAt, ')
           ..write('lastCompletedAt: $lastCompletedAt, ')
           ..write('lastDelayMinutes: $lastDelayMinutes, ')
@@ -544,6 +577,7 @@ class RoutineTableData extends DataClass
     targetMinute,
     allowableDelayMinutes,
     criticalDelayMinutes,
+    sortIndex,
     lastScheduledAt,
     lastCompletedAt,
     lastDelayMinutes,
@@ -561,6 +595,7 @@ class RoutineTableData extends DataClass
           other.targetMinute == this.targetMinute &&
           other.allowableDelayMinutes == this.allowableDelayMinutes &&
           other.criticalDelayMinutes == this.criticalDelayMinutes &&
+          other.sortIndex == this.sortIndex &&
           other.lastScheduledAt == this.lastScheduledAt &&
           other.lastCompletedAt == this.lastCompletedAt &&
           other.lastDelayMinutes == this.lastDelayMinutes &&
@@ -576,6 +611,7 @@ class RoutineTableCompanion extends UpdateCompanion<RoutineTableData> {
   final Value<int> targetMinute;
   final Value<int> allowableDelayMinutes;
   final Value<int> criticalDelayMinutes;
+  final Value<int> sortIndex;
   final Value<DateTime?> lastScheduledAt;
   final Value<DateTime?> lastCompletedAt;
   final Value<int?> lastDelayMinutes;
@@ -590,6 +626,7 @@ class RoutineTableCompanion extends UpdateCompanion<RoutineTableData> {
     this.targetMinute = const Value.absent(),
     this.allowableDelayMinutes = const Value.absent(),
     this.criticalDelayMinutes = const Value.absent(),
+    this.sortIndex = const Value.absent(),
     this.lastScheduledAt = const Value.absent(),
     this.lastCompletedAt = const Value.absent(),
     this.lastDelayMinutes = const Value.absent(),
@@ -605,6 +642,7 @@ class RoutineTableCompanion extends UpdateCompanion<RoutineTableData> {
     required int targetMinute,
     this.allowableDelayMinutes = const Value.absent(),
     this.criticalDelayMinutes = const Value.absent(),
+    this.sortIndex = const Value.absent(),
     this.lastScheduledAt = const Value.absent(),
     this.lastCompletedAt = const Value.absent(),
     this.lastDelayMinutes = const Value.absent(),
@@ -623,6 +661,7 @@ class RoutineTableCompanion extends UpdateCompanion<RoutineTableData> {
     Expression<int>? targetMinute,
     Expression<int>? allowableDelayMinutes,
     Expression<int>? criticalDelayMinutes,
+    Expression<int>? sortIndex,
     Expression<DateTime>? lastScheduledAt,
     Expression<DateTime>? lastCompletedAt,
     Expression<int>? lastDelayMinutes,
@@ -640,6 +679,7 @@ class RoutineTableCompanion extends UpdateCompanion<RoutineTableData> {
         'allowable_delay_minutes': allowableDelayMinutes,
       if (criticalDelayMinutes != null)
         'critical_delay_minutes': criticalDelayMinutes,
+      if (sortIndex != null) 'sort_index': sortIndex,
       if (lastScheduledAt != null) 'last_scheduled_at': lastScheduledAt,
       if (lastCompletedAt != null) 'last_completed_at': lastCompletedAt,
       if (lastDelayMinutes != null) 'last_delay_minutes': lastDelayMinutes,
@@ -657,6 +697,7 @@ class RoutineTableCompanion extends UpdateCompanion<RoutineTableData> {
     Value<int>? targetMinute,
     Value<int>? allowableDelayMinutes,
     Value<int>? criticalDelayMinutes,
+    Value<int>? sortIndex,
     Value<DateTime?>? lastScheduledAt,
     Value<DateTime?>? lastCompletedAt,
     Value<int?>? lastDelayMinutes,
@@ -673,6 +714,7 @@ class RoutineTableCompanion extends UpdateCompanion<RoutineTableData> {
       allowableDelayMinutes:
           allowableDelayMinutes ?? this.allowableDelayMinutes,
       criticalDelayMinutes: criticalDelayMinutes ?? this.criticalDelayMinutes,
+      sortIndex: sortIndex ?? this.sortIndex,
       lastScheduledAt: lastScheduledAt ?? this.lastScheduledAt,
       lastCompletedAt: lastCompletedAt ?? this.lastCompletedAt,
       lastDelayMinutes: lastDelayMinutes ?? this.lastDelayMinutes,
@@ -705,6 +747,9 @@ class RoutineTableCompanion extends UpdateCompanion<RoutineTableData> {
     }
     if (criticalDelayMinutes.present) {
       map['critical_delay_minutes'] = Variable<int>(criticalDelayMinutes.value);
+    }
+    if (sortIndex.present) {
+      map['sort_index'] = Variable<int>(sortIndex.value);
     }
     if (lastScheduledAt.present) {
       map['last_scheduled_at'] = Variable<DateTime>(lastScheduledAt.value);
@@ -739,6 +784,7 @@ class RoutineTableCompanion extends UpdateCompanion<RoutineTableData> {
           ..write('targetMinute: $targetMinute, ')
           ..write('allowableDelayMinutes: $allowableDelayMinutes, ')
           ..write('criticalDelayMinutes: $criticalDelayMinutes, ')
+          ..write('sortIndex: $sortIndex, ')
           ..write('lastScheduledAt: $lastScheduledAt, ')
           ..write('lastCompletedAt: $lastCompletedAt, ')
           ..write('lastDelayMinutes: $lastDelayMinutes, ')
@@ -1113,6 +1159,7 @@ typedef $$RoutineTableTableCreateCompanionBuilder =
       required int targetMinute,
       Value<int> allowableDelayMinutes,
       Value<int> criticalDelayMinutes,
+      Value<int> sortIndex,
       Value<DateTime?> lastScheduledAt,
       Value<DateTime?> lastCompletedAt,
       Value<int?> lastDelayMinutes,
@@ -1129,6 +1176,7 @@ typedef $$RoutineTableTableUpdateCompanionBuilder =
       Value<int> targetMinute,
       Value<int> allowableDelayMinutes,
       Value<int> criticalDelayMinutes,
+      Value<int> sortIndex,
       Value<DateTime?> lastScheduledAt,
       Value<DateTime?> lastCompletedAt,
       Value<int?> lastDelayMinutes,
@@ -1174,6 +1222,11 @@ class $$RoutineTableTableFilterComposer
 
   ColumnFilters<int> get criticalDelayMinutes => $composableBuilder(
     column: $table.criticalDelayMinutes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get sortIndex => $composableBuilder(
+    column: $table.sortIndex,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -1247,6 +1300,11 @@ class $$RoutineTableTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get sortIndex => $composableBuilder(
+    column: $table.sortIndex,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get lastScheduledAt => $composableBuilder(
     column: $table.lastScheduledAt,
     builder: (column) => ColumnOrderings(column),
@@ -1313,6 +1371,9 @@ class $$RoutineTableTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<int> get sortIndex =>
+      $composableBuilder(column: $table.sortIndex, builder: (column) => column);
+
   GeneratedColumn<DateTime> get lastScheduledAt => $composableBuilder(
     column: $table.lastScheduledAt,
     builder: (column) => column,
@@ -1377,6 +1438,7 @@ class $$RoutineTableTableTableManager
                 Value<int> targetMinute = const Value.absent(),
                 Value<int> allowableDelayMinutes = const Value.absent(),
                 Value<int> criticalDelayMinutes = const Value.absent(),
+                Value<int> sortIndex = const Value.absent(),
                 Value<DateTime?> lastScheduledAt = const Value.absent(),
                 Value<DateTime?> lastCompletedAt = const Value.absent(),
                 Value<int?> lastDelayMinutes = const Value.absent(),
@@ -1391,6 +1453,7 @@ class $$RoutineTableTableTableManager
                 targetMinute: targetMinute,
                 allowableDelayMinutes: allowableDelayMinutes,
                 criticalDelayMinutes: criticalDelayMinutes,
+                sortIndex: sortIndex,
                 lastScheduledAt: lastScheduledAt,
                 lastCompletedAt: lastCompletedAt,
                 lastDelayMinutes: lastDelayMinutes,
@@ -1407,6 +1470,7 @@ class $$RoutineTableTableTableManager
                 required int targetMinute,
                 Value<int> allowableDelayMinutes = const Value.absent(),
                 Value<int> criticalDelayMinutes = const Value.absent(),
+                Value<int> sortIndex = const Value.absent(),
                 Value<DateTime?> lastScheduledAt = const Value.absent(),
                 Value<DateTime?> lastCompletedAt = const Value.absent(),
                 Value<int?> lastDelayMinutes = const Value.absent(),
@@ -1421,6 +1485,7 @@ class $$RoutineTableTableTableManager
                 targetMinute: targetMinute,
                 allowableDelayMinutes: allowableDelayMinutes,
                 criticalDelayMinutes: criticalDelayMinutes,
+                sortIndex: sortIndex,
                 lastScheduledAt: lastScheduledAt,
                 lastCompletedAt: lastCompletedAt,
                 lastDelayMinutes: lastDelayMinutes,

@@ -10,13 +10,18 @@ abstract class RoutineSettingsState with _$RoutineSettingsState {
 
   const factory RoutineSettingsState({
     RoutineThresholdSetting? setting,
+    @Default(<RoutineEntity>[]) List<RoutineEntity> routines,
     @Default(false) bool isLoading,
     @Default(false) bool isSaving,
+    @Default(false) bool isRoutineLoading,
+    @Default(false) bool isReordering,
     String? errorMessage,
     bool? saveSucceeded,
   }) = _RoutineSettingsState;
 
   bool get hasError => errorMessage != null;
 
-  bool get hasData => setting != null;
+  bool get hasData => setting != null || routines.isNotEmpty;
+
+  bool get isEmpty => !isLoading && routines.isEmpty && setting == null;
 }
