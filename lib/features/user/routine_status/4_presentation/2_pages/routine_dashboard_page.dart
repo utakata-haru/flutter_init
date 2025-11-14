@@ -18,6 +18,7 @@ class RoutineDashboardPage extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(routineDashboardProvider);
     final notifier = ref.read(routineDashboardProvider.notifier);
+    final theme = Theme.of(context);
     final nextRoutine = _findNextIncompleteRoutine(state.routines);
     final canQuickComplete = nextRoutine != null;
     final quickCompleteLabel = nextRoutine != null
@@ -121,12 +122,23 @@ class RoutineDashboardPage extends HookConsumerWidget {
           ? null
           : SafeArea(
               minimum: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-              child: FilledButton.icon(
-                onPressed: canQuickComplete
-                    ? () => _completeNextRoutine(context, notifier, state)
-                    : null,
-                icon: const Icon(Icons.playlist_add_check),
-                label: Text(quickCompleteLabel),
+              child: SizedBox(
+                width: double.infinity,
+                height: 72,
+                child: FilledButton.icon(
+                  style: FilledButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    minimumSize: const Size.fromHeight(64),
+                    textStyle: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  onPressed: canQuickComplete
+                      ? () => _completeNextRoutine(context, notifier, state)
+                      : null,
+                  icon: const Icon(Icons.playlist_add_check, size: 28),
+                  label: Text(quickCompleteLabel),
+                ),
               ),
             ),
     );
