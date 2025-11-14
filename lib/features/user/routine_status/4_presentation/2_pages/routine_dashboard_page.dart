@@ -37,9 +37,7 @@ class RoutineDashboardPage extends HookConsumerWidget {
       final message = next.errorMessage;
       final previousMessage = previous?.errorMessage;
       if (message != null && message != previousMessage) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(message)));
+        _showSnackBar(context, SnackBar(content: Text(message)));
         notifier.clearError();
       }
     });
@@ -203,9 +201,10 @@ class RoutineDashboardPage extends HookConsumerWidget {
     }
 
     if (success) {
-      ScaffoldMessenger.of(
+      _showSnackBar(
         context,
-      ).showSnackBar(const SnackBar(content: Text('全てのルーチンを未完了状態に戻しました')));
+        const SnackBar(content: Text('全てのルーチンを未完了状態に戻しました')),
+      );
     }
   }
 
@@ -233,8 +232,10 @@ class RoutineDashboardPage extends HookConsumerWidget {
     }
 
     if (success) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      _showSnackBar(
+        context,
         SnackBar(
+          duration: const Duration(seconds: 2),
           content: Text(
             existing == null
                 ? '${routine.name}を追加しました'
@@ -252,9 +253,13 @@ class RoutineDashboardPage extends HookConsumerWidget {
   ) async {
     final target = _findNextIncompleteRoutine(state.routines);
     if (target == null) {
-      ScaffoldMessenger.of(
+      _showSnackBar(
         context,
-      ).showSnackBar(const SnackBar(content: Text('完了すべきルーチンはありません。')));
+        const SnackBar(
+          duration: Duration(seconds: 2),
+          content: Text('完了すべきルーチンはありません。'),
+        ),
+      );
       return;
     }
 
@@ -263,9 +268,13 @@ class RoutineDashboardPage extends HookConsumerWidget {
       return;
     }
 
-    ScaffoldMessenger.of(
+    _showSnackBar(
       context,
-    ).showSnackBar(SnackBar(content: Text('${target.name}を完了として記録しました')));
+      SnackBar(
+        duration: const Duration(seconds: 2),
+        content: Text('${target.name}を完了として記録しました'),
+      ),
+    );
   }
 
   RoutineEntity? _findNextIncompleteRoutine(List<RoutineEntity> routines) {
@@ -289,5 +298,11 @@ class RoutineDashboardPage extends HookConsumerWidget {
     }
 
     return null;
+  }
+
+  void _showSnackBar(BuildContext context, SnackBar snackBar) {
+    final messenger = ScaffoldMessenger.of(context);
+    messenger.clearSnackBars();
+    messenger.showSnackBar(snackBar);
   }
 }
