@@ -98,11 +98,8 @@ class RoutineDashboardPage extends HookConsumerWidget {
             onRefresh: notifier.refresh,
             onComplete: notifier.completeRoutine,
             onUndo: notifier.undoCompletion,
-            onEditCompletionTime: (routine) => _pickAndUpdateCompletion(
-              context,
-              ref,
-              routine,
-            ),
+            onEditCompletionTime: (routine) =>
+                _pickAndUpdateCompletion(context, ref, routine),
           );
         },
       ),

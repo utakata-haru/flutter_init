@@ -55,8 +55,8 @@ class RoutineCard extends StatelessWidget {
     final actionCallback = hasResult ? onUndo : onComplete;
     final actionLabel = hasResult ? '完了を取り消す' : '完了として記録';
     final actionIcon = hasResult
-      ? const Icon(Icons.undo)
-      : const Icon(Icons.check_circle_outline);
+        ? const Icon(Icons.undo)
+        : const Icon(Icons.check_circle_outline);
     final showReorderControls = onMoveUp != null || onMoveDown != null;
     final showEdit = onEdit != null;
     final showDelete = onDelete != null;
@@ -107,11 +107,15 @@ class RoutineCard extends StatelessWidget {
                               if (hasResult && onEditCompletionTime != null)
                                 TextButton.icon(
                                   onPressed: onEditCompletionTime,
-                                  icon: const Icon(Icons.edit_calendar, size: 18),
+                                  icon: const Icon(
+                                    Icons.edit_calendar,
+                                    size: 18,
+                                  ),
                                   label: const Text('時刻を編集'),
                                   style: TextButton.styleFrom(
-                                    padding:
-                                        const EdgeInsets.symmetric(horizontal: 8),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                    ),
                                     visualDensity: VisualDensity.compact,
                                   ),
                                 ),

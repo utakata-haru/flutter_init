@@ -12,7 +12,9 @@ class UpdateCompletionTimeUseCase {
     required DateTime newCompletedAt,
     DateTime? referenceDate,
   }) async {
-    final scheduled = routine.targetTime.asDateTime(referenceDate ?? newCompletedAt);
+    final scheduled = routine.targetTime.asDateTime(
+      referenceDate ?? newCompletedAt,
+    );
     final delayMinutes = _delayMinutes(scheduled, newCompletedAt);
     final status = routine.thresholds.evaluate(Duration(minutes: delayMinutes));
 
