@@ -16,6 +16,7 @@ class RoutineCard extends StatelessWidget {
     this.onMoveDown,
     this.showLastResult = true,
     this.showStatusIndicator = true,
+    this.onEditCompletionTime,
   });
 
   final RoutineEntity routine;
@@ -28,6 +29,7 @@ class RoutineCard extends StatelessWidget {
   final VoidCallback? onMoveDown;
   final bool showLastResult;
   final bool showStatusIndicator;
+  final VoidCallback? onEditCompletionTime;
 
   @override
   Widget build(BuildContext context) {
@@ -53,8 +55,8 @@ class RoutineCard extends StatelessWidget {
     final actionCallback = hasResult ? onUndo : onComplete;
     final actionLabel = hasResult ? '完了を取り消す' : '完了として記録';
     final actionIcon = hasResult
-        ? const Icon(Icons.undo)
-        : const Icon(Icons.check_circle_outline);
+      ? const Icon(Icons.undo)
+      : const Icon(Icons.check_circle_outline);
     final showReorderControls = onMoveUp != null || onMoveDown != null;
     final showEdit = onEdit != null;
     final showDelete = onDelete != null;
@@ -91,11 +93,29 @@ class RoutineCard extends StatelessWidget {
                         ),
                         if (lastResultText != null) ...[
                           const SizedBox(height: 4),
-                          Text(
-                            lastResultText,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant,
-                            ),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  lastResultText,
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: theme.colorScheme.onSurfaceVariant,
+                                  ),
+                                ),
+                              ),
+                              if (hasResult && onEditCompletionTime != null)
+                                TextButton.icon(
+                                  onPressed: onEditCompletionTime,
+                                  icon: const Icon(Icons.edit_calendar, size: 18),
+                                  label: const Text('時刻を編集'),
+                                  style: TextButton.styleFrom(
+                                    padding:
+                                        const EdgeInsets.symmetric(horizontal: 8),
+                                    visualDensity: VisualDensity.compact,
+                                  ),
+                                ),
+                            ],
                           ),
                         ],
                       ],
@@ -162,11 +182,9 @@ class RoutineCard extends StatelessWidget {
         '${completedAt.year}/${_twoDigits(completedAt.month)}/${_twoDigits(completedAt.day)} ${_twoDigits(completedAt.hour)}:${_twoDigits(completedAt.minute)}';
     final delay = result.delayMinutes;
 
-    if (delay == 0) {
-      return '最終完了: $completedText（オンタイム）';
-    }
-
-    return '最終完了: $completedText（+$delay 分）';
+    final statusText = delay == 0 ? 'オンタイム' : '+$delay 分';
+    final editedMark = (result as dynamic).edited == true ? '  編集済み' : '';
+    return '最終完了: $completedText（$statusText）$editedMark';
   }
 
   String _formatTime(int hour, int minute) =>

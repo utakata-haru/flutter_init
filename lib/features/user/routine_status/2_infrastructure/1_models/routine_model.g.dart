@@ -28,6 +28,7 @@ RoutineModel _$RoutineModelFromJson(Map<String, dynamic> json) => RoutineModel(
   createdAt: json['createdAt'] == null
       ? null
       : DateTime.parse(json['createdAt'] as String),
+  lastEdited: json['lastEdited'] as bool? ?? false,
   updatedAt: json['updatedAt'] == null
       ? null
       : DateTime.parse(json['updatedAt'] as String),
@@ -46,6 +47,7 @@ Map<String, dynamic> _$RoutineModelToJson(RoutineModel instance) =>
       'lastCompletedAt': instance.lastCompletedAt?.toIso8601String(),
       'lastDelayMinutes': instance.lastDelayMinutes,
       'lastStatus': _$RoutineComplianceStatusEnumMap[instance.lastStatus],
+      'lastEdited': instance.lastEdited,
       'createdAt': instance.createdAt?.toIso8601String(),
       'updatedAt': instance.updatedAt?.toIso8601String(),
     };

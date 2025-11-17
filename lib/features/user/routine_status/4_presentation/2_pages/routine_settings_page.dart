@@ -160,11 +160,13 @@ class RoutineSettingsPage extends HookConsumerWidget {
                     thresholds: state.setting,
                     existing: entry.value,
                   ),
-                  onDelete: () => _confirmDelete(context, notifier, entry.value),
+                  onDelete: () =>
+                      _confirmDelete(context, notifier, entry.value),
                   onMoveUp: state.isReordering || entry.key == 0
                       ? null
                       : () => notifier.moveRoutineByDelta(entry.value.id, -1),
-                  onMoveDown: state.isReordering ||
+                  onMoveDown:
+                      state.isReordering ||
                           entry.key == state.routines.length - 1
                       ? null
                       : () => notifier.moveRoutineByDelta(entry.value.id, 1),
@@ -177,11 +179,8 @@ class RoutineSettingsPage extends HookConsumerWidget {
           ),
         const SizedBox(height: 16),
         FilledButton.icon(
-          onPressed: () => _openRoutineEditor(
-            context,
-            notifier,
-            thresholds: state.setting,
-          ),
+          onPressed: () =>
+              _openRoutineEditor(context, notifier, thresholds: state.setting),
           icon: const Icon(Icons.add),
           label: const Text('ルーチンを追加'),
         ),

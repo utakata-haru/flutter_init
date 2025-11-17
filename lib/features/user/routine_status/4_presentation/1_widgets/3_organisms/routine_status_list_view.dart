@@ -14,6 +14,7 @@ class RoutineStatusListView extends StatelessWidget {
     this.onUndo,
     this.onEdit,
     this.onDelete,
+    this.onEditCompletionTime,
   });
 
   final List<RoutineEntity> routines;
@@ -24,6 +25,7 @@ class RoutineStatusListView extends StatelessWidget {
   final void Function(RoutineEntity routine)? onUndo;
   final void Function(RoutineEntity routine)? onEdit;
   final void Function(RoutineEntity routine)? onDelete;
+  final void Function(RoutineEntity routine)? onEditCompletionTime;
 
   @override
   Widget build(BuildContext context) {
@@ -54,6 +56,9 @@ class RoutineStatusListView extends StatelessWidget {
             onEdit: onEdit == null ? null : () => onEdit!(routine),
             onDelete: onDelete == null ? null : () => onDelete!(routine),
             showLastResult: true,
+            onEditCompletionTime: onEditCompletionTime == null
+                ? null
+                : () => onEditCompletionTime!(routine),
           );
         },
         separatorBuilder: (context, index) => const SizedBox(height: 16),

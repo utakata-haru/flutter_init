@@ -14,6 +14,7 @@ _RoutineCompletionResultEntity _$RoutineCompletionResultEntityFromJson(
   completedAt: DateTime.parse(json['completedAt'] as String),
   status: $enumDecode(_$RoutineComplianceStatusEnumMap, json['status']),
   delayMinutes: (json['delayMinutes'] as num).toInt(),
+  edited: json['edited'] as bool? ?? false,
 );
 
 Map<String, dynamic> _$RoutineCompletionResultEntityToJson(
@@ -24,6 +25,7 @@ Map<String, dynamic> _$RoutineCompletionResultEntityToJson(
   'completedAt': instance.completedAt.toIso8601String(),
   'status': _$RoutineComplianceStatusEnumMap[instance.status]!,
   'delayMinutes': instance.delayMinutes,
+  'edited': instance.edited,
 };
 
 const _$RoutineComplianceStatusEnumMap = {

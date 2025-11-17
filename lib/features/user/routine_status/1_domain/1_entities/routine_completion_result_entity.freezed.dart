@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$RoutineCompletionResultEntity {
 
- String get routineId; DateTime get scheduledDateTime; DateTime get completedAt; RoutineComplianceStatus get status; int get delayMinutes;
+ String get routineId; DateTime get scheduledDateTime; DateTime get completedAt; RoutineComplianceStatus get status; int get delayMinutes; bool get edited;
 /// Create a copy of RoutineCompletionResultEntity
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $RoutineCompletionResultEntityCopyWith<RoutineCompletionResultEntity> get copyWi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is RoutineCompletionResultEntity&&(identical(other.routineId, routineId) || other.routineId == routineId)&&(identical(other.scheduledDateTime, scheduledDateTime) || other.scheduledDateTime == scheduledDateTime)&&(identical(other.completedAt, completedAt) || other.completedAt == completedAt)&&(identical(other.status, status) || other.status == status)&&(identical(other.delayMinutes, delayMinutes) || other.delayMinutes == delayMinutes));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is RoutineCompletionResultEntity&&(identical(other.routineId, routineId) || other.routineId == routineId)&&(identical(other.scheduledDateTime, scheduledDateTime) || other.scheduledDateTime == scheduledDateTime)&&(identical(other.completedAt, completedAt) || other.completedAt == completedAt)&&(identical(other.status, status) || other.status == status)&&(identical(other.delayMinutes, delayMinutes) || other.delayMinutes == delayMinutes)&&(identical(other.edited, edited) || other.edited == edited));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,routineId,scheduledDateTime,completedAt,status,delayMinutes);
+int get hashCode => Object.hash(runtimeType,routineId,scheduledDateTime,completedAt,status,delayMinutes,edited);
 
 @override
 String toString() {
-  return 'RoutineCompletionResultEntity(routineId: $routineId, scheduledDateTime: $scheduledDateTime, completedAt: $completedAt, status: $status, delayMinutes: $delayMinutes)';
+  return 'RoutineCompletionResultEntity(routineId: $routineId, scheduledDateTime: $scheduledDateTime, completedAt: $completedAt, status: $status, delayMinutes: $delayMinutes, edited: $edited)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $RoutineCompletionResultEntityCopyWith<$Res>  {
   factory $RoutineCompletionResultEntityCopyWith(RoutineCompletionResultEntity value, $Res Function(RoutineCompletionResultEntity) _then) = _$RoutineCompletionResultEntityCopyWithImpl;
 @useResult
 $Res call({
- String routineId, DateTime scheduledDateTime, DateTime completedAt, RoutineComplianceStatus status, int delayMinutes
+ String routineId, DateTime scheduledDateTime, DateTime completedAt, RoutineComplianceStatus status, int delayMinutes, bool edited
 });
 
 
@@ -65,14 +65,15 @@ class _$RoutineCompletionResultEntityCopyWithImpl<$Res>
 
 /// Create a copy of RoutineCompletionResultEntity
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? routineId = null,Object? scheduledDateTime = null,Object? completedAt = null,Object? status = null,Object? delayMinutes = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? routineId = null,Object? scheduledDateTime = null,Object? completedAt = null,Object? status = null,Object? delayMinutes = null,Object? edited = null,}) {
   return _then(_self.copyWith(
 routineId: null == routineId ? _self.routineId : routineId // ignore: cast_nullable_to_non_nullable
 as String,scheduledDateTime: null == scheduledDateTime ? _self.scheduledDateTime : scheduledDateTime // ignore: cast_nullable_to_non_nullable
 as DateTime,completedAt: null == completedAt ? _self.completedAt : completedAt // ignore: cast_nullable_to_non_nullable
 as DateTime,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as RoutineComplianceStatus,delayMinutes: null == delayMinutes ? _self.delayMinutes : delayMinutes // ignore: cast_nullable_to_non_nullable
-as int,
+as int,edited: null == edited ? _self.edited : edited // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 
@@ -157,10 +158,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String routineId,  DateTime scheduledDateTime,  DateTime completedAt,  RoutineComplianceStatus status,  int delayMinutes)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String routineId,  DateTime scheduledDateTime,  DateTime completedAt,  RoutineComplianceStatus status,  int delayMinutes,  bool edited)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _RoutineCompletionResultEntity() when $default != null:
-return $default(_that.routineId,_that.scheduledDateTime,_that.completedAt,_that.status,_that.delayMinutes);case _:
+return $default(_that.routineId,_that.scheduledDateTime,_that.completedAt,_that.status,_that.delayMinutes,_that.edited);case _:
   return orElse();
 
 }
@@ -178,10 +179,10 @@ return $default(_that.routineId,_that.scheduledDateTime,_that.completedAt,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String routineId,  DateTime scheduledDateTime,  DateTime completedAt,  RoutineComplianceStatus status,  int delayMinutes)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String routineId,  DateTime scheduledDateTime,  DateTime completedAt,  RoutineComplianceStatus status,  int delayMinutes,  bool edited)  $default,) {final _that = this;
 switch (_that) {
 case _RoutineCompletionResultEntity():
-return $default(_that.routineId,_that.scheduledDateTime,_that.completedAt,_that.status,_that.delayMinutes);case _:
+return $default(_that.routineId,_that.scheduledDateTime,_that.completedAt,_that.status,_that.delayMinutes,_that.edited);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -198,10 +199,10 @@ return $default(_that.routineId,_that.scheduledDateTime,_that.completedAt,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String routineId,  DateTime scheduledDateTime,  DateTime completedAt,  RoutineComplianceStatus status,  int delayMinutes)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String routineId,  DateTime scheduledDateTime,  DateTime completedAt,  RoutineComplianceStatus status,  int delayMinutes,  bool edited)?  $default,) {final _that = this;
 switch (_that) {
 case _RoutineCompletionResultEntity() when $default != null:
-return $default(_that.routineId,_that.scheduledDateTime,_that.completedAt,_that.status,_that.delayMinutes);case _:
+return $default(_that.routineId,_that.scheduledDateTime,_that.completedAt,_that.status,_that.delayMinutes,_that.edited);case _:
   return null;
 
 }
@@ -213,7 +214,7 @@ return $default(_that.routineId,_that.scheduledDateTime,_that.completedAt,_that.
 @JsonSerializable()
 
 class _RoutineCompletionResultEntity extends RoutineCompletionResultEntity {
-  const _RoutineCompletionResultEntity({required this.routineId, required this.scheduledDateTime, required this.completedAt, required this.status, required this.delayMinutes}): super._();
+  const _RoutineCompletionResultEntity({required this.routineId, required this.scheduledDateTime, required this.completedAt, required this.status, required this.delayMinutes, this.edited = false}): super._();
   factory _RoutineCompletionResultEntity.fromJson(Map<String, dynamic> json) => _$RoutineCompletionResultEntityFromJson(json);
 
 @override final  String routineId;
@@ -221,6 +222,7 @@ class _RoutineCompletionResultEntity extends RoutineCompletionResultEntity {
 @override final  DateTime completedAt;
 @override final  RoutineComplianceStatus status;
 @override final  int delayMinutes;
+@override@JsonKey() final  bool edited;
 
 /// Create a copy of RoutineCompletionResultEntity
 /// with the given fields replaced by the non-null parameter values.
@@ -235,16 +237,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RoutineCompletionResultEntity&&(identical(other.routineId, routineId) || other.routineId == routineId)&&(identical(other.scheduledDateTime, scheduledDateTime) || other.scheduledDateTime == scheduledDateTime)&&(identical(other.completedAt, completedAt) || other.completedAt == completedAt)&&(identical(other.status, status) || other.status == status)&&(identical(other.delayMinutes, delayMinutes) || other.delayMinutes == delayMinutes));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RoutineCompletionResultEntity&&(identical(other.routineId, routineId) || other.routineId == routineId)&&(identical(other.scheduledDateTime, scheduledDateTime) || other.scheduledDateTime == scheduledDateTime)&&(identical(other.completedAt, completedAt) || other.completedAt == completedAt)&&(identical(other.status, status) || other.status == status)&&(identical(other.delayMinutes, delayMinutes) || other.delayMinutes == delayMinutes)&&(identical(other.edited, edited) || other.edited == edited));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,routineId,scheduledDateTime,completedAt,status,delayMinutes);
+int get hashCode => Object.hash(runtimeType,routineId,scheduledDateTime,completedAt,status,delayMinutes,edited);
 
 @override
 String toString() {
-  return 'RoutineCompletionResultEntity(routineId: $routineId, scheduledDateTime: $scheduledDateTime, completedAt: $completedAt, status: $status, delayMinutes: $delayMinutes)';
+  return 'RoutineCompletionResultEntity(routineId: $routineId, scheduledDateTime: $scheduledDateTime, completedAt: $completedAt, status: $status, delayMinutes: $delayMinutes, edited: $edited)';
 }
 
 
@@ -255,7 +257,7 @@ abstract mixin class _$RoutineCompletionResultEntityCopyWith<$Res> implements $R
   factory _$RoutineCompletionResultEntityCopyWith(_RoutineCompletionResultEntity value, $Res Function(_RoutineCompletionResultEntity) _then) = __$RoutineCompletionResultEntityCopyWithImpl;
 @override @useResult
 $Res call({
- String routineId, DateTime scheduledDateTime, DateTime completedAt, RoutineComplianceStatus status, int delayMinutes
+ String routineId, DateTime scheduledDateTime, DateTime completedAt, RoutineComplianceStatus status, int delayMinutes, bool edited
 });
 
 
@@ -272,14 +274,15 @@ class __$RoutineCompletionResultEntityCopyWithImpl<$Res>
 
 /// Create a copy of RoutineCompletionResultEntity
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? routineId = null,Object? scheduledDateTime = null,Object? completedAt = null,Object? status = null,Object? delayMinutes = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? routineId = null,Object? scheduledDateTime = null,Object? completedAt = null,Object? status = null,Object? delayMinutes = null,Object? edited = null,}) {
   return _then(_RoutineCompletionResultEntity(
 routineId: null == routineId ? _self.routineId : routineId // ignore: cast_nullable_to_non_nullable
 as String,scheduledDateTime: null == scheduledDateTime ? _self.scheduledDateTime : scheduledDateTime // ignore: cast_nullable_to_non_nullable
 as DateTime,completedAt: null == completedAt ? _self.completedAt : completedAt // ignore: cast_nullable_to_non_nullable
 as DateTime,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as RoutineComplianceStatus,delayMinutes: null == delayMinutes ? _self.delayMinutes : delayMinutes // ignore: cast_nullable_to_non_nullable
-as int,
+as int,edited: null == edited ? _self.edited : edited // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 

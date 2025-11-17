@@ -129,6 +129,21 @@ class $RoutineTableTable extends RoutineTable
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _lastEditedMeta = const VerificationMeta(
+    'lastEdited',
+  );
+  @override
+  late final GeneratedColumn<bool> lastEdited = GeneratedColumn<bool>(
+    'last_edited',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("last_edited" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -166,6 +181,7 @@ class $RoutineTableTable extends RoutineTable
     lastCompletedAt,
     lastDelayMinutes,
     lastStatus,
+    lastEdited,
     createdAt,
     updatedAt,
   ];
@@ -270,6 +286,12 @@ class $RoutineTableTable extends RoutineTable
         lastStatus.isAcceptableOrUnknown(data['last_status']!, _lastStatusMeta),
       );
     }
+    if (data.containsKey('last_edited')) {
+      context.handle(
+        _lastEditedMeta,
+        lastEdited.isAcceptableOrUnknown(data['last_edited']!, _lastEditedMeta),
+      );
+    }
     if (data.containsKey('created_at')) {
       context.handle(
         _createdAtMeta,
@@ -335,6 +357,10 @@ class $RoutineTableTable extends RoutineTable
         DriftSqlType.string,
         data['${effectivePrefix}last_status'],
       ),
+      lastEdited: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}last_edited'],
+      )!,
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
@@ -365,6 +391,7 @@ class RoutineTableData extends DataClass
   final DateTime? lastCompletedAt;
   final int? lastDelayMinutes;
   final String? lastStatus;
+  final bool lastEdited;
   final DateTime createdAt;
   final DateTime updatedAt;
   const RoutineTableData({
@@ -379,6 +406,7 @@ class RoutineTableData extends DataClass
     this.lastCompletedAt,
     this.lastDelayMinutes,
     this.lastStatus,
+    required this.lastEdited,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -404,6 +432,7 @@ class RoutineTableData extends DataClass
     if (!nullToAbsent || lastStatus != null) {
       map['last_status'] = Variable<String>(lastStatus);
     }
+    map['last_edited'] = Variable<bool>(lastEdited);
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
     return map;
@@ -430,6 +459,7 @@ class RoutineTableData extends DataClass
       lastStatus: lastStatus == null && nullToAbsent
           ? const Value.absent()
           : Value(lastStatus),
+      lastEdited: Value(lastEdited),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
     );
@@ -456,6 +486,7 @@ class RoutineTableData extends DataClass
       lastCompletedAt: serializer.fromJson<DateTime?>(json['lastCompletedAt']),
       lastDelayMinutes: serializer.fromJson<int?>(json['lastDelayMinutes']),
       lastStatus: serializer.fromJson<String?>(json['lastStatus']),
+      lastEdited: serializer.fromJson<bool>(json['lastEdited']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
     );
@@ -475,6 +506,7 @@ class RoutineTableData extends DataClass
       'lastCompletedAt': serializer.toJson<DateTime?>(lastCompletedAt),
       'lastDelayMinutes': serializer.toJson<int?>(lastDelayMinutes),
       'lastStatus': serializer.toJson<String?>(lastStatus),
+      'lastEdited': serializer.toJson<bool>(lastEdited),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
     };
@@ -492,6 +524,7 @@ class RoutineTableData extends DataClass
     Value<DateTime?> lastCompletedAt = const Value.absent(),
     Value<int?> lastDelayMinutes = const Value.absent(),
     Value<String?> lastStatus = const Value.absent(),
+    bool? lastEdited,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) => RoutineTableData(
@@ -512,6 +545,7 @@ class RoutineTableData extends DataClass
         ? lastDelayMinutes.value
         : this.lastDelayMinutes,
     lastStatus: lastStatus.present ? lastStatus.value : this.lastStatus,
+    lastEdited: lastEdited ?? this.lastEdited,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
   );
@@ -544,6 +578,9 @@ class RoutineTableData extends DataClass
       lastStatus: data.lastStatus.present
           ? data.lastStatus.value
           : this.lastStatus,
+      lastEdited: data.lastEdited.present
+          ? data.lastEdited.value
+          : this.lastEdited,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
@@ -563,6 +600,7 @@ class RoutineTableData extends DataClass
           ..write('lastCompletedAt: $lastCompletedAt, ')
           ..write('lastDelayMinutes: $lastDelayMinutes, ')
           ..write('lastStatus: $lastStatus, ')
+          ..write('lastEdited: $lastEdited, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
@@ -582,6 +620,7 @@ class RoutineTableData extends DataClass
     lastCompletedAt,
     lastDelayMinutes,
     lastStatus,
+    lastEdited,
     createdAt,
     updatedAt,
   );
@@ -600,6 +639,7 @@ class RoutineTableData extends DataClass
           other.lastCompletedAt == this.lastCompletedAt &&
           other.lastDelayMinutes == this.lastDelayMinutes &&
           other.lastStatus == this.lastStatus &&
+          other.lastEdited == this.lastEdited &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt);
 }
@@ -616,6 +656,7 @@ class RoutineTableCompanion extends UpdateCompanion<RoutineTableData> {
   final Value<DateTime?> lastCompletedAt;
   final Value<int?> lastDelayMinutes;
   final Value<String?> lastStatus;
+  final Value<bool> lastEdited;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
   final Value<int> rowid;
@@ -631,6 +672,7 @@ class RoutineTableCompanion extends UpdateCompanion<RoutineTableData> {
     this.lastCompletedAt = const Value.absent(),
     this.lastDelayMinutes = const Value.absent(),
     this.lastStatus = const Value.absent(),
+    this.lastEdited = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -647,6 +689,7 @@ class RoutineTableCompanion extends UpdateCompanion<RoutineTableData> {
     this.lastCompletedAt = const Value.absent(),
     this.lastDelayMinutes = const Value.absent(),
     this.lastStatus = const Value.absent(),
+    this.lastEdited = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -666,6 +709,7 @@ class RoutineTableCompanion extends UpdateCompanion<RoutineTableData> {
     Expression<DateTime>? lastCompletedAt,
     Expression<int>? lastDelayMinutes,
     Expression<String>? lastStatus,
+    Expression<bool>? lastEdited,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
     Expression<int>? rowid,
@@ -684,6 +728,7 @@ class RoutineTableCompanion extends UpdateCompanion<RoutineTableData> {
       if (lastCompletedAt != null) 'last_completed_at': lastCompletedAt,
       if (lastDelayMinutes != null) 'last_delay_minutes': lastDelayMinutes,
       if (lastStatus != null) 'last_status': lastStatus,
+      if (lastEdited != null) 'last_edited': lastEdited,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (rowid != null) 'rowid': rowid,
@@ -702,6 +747,7 @@ class RoutineTableCompanion extends UpdateCompanion<RoutineTableData> {
     Value<DateTime?>? lastCompletedAt,
     Value<int?>? lastDelayMinutes,
     Value<String?>? lastStatus,
+    Value<bool>? lastEdited,
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
     Value<int>? rowid,
@@ -719,6 +765,7 @@ class RoutineTableCompanion extends UpdateCompanion<RoutineTableData> {
       lastCompletedAt: lastCompletedAt ?? this.lastCompletedAt,
       lastDelayMinutes: lastDelayMinutes ?? this.lastDelayMinutes,
       lastStatus: lastStatus ?? this.lastStatus,
+      lastEdited: lastEdited ?? this.lastEdited,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       rowid: rowid ?? this.rowid,
@@ -763,6 +810,9 @@ class RoutineTableCompanion extends UpdateCompanion<RoutineTableData> {
     if (lastStatus.present) {
       map['last_status'] = Variable<String>(lastStatus.value);
     }
+    if (lastEdited.present) {
+      map['last_edited'] = Variable<bool>(lastEdited.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -789,6 +839,7 @@ class RoutineTableCompanion extends UpdateCompanion<RoutineTableData> {
           ..write('lastCompletedAt: $lastCompletedAt, ')
           ..write('lastDelayMinutes: $lastDelayMinutes, ')
           ..write('lastStatus: $lastStatus, ')
+          ..write('lastEdited: $lastEdited, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('rowid: $rowid')
@@ -1164,6 +1215,7 @@ typedef $$RoutineTableTableCreateCompanionBuilder =
       Value<DateTime?> lastCompletedAt,
       Value<int?> lastDelayMinutes,
       Value<String?> lastStatus,
+      Value<bool> lastEdited,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
       Value<int> rowid,
@@ -1181,6 +1233,7 @@ typedef $$RoutineTableTableUpdateCompanionBuilder =
       Value<DateTime?> lastCompletedAt,
       Value<int?> lastDelayMinutes,
       Value<String?> lastStatus,
+      Value<bool> lastEdited,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
       Value<int> rowid,
@@ -1247,6 +1300,11 @@ class $$RoutineTableTableFilterComposer
 
   ColumnFilters<String> get lastStatus => $composableBuilder(
     column: $table.lastStatus,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get lastEdited => $composableBuilder(
+    column: $table.lastEdited,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -1325,6 +1383,11 @@ class $$RoutineTableTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<bool> get lastEdited => $composableBuilder(
+    column: $table.lastEdited,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
@@ -1394,6 +1457,11 @@ class $$RoutineTableTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<bool> get lastEdited => $composableBuilder(
+    column: $table.lastEdited,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
 
@@ -1443,6 +1511,7 @@ class $$RoutineTableTableTableManager
                 Value<DateTime?> lastCompletedAt = const Value.absent(),
                 Value<int?> lastDelayMinutes = const Value.absent(),
                 Value<String?> lastStatus = const Value.absent(),
+                Value<bool> lastEdited = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -1458,6 +1527,7 @@ class $$RoutineTableTableTableManager
                 lastCompletedAt: lastCompletedAt,
                 lastDelayMinutes: lastDelayMinutes,
                 lastStatus: lastStatus,
+                lastEdited: lastEdited,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 rowid: rowid,
@@ -1475,6 +1545,7 @@ class $$RoutineTableTableTableManager
                 Value<DateTime?> lastCompletedAt = const Value.absent(),
                 Value<int?> lastDelayMinutes = const Value.absent(),
                 Value<String?> lastStatus = const Value.absent(),
+                Value<bool> lastEdited = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -1490,6 +1561,7 @@ class $$RoutineTableTableTableManager
                 lastCompletedAt: lastCompletedAt,
                 lastDelayMinutes: lastDelayMinutes,
                 lastStatus: lastStatus,
+                lastEdited: lastEdited,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 rowid: rowid,

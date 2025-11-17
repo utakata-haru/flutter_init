@@ -9,6 +9,7 @@ import 'package:flutter_init_3/features/user/routine_status/1_domain/1_entities/
 import 'package:flutter_init_3/features/user/routine_status/3_application/1_states/routine_dashboard_state.dart';
 import 'package:flutter_init_3/features/user/routine_status/3_application/3_notifiers/routine_dashboard_notifier.dart';
 import 'package:flutter_init_3/features/user/routine_status/4_presentation/1_widgets/3_organisms/routine_status_list_view.dart';
+import 'package:flutter_init_3/features/user/routine_status/3_application/2_providers/routine_repository_provider.dart';
 
 class RoutineDashboardPage extends HookConsumerWidget {
   const RoutineDashboardPage({super.key});
@@ -97,6 +98,11 @@ class RoutineDashboardPage extends HookConsumerWidget {
             onRefresh: notifier.refresh,
             onComplete: notifier.completeRoutine,
             onUndo: notifier.undoCompletion,
+            onEditCompletionTime: (routine) => _pickAndUpdateCompletion(
+              context,
+              ref,
+              routine,
+            ),
           );
         },
       ),
@@ -217,6 +223,48 @@ class RoutineDashboardPage extends HookConsumerWidget {
     }
 
     return null;
+  }
+
+  Future<void> _pickAndUpdateCompletion(
+    BuildContext context,
+    WidgetRef ref,
+    RoutineEntity routine,
+  ) async {
+    final initial = routine.lastResult?.completedAt ?? DateTime.now();
+    final initialTime = TimeOfDay(hour: initial.hour, minute: initial.minute);
+
+    final picked = await showTimePicker(
+      context: context,
+      initialTime: initialTime,
+      builder: (context, child) => child ?? const SizedBox.shrink(),
+    );
+    if (picked == null) {
+      return;
+    }
+
+    final newCompletedAt = DateTime(
+      initial.year,
+      initial.month,
+      initial.day,
+      picked.hour,
+      picked.minute,
+    );
+
+    final useCase = ref.read(updateCompletionTimeUseCaseProvider);
+    try {
+      await useCase(routine: routine, newCompletedAt: newCompletedAt);
+      if (!context.mounted) return;
+      _showSnackBar(
+        context,
+        const SnackBar(
+          duration: Duration(seconds: 2),
+          content: Text('完了時刻を更新しました（編集済み）'),
+        ),
+      );
+    } catch (e) {
+      if (!context.mounted) return;
+      _showSnackBar(context, SnackBar(content: Text(e.toString())));
+    }
   }
 
   void _showSnackBar(BuildContext context, SnackBar snackBar) {

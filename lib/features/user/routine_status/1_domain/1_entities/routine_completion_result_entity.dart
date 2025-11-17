@@ -16,6 +16,7 @@ abstract class RoutineCompletionResultEntity
     required DateTime completedAt,
     required RoutineComplianceStatus status,
     required int delayMinutes,
+    @Default(false) bool edited,
   }) = _RoutineCompletionResultEntity;
 
   factory RoutineCompletionResultEntity.fromJson(Map<String, dynamic> json) =>

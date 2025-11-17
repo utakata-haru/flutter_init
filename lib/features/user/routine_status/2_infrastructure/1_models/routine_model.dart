@@ -22,6 +22,7 @@ class RoutineModel {
     this.lastDelayMinutes,
     this.lastStatus,
     this.createdAt,
+    this.lastEdited = false,
     this.updatedAt,
   });
 
@@ -36,6 +37,7 @@ class RoutineModel {
   final DateTime? lastCompletedAt;
   final int? lastDelayMinutes;
   final RoutineComplianceStatus? lastStatus;
+  final bool lastEdited;
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
@@ -74,6 +76,7 @@ class RoutineModel {
       completedAt: lastCompletedAt!,
       status: lastStatus!,
       delayMinutes: lastDelayMinutes!,
+      edited: lastEdited,
     );
   }
 
@@ -91,6 +94,7 @@ class RoutineModel {
       lastCompletedAt: Value(lastCompletedAt),
       lastDelayMinutes: Value(lastDelayMinutes),
       lastStatus: Value(lastStatus?.name),
+      lastEdited: Value(lastEdited),
       createdAt: Value(createdAt ?? effectiveNow),
       updatedAt: Value(effectiveNow),
     );
@@ -116,6 +120,7 @@ class RoutineModel {
     DateTime? lastCompletedAt,
     int? lastDelayMinutes,
     RoutineComplianceStatus? lastStatus,
+    bool? lastEdited,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -127,11 +132,12 @@ class RoutineModel {
       allowableDelayMinutes:
           allowableDelayMinutes ?? this.allowableDelayMinutes,
       criticalDelayMinutes: criticalDelayMinutes ?? this.criticalDelayMinutes,
-        sortIndex: sortIndex ?? this.sortIndex,
+      sortIndex: sortIndex ?? this.sortIndex,
       lastScheduledAt: lastScheduledAt ?? this.lastScheduledAt,
       lastCompletedAt: lastCompletedAt ?? this.lastCompletedAt,
       lastDelayMinutes: lastDelayMinutes ?? this.lastDelayMinutes,
       lastStatus: lastStatus ?? this.lastStatus,
+      lastEdited: lastEdited ?? this.lastEdited,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
@@ -151,6 +157,7 @@ class RoutineModel {
       lastCompletedAt: lastResult?.completedAt,
       lastDelayMinutes: lastResult?.delayMinutes,
       lastStatus: lastResult?.status,
+      lastEdited: lastResult?.edited ?? false,
     );
   }
 
@@ -167,6 +174,7 @@ class RoutineModel {
       lastCompletedAt: data.lastCompletedAt,
       lastDelayMinutes: data.lastDelayMinutes,
       lastStatus: _parseStatus(data.lastStatus),
+      lastEdited: data.lastEdited,
       createdAt: data.createdAt,
       updatedAt: data.updatedAt,
     );

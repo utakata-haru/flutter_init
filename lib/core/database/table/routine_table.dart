@@ -25,6 +25,8 @@ class RoutineTable extends Table {
 
   TextColumn get lastStatus => text().nullable()();
 
+  BoolColumn get lastEdited => boolean().withDefault(const Constant(false))();
+
   DateTimeColumn get createdAt => dateTime().clientDefault(DateTime.now)();
 
   DateTimeColumn get updatedAt => dateTime().clientDefault(DateTime.now)();

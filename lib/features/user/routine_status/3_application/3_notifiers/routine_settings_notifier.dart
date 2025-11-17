@@ -17,10 +17,7 @@ class RoutineSettingsNotifier extends _$RoutineSettingsNotifier {
   RoutineSettingsState build() {
     _listenSettings();
     _listenRoutines();
-    return const RoutineSettingsState(
-      isLoading: true,
-      isRoutineLoading: true,
-    );
+    return const RoutineSettingsState(isLoading: true, isRoutineLoading: true);
   }
 
   Future<void> refresh() async {
@@ -34,10 +31,7 @@ class RoutineSettingsNotifier extends _$RoutineSettingsNotifier {
       final settingFuture = ref.read(routineThresholdProvider.future);
       final routinesFuture = ref.read(routineListProvider.future);
 
-      final results = await Future.wait([
-        settingFuture,
-        routinesFuture,
-      ]);
+      final results = await Future.wait([settingFuture, routinesFuture]);
 
       final thresholdSetting = results[0] as RoutineThresholdSetting;
       final routines = results[1] as List<RoutineEntity>;
@@ -91,8 +85,9 @@ class RoutineSettingsNotifier extends _$RoutineSettingsNotifier {
 
   Future<bool> saveRoutine(RoutineEntity routine) async {
     final useCase = ref.read(updateRoutineUseCaseProvider);
-    final existingIndex =
-        state.routines.indexWhere((element) => element.id == routine.id);
+    final existingIndex = state.routines.indexWhere(
+      (element) => element.id == routine.id,
+    );
     final isNew = existingIndex == -1;
     final nextSortIndex = isNew
         ? _nextSortIndex()
@@ -137,9 +132,7 @@ class RoutineSettingsNotifier extends _$RoutineSettingsNotifier {
     if (oldIndex == -1) {
       return;
     }
-    final newIndex = (oldIndex + delta)
-        .clamp(0, routines.length - 1)
-        .toInt();
+    final newIndex = (oldIndex + delta).clamp(0, routines.length - 1).toInt();
     if (oldIndex == newIndex) {
       return;
     }
@@ -284,7 +277,9 @@ class RoutineSettingsNotifier extends _$RoutineSettingsNotifier {
     if (state.routines.isEmpty) {
       return 0;
     }
-    final maxValue = state.routines.map((r) => r.sortIndex).fold<int>(
+    final maxValue = state.routines
+        .map((r) => r.sortIndex)
+        .fold<int>(
           0,
           (previous, element) => element > previous ? element : previous,
         );

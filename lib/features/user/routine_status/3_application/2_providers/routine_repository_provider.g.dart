@@ -441,6 +441,55 @@ final class UpdateRoutineUseCaseProvider
 String _$updateRoutineUseCaseHash() =>
     r'c7bb1ecdd8824eb78f49111771c1fa8d2dc5ca25';
 
+@ProviderFor(updateCompletionTimeUseCase)
+const updateCompletionTimeUseCaseProvider =
+    UpdateCompletionTimeUseCaseProvider._();
+
+final class UpdateCompletionTimeUseCaseProvider
+    extends
+        $FunctionalProvider<
+          UpdateCompletionTimeUseCase,
+          UpdateCompletionTimeUseCase,
+          UpdateCompletionTimeUseCase
+        >
+    with $Provider<UpdateCompletionTimeUseCase> {
+  const UpdateCompletionTimeUseCaseProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'updateCompletionTimeUseCaseProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$updateCompletionTimeUseCaseHash();
+
+  @$internal
+  @override
+  $ProviderElement<UpdateCompletionTimeUseCase> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  UpdateCompletionTimeUseCase create(Ref ref) {
+    return updateCompletionTimeUseCase(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(UpdateCompletionTimeUseCase value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<UpdateCompletionTimeUseCase>(value),
+    );
+  }
+}
+
+String _$updateCompletionTimeUseCaseHash() =>
+    r'06f74cd1d284ef26c0eb7f6994aaefcf6a73f8b6';
+
 @ProviderFor(routineStream)
 const routineStreamProvider = RoutineStreamProvider._();
 
